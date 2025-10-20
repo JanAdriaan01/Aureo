@@ -83,24 +83,23 @@ function useLocalStorage(key, initial){
 function Shell({ children }){
   return (
     <div className="min-h-screen bg-zinc-50 text-zinc-900">
-      <header className="sticky top-0 z-50 backdrop-blur bg-white/80 border-b border-zinc-200">
-        <div className="max-w-7xl mx-auto px-4 py-3 flex items-center gap-4">
-          <Logo />
-          <nav className="hidden md:flex gap-4 text-sm">
-            <NavItem to="/">Home</NavItem>
-            <NavItem to="/products">Products</NavItem>
-            <NavItem to="/builder">Builder</NavItem>
-            <NavItem to="/order">Order</NavItem>
-            <NavItem to="/gallery">Gallery</NavItem>
-            <NavItem to="/compliance">Compliance</NavItem>
-            <NavItem to="/faq">FAQ</NavItem>
-            <NavItem to="/contact">Contact</NavItem>
-          </nav>
-          <div className="ml-auto flex items-center gap-2">
-            <OrderMini />
-          </div>
-        </div>
-      </header>
+     
+     <header className="sticky top-0 z-50 backdrop-blur bg-white/80 border-b border-zinc-200"> 
+     <div className="max-w-7xl mx-auto px-4 py-3 flex items-center gap-4"> 
+      <Logo /> <nav className="hidden md:flex gap-4 text-sm"> 
+        <NavItem to="/">Home</NavItem> 
+        <NavItem to="/products">Products</NavItem> 
+        <NavItem to="/builder">Builder</NavItem> 
+        <NavItem to="/order">Order</NavItem> 
+        <NavItem to="/gallery">Gallery</NavItem> 
+        <NavItem to="/compliance">Compliance</NavItem> 
+        <NavItem to="/faq">FAQ</NavItem> 
+        <NavItem to="/contact">Contact</NavItem> 
+        </nav> <div className="ml-auto flex items-center gap-2"> <OrderMini />
+        </div> 
+        </div> 
+        </header>
+
       <main className="max-w-7xl mx-auto px-4 py-8">{children}</main>
       <Footer />
     </div>
@@ -110,10 +109,14 @@ function Shell({ children }){
 function Logo(){
   return (
     <div className="flex items-center gap-2 font-semibold">
-      <div className="w-8 h-8 rounded-xl bg-zinc-900 text-white grid place-items-center">C</div>
-      <div className="leading-tight">
-        <div>Crealco Specialists</div>
-        <div className="text-xs text-zinc-500">Aluminium Windows & Shopfronts</div>
+      <img 
+        src="/images/logo.png" 
+        alt="Crealco Specialists Logo" 
+        className="w-14 h-14 object-contain"
+      />
+         <div className="leading-tight">
+        <div>AUREO</div>
+        <div className="text-xs text-zinc-500">Built to Inspire</div>
       </div>
     </div>
   );
