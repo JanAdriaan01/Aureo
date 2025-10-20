@@ -616,9 +616,9 @@ function Contact(){
         <h1 className="text-3xl font-bold">Contact</h1>
         <p className="text-zinc-600 mt-1">Send a message or call us to discuss your project. We can meet on site or assist off plan.</p>
         <div className="mt-6 space-y-2 text-zinc-700">
-          <div><span className="font-medium">Phone:</span> +27 (0) 10 555 1234</div>
-          <div><span className="font-medium">Email:</span> sales@yourfabricator.co.za</div>
-          <div><span className="font-medium">Hours:</span> Mon–Fri 08:00–17:00</div>
+          <div><span className="font-medium">Phone:</span> +27 (0) 61 193 3931</div>
+          <div><span className="font-medium">Email:</span> info@modahaus.co.za</div>
+          <div><span className="font-medium">Hours:</span> Mon–Sun 08:00–17:00</div>
         </div>
       </div>
       <form onSubmit={submit} className="rounded-2xl border border-zinc-200 p-5 bg-white">
