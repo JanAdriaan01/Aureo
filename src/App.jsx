@@ -111,7 +111,7 @@ function Logo(){
     <div className="flex items-center gap-2 font-semibold">
       <img 
         src="/images/logo.png" 
-        alt="Crealco Specialists Logo" 
+        alt="Aureo Logo" 
         className="w-14 h-14 object-contain"
       />
          <div className="leading-tight">
@@ -150,8 +150,8 @@ function Footer(){
         <div>
           <div className="font-semibold mb-2">Contact</div>
           <div className="text-zinc-600">Johannesburg • Cape Town • Durban</div>
-          <div className="text-zinc-600">+27 (0) 10 555 1234</div>
-          <div className="text-zinc-600">sales@yourfabricator.co.za</div>
+          <div className="text-zinc-600">+27 (0) 61 193 3931</div>
+          <div className="text-zinc-600">info@modahaus.co.za</div>
         </div>
       </div>
     </footer>
