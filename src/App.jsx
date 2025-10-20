@@ -116,7 +116,7 @@ function Logo(){
       />
          <div className="leading-tight">
         <div>AUREO</div>
-        <div className="text-xs text-zinc-500">Built to Inspire</div>
+        <div className="text-xs text-zinc-500">A Modahaus Company</div>
       </div>
     </div>
   );
