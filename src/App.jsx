@@ -198,8 +198,8 @@ function Home(){
           <h1 className="text-4xl md:text-6xl font-black tracking-tight">Crealco aluminium windows, built to spec.</h1>
           <p className="mt-4 text-lg text-zinc-600">Domestic to high-performance systems, powder coated or anodised, glazed to SANS 10400 & 10137 guidelines. Configure online — we’ll price and fabricate.</p>
           <div className="mt-6 flex gap-3">
-            <button onClick={()=>navigate("/builder")} className="px-5 py-3 rounded-2xl bg-zinc-900 text-white">Start Spec Builder</button>
-            <button onClick={()=>navigate("/products")} className="px-5 py-3 rounded-2xl border border-zinc-300">Browse Products</button>
+            <button onClick={()=>navigate("/builder")} className="px-5 py-3 rounded-2xl bg-zinc-900 text-white">Window Builder</button>
+            <button onClick={()=>navigate("/products")} className="px-5 py-3 rounded-2xl border border-zinc-300">All Products</button>
           </div>
           <div className="mt-6 text-sm text-zinc-500">Lead times from 10–15 working days depending on finish and glazing.</div>
         </div>
@@ -333,7 +333,7 @@ function Builder(){
   return (
     <div className="grid lg:grid-cols-2 gap-8">
       <div>
-        <h1 className="text-3xl font-bold">Spec builder</h1>
+        <h1 className="text-3xl font-bold">Configure</h1>
         <p className="text-zinc-600 mt-1">Create line items for your order. We’ll verify span limits and hardware during review.</p>
 
         <div className="mt-6 space-y-4">
