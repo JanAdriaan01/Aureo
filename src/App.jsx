@@ -24,18 +24,17 @@ import { BrowserRouter, Routes, Route, NavLink, useNavigate } from "react-router
 
 // ---------- Utilities ----------
 const IMAGES = {
-  elite: "https://images.unsplash.com/photo-1523419409543-a7ea0c77e2d1?w=1200&q=80&auto=format&fit=crop",
-  slenderline500: "https://images.unsplash.com/photo-1501045661006-fcebe0257c3f?w=1200&q=80&auto=format&fit=crop",
-  sliding1000: "https://images.unsplash.com/photo-1524758631624-e2822e304c36?w=1200&q=80&auto=format&fit=crop",
-  swift36: "https://images.unsplash.com/photo-1534239143979-0e3c5ea1e57c?w=1200&q=80&auto=format&fit=crop",
-  swift38: "https://images.unsplash.com/photo-1505693621784-35f4b3b4f7b0?w=1200&q=80&auto=format&fit=crop",
-  skyline41: "https://images.unsplash.com/photo-1486946255434-2466348c2166?w=1200&q=80&auto=format&fit=crop",
-  pivot38: "https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=1200&q=80&auto=format&fit=crop",
-  edge42: "https://images.unsplash.com/photo-1472224371017-08207f84aaae?w=1200&q=80&auto=format&fit=crop",
-  serene52: "https://images.unsplash.com/photo-1519710164239-da123dc03ef4?w=1200&q=80&auto=format&fit=crop",
-  vert70: "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=1200&q=80&auto=format&fit=crop",
-  clip38: "https://images.unsplash.com/photo-1519710884005-8a3cb1886c2f?w=1200&q=80&auto=format&fit=crop",
-  clip44: "https://images.unsplash.com/photo-1497366216548-37526070297c?w=1200&q=80&auto=format&fit=crop",
+  elite: "/images/elite.jpg",
+  sliding1000: "/images/sliding1000.jpg",
+  swift36: "/images/swift36.jpg",
+  swift38: "/images/swift38.jpg",
+  skyline41: "/images/skyline41.jpg",
+  pivot38: "/images/pivot38.jpg",
+  edge42: "/images/edge42.jpg",
+  serene52: "/images/serene52.jpg",
+  vert70: "/images/vert70.jpg",
+  clip38: "/images/clip38.jpg",
+  clip44: "/images/clip44.jpg",
 };
 
 const CREALCO_SYSTEMS = [
@@ -202,10 +201,10 @@ function Home(){
             <button onClick={()=>navigate("/builder")} className="px-5 py-3 rounded-2xl bg-zinc-900 text-white">Start Spec Builder</button>
             <button onClick={()=>navigate("/products")} className="px-5 py-3 rounded-2xl border border-zinc-300">Browse Products</button>
           </div>
-          <div className="mt-6 text-sm text-zinc-500">Lead times from 10–20 working days depending on finish and glazing.</div>
+          <div className="mt-6 text-sm text-zinc-500">Lead times from 10–15 working days depending on finish and glazing.</div>
         </div>
         <div className="aspect-[4/3] rounded-3xl overflow-hidden shadow-xl">
-          <img src={IMAGES.edge42} alt="Thermally broken casement in charcoal" className="w-full h-full object-cover"/>
+          <img src={IMAGES.sliding1000} alt="Elite Range Windows" className="w-full h-full object-cover"/>
         </div>
       </section>
 
@@ -471,7 +470,7 @@ function Order(){
       "Order lines:",
       ...items.map((x,i)=> `${i+1}. ${x.quantity} x ${x.systemName} ${x.width}x${x.height}mm (${x.sashType}) — ${x.glazing}, ${x.finish}, ${x.hardware}${x.transom!=="None"? ", "+x.transom: ""}${x.location? ", room: "+x.location: ""}${x.notes? " — "+x.notes: ""}`)
     ].join("\n"));
-    return `mailto:sales@yourfabricator.co.za?subject=${subject}&body=${body}`;
+    return `mailto:info@modahaus.co.za?subject=${subject}&body=${body}`;
   },[items, customer]);
 
   return (
