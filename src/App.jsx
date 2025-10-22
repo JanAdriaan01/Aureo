@@ -135,7 +135,7 @@ function Footer(){
       <div className="max-w-7xl mx-auto px-4 py-10 grid gap-8 md:grid-cols-3 text-sm">
         <div>
           <Logo />
-          <p className="mt-3 text-zinc-600">Fabrication & installation of Crealco aluminium systems. SANS compliant. Coastal & inland specs.</p>
+          <p className="mt-3 text-zinc-600">Fabrication & Shipment of aluminium Window systems. SANS compliant. Coastal & inland specs.</p>
         </div>
         <div>
           <div className="font-semibold mb-2">Quick links</div>
@@ -195,13 +195,13 @@ function Home(){
     <div className="space-y-16">
       <section className="grid md:grid-cols-2 gap-8 items-center">
         <div>
-          <h1 className="text-4xl md:text-6xl font-black tracking-tight">Crealco aluminium windows, built to spec.</h1>
+          <h1 className="text-4xl md:text-6xl font-black tracking-tight"> Aluminium windows, built to youre spec.</h1>
           <p className="mt-4 text-lg text-zinc-600">Domestic to high-performance systems, powder coated or anodised, glazed to SANS 10400 & 10137 guidelines. Configure online — we’ll price and fabricate.</p>
           <div className="mt-6 flex gap-3">
             <button onClick={()=>navigate("/builder")} className="px-5 py-3 rounded-2xl bg-zinc-900 text-white">Window Builder</button>
             <button onClick={()=>navigate("/products")} className="px-5 py-3 rounded-2xl border border-zinc-300">All Products</button>
           </div>
-          <div className="mt-6 text-sm text-zinc-500">Lead times from 10–15 working days depending on finish and glazing.</div>
+          <div className="mt-6 text-sm text-zinc-500">Lead times from 10 working days depending on finish and glazing.</div>
         </div>
         <div className="aspect-[4/3] rounded-3xl overflow-hidden shadow-xl">
           <img src={IMAGES.sliding1000} alt="Elite Range Windows" className="w-full h-full object-cover"/>
