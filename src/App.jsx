@@ -114,7 +114,7 @@ function Logo(){
         className="w-14 h-14 object-contain"
       />
          <div className="leading-tight">
-        <div>AUREO</div>
+        <div>AUREO INTERNATIONAL</div>
         <div className="text-xs text-zinc-500">A Modahaus Company</div>
       </div>
     </div>
@@ -141,14 +141,14 @@ function Footer(){
           <div className="font-semibold mb-2">Quick links</div>
           <ul className="space-y-1">
             <li><a href="/products" className="hover:underline">Products</a></li>
-            <li><a href="/builder" className="hover:underline">Spec Builder</a></li>
+            <li><a href="/builder" className="hover:underline">Builder</a></li>
             <li><a href="/order" className="hover:underline">Place an Order</a></li>
             <li><a href="/compliance" className="hover:underline">Compliance</a></li>
           </ul>
         </div>
         <div>
           <div className="font-semibold mb-2">Contact</div>
-          <div className="text-zinc-600">Johannesburg • Cape Town • Durban</div>
+          <div className="text-zinc-600">Johannesburg</div>
           <div className="text-zinc-600">+27 (0) 61 193 3931</div>
           <div className="text-zinc-600">info@modahaus.co.za</div>
         </div>
@@ -254,19 +254,62 @@ function TrustBar(){
   );
 }
 
-function SystemCard({ system }){
+function SystemCard({ system }) {
+  const [expanded, setExpanded] = React.useState(false);
+  const [hovered, setHovered] = React.useState(false);
+
   return (
-    <div className="rounded-2xl border border-zinc-200 overflow-hidden bg-white flex flex-col">
+    <div
+      className="rounded-2xl border border-zinc-200 overflow-hidden bg-white flex flex-col relative group"
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+    >
       <div className="aspect-[4/3] overflow-hidden">
-        <img src={system.image} alt={system.name} className="w-full h-full object-cover"/>
+        <img
+          src={system.image}
+          alt={system.name}
+          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+        />
       </div>
+
       <div className="p-4 flex-1 flex flex-col">
         <div className="font-semibold">{system.name}</div>
-        <div className="text-sm text-zinc-600">{system.type} {system.depth_mm? `• ${system.depth_mm}mm`: ""}</div>
-        <div className="mt-4 flex gap-2">
-          <a href="/builder" className="px-3 py-1.5 rounded-xl bg-zinc-900 text-white text-sm">Configure</a>
-          <a href="/products" className="px-3 py-1.5 rounded-xl border border-zinc-300 text-sm">Details</a>
+        <div className="text-sm text-zinc-600">
+          {system.type} {system.depth_mm ? `• ${system.depth_mm}mm` : ""}
         </div>
+
+        <div className="mt-4 flex gap-2">
+          <a
+            href="/builder"
+            className="px-3 py-1.5 rounded-xl bg-zinc-900 text-white text-sm"
+          >
+            Configure
+          </a>
+          <button
+            onClick={() => setExpanded(!expanded)}
+            className="px-3 py-1.5 rounded-xl border border-zinc-300 text-sm relative"
+          >
+            Details
+            {/* Hover tooltip */}
+            {hovered && !expanded && (
+              <div className="absolute left-0 top-full mt-2 w-56 bg-white border border-zinc-200 rounded-xl shadow-lg p-3 text-xs text-zinc-600 z-10">
+                {system.name} — {system.type}. Click for full specs.
+              </div>
+            )}
+          </button>
+        </div>
+
+        {/* Expanded details section */}
+        {expanded && (
+          <div className="mt-4 border-t border-zinc-200 pt-3 text-sm text-zinc-700 space-y-1">
+            <div><strong>System:</strong> {system.name}</div>
+            <div><strong>Type:</strong> {system.type}</div>
+            <div><strong>Profile depth:</strong> {system.depth_mm || "N/A"} mm</div>
+            <div>
+              <strong>Description:</strong> Designed for performance and easy fabrication. Compatible with standard Crealco accessories and glazing options.
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
