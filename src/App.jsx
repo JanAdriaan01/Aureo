@@ -414,7 +414,7 @@ function Products() {
 
       {/* Product grid */}
       <div>
-        <h1 className="text-3xl font-bold mb-4">Crealco Systems</h1>
+        <h1 className="text-3xl font-bold mb-4">All Products</h1>
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {filtered.map(s => (
             <SystemCard key={s.code} system={s} />
@@ -455,25 +455,14 @@ function ProductDetails() {
   const { code } = useParams();
   const navigate = useNavigate();
 
-  // find the selected system by code from your existing array
   const system = CREALCO_SYSTEMS.find(s => s.code === code);
 
-  // You can enrich these if you want per-product overrides later
-  const finishOptions = FINISHES;
-  const glazingOptions = GLAZING;
-  const hardwareOptions = HARDWARE;
-  const transomOptions = ["None","Mid-rail","T-bar","Coupled"];
-  const configurations = [
-    { key: "top-hung", label: "Top Hung" },
-    { key: "side-hung", label: "Side Hung" },
-    { key: "fixed", label: "Fixed" },
-    { key: "sliding-2", label: "2-Panel Sliding" },
-    { key: "sliding-3", label: "3-Panel Sliding" },
-    { key: "pivot", label: "Pivot" },
-    { key: "tilt-turn", label: "Tilt & Turn" },
-    { key: "vertical-slide", label: "Vertical Sliding" },
-    { key: "shopfront", label: "Shopfront" },
-  ];
+  // --- Add state for user selections ---
+  const [config, setConfig] = useState({
+    type: "default",
+    colour: "white",
+    glazing: "clear",
+  });
 
   if (!system) {
     return (
@@ -484,6 +473,22 @@ function ProductDetails() {
     );
   }
 
+  // --- Define your images ---
+  const IMAGE_VARIANTS = {
+    default: system.image,
+    "side-hung": "/images/examples/sidehung.jpg",
+    "top-hung": "/images/examples/tophung.jpg",
+    black: "/images/examples/blackframe.jpg",
+    bronze: "/images/examples/bronze.jpg",
+    tinted: "/images/examples/tinted.jpg",
+  };
+
+  // Compute the correct image to display
+  const currentImage =
+    IMAGE_VARIANTS[config.colour] ||
+    IMAGE_VARIANTS[config.type] ||
+    system.image;
+
   return (
     <div className="space-y-8">
       <button onClick={() => navigate(-1)} className="text-sm text-zinc-500 hover:underline">
@@ -492,25 +497,53 @@ function ProductDetails() {
 
       <div className="grid md:grid-cols-2 gap-8">
         <div className="rounded-2xl overflow-hidden border border-zinc-200">
-          <img src={system.image} alt={system.name} className="w-full h-full object-cover"/>
+          <img src={currentImage} alt={system.name} className="w-full h-full object-cover transition-all duration-500" />
         </div>
 
         <div>
           <h1 className="text-3xl font-bold">{system.name}</h1>
-          <div className="text-zinc-600 mt-1">{system.type} {system.depth_mm ? `• ${system.depth_mm} mm` : ""}</div>
+          <div className="text-zinc-600 mt-1">{system.type}</div>
 
-          <p className="mt-4 text-zinc-700">
-            This Crealco system is suitable for residential and commercial use.
-            Specs vary by opening size, wind loads, glazing mass and hardware selection.
-          </p>
+          {/* Selectors */}
+          <div className="mt-6 space-y-4">
+            <div>
+              <label className="font-medium text-sm text-zinc-700">Configuration</label>
+              <select
+                value={config.type}
+                onChange={e => setConfig({ ...config, type: e.target.value })}
+                className="block w-full border border-zinc-300 rounded-lg mt-1 p-2"
+              >
+                <option value="default">Select...</option>
+                <option value="side-hung">Side Hung</option>
+                <option value="top-hung">Top Hung</option>
+              </select>
+            </div>
 
-          {/* Quick spec blocks */}
-          <div className="mt-6 grid sm:grid-cols-2 gap-4">
-            <SpecCard title="Configurations" items={configurations.map(c=>c.label)} />
-            <SpecCard title="Finishes" items={finishOptions} />
-            <SpecCard title="Glazing" items={glazingOptions} />
-            <SpecCard title="Hardware" items={hardwareOptions} />
-            <SpecCard title="Transoms / Mullions" items={transomOptions} />
+            <div>
+              <label className="font-medium text-sm text-zinc-700">Frame Colour</label>
+              <select
+                value={config.colour}
+                onChange={e => setConfig({ ...config, colour: e.target.value })}
+                className="block w-full border border-zinc-300 rounded-lg mt-1 p-2"
+              >
+                <option value="white">White</option>
+                <option value="black">Black</option>
+                <option value="bronze">Bronze</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="font-medium text-sm text-zinc-700">Glazing</label>
+              <select
+                value={config.glazing}
+                onChange={e => setConfig({ ...config, glazing: e.target.value })}
+                className="block w-full border border-zinc-300 rounded-lg mt-1 p-2"
+              >
+                <option value="clear">Clear</option>
+                <option value="tinted">Tinted</option>
+                <option value="laminated">Laminated</option>
+              </select>
+            </div>
           </div>
 
           <div className="mt-8 flex gap-3">
