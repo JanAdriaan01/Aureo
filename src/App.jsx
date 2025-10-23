@@ -1,6 +1,6 @@
 import React, { useMemo, useState, useEffect } from "react";
 import { createRoot } from "react-dom/client";
-import { BrowserRouter, Routes, Route, NavLink, useNavigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, NavLink, useNavigate, useParams } from "react-router-dom";
 
 /*
   Crealco Aluminium Windows — Full Website (React SPA)
@@ -264,19 +264,24 @@ function SystemCard({ system }) {
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
-      <div className="aspect-[4/3] overflow-hidden">
-        <img
-          src={system.image}
-          alt={system.name}
-          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-        />
-      </div>
+      <NavLink
+  to={`/products/${system.code}`}
+  className="block aspect-[4/3] overflow-hidden"
+>
+  <img
+    src={system.image}
+    alt={system.name}
+    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+  />
+</NavLink>
 
       <div className="p-4 flex-1 flex flex-col">
-        <div className="font-semibold">{system.name}</div>
-        <div className="text-sm text-zinc-600">
-          {system.type} {system.depth_mm ? `• ${system.depth_mm}mm` : ""}
-        </div>
+        <NavLink
+  to={`/products/${system.code}`}
+  className="font-semibold hover:underline"
+>
+  {system.name}
+</NavLink>
 
         <div className="mt-4 flex gap-2">
           <a
@@ -285,19 +290,21 @@ function SystemCard({ system }) {
           >
             Configure
           </a>
-          <button
-            onClick={() => setExpanded(!expanded)}
-            className="px-3 py-1.5 rounded-xl border border-zinc-300 text-sm relative"
-          >
-            Details
-            {/* Hover tooltip */}
-        {hovered && !expanded && (
-  <div className="absolute left-1/2 -translate-x-1/2 top-full mt-3 w-64 bg-white border border-zinc-300 rounded-xl shadow-xl p-3 text-xs text-zinc-700 z-20">
-    <div className="font-semibold mb-1">{system.name}</div>
-    <div>{system.type}</div>
-    <div className="text-zinc-500 mt-1">Click for full details</div>
-  </div>
-)}        </button>
+          <NavLink
+  to={`/products/${system.code}`}
+  className="relative px-3 py-1.5 rounded-xl border border-zinc-300 text-sm hover:bg-zinc-100"
+  onMouseEnter={() => setHovered(true)}
+  onMouseLeave={() => setHovered(false)}
+>
+  Details
+  {hovered && (
+    <div className="absolute left-1/2 -translate-x-1/2 top-full mt-3 w-64 bg-white border border-zinc-300 rounded-xl shadow-xl p-3 text-xs text-zinc-700 z-20">
+      <div className="font-semibold mb-1">{system.name}</div>
+      <div>{system.type}</div>
+      <div className="text-zinc-500 mt-1">Click for full details</div>
+    </div>
+  )}
+</NavLink>
         </div>
 
         {/* Expanded details section */}
@@ -440,6 +447,90 @@ function FilterGroup({ title, options, active, onToggle }) {
           </label>
         ))}
       </div>
+    </div>
+  );
+}
+
+function ProductDetails() {
+  const { code } = useParams();
+  const navigate = useNavigate();
+
+  // find the selected system by code from your existing array
+  const system = CREALCO_SYSTEMS.find(s => s.code === code);
+
+  // You can enrich these if you want per-product overrides later
+  const finishOptions = FINISHES;
+  const glazingOptions = GLAZING;
+  const hardwareOptions = HARDWARE;
+  const transomOptions = ["None","Mid-rail","T-bar","Coupled"];
+  const configurations = [
+    { key: "top-hung", label: "Top Hung" },
+    { key: "side-hung", label: "Side Hung" },
+    { key: "fixed", label: "Fixed" },
+    { key: "sliding-2", label: "2-Panel Sliding" },
+    { key: "sliding-3", label: "3-Panel Sliding" },
+    { key: "pivot", label: "Pivot" },
+    { key: "tilt-turn", label: "Tilt & Turn" },
+    { key: "vertical-slide", label: "Vertical Sliding" },
+    { key: "shopfront", label: "Shopfront" },
+  ];
+
+  if (!system) {
+    return (
+      <div className="space-y-4">
+        <button onClick={() => navigate(-1)} className="text-sm text-zinc-500 hover:underline">← Back</button>
+        <div className="text-zinc-600">Product not found.</div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-8">
+      <button onClick={() => navigate(-1)} className="text-sm text-zinc-500 hover:underline">
+        ← Back to Products
+      </button>
+
+      <div className="grid md:grid-cols-2 gap-8">
+        <div className="rounded-2xl overflow-hidden border border-zinc-200">
+          <img src={system.image} alt={system.name} className="w-full h-full object-cover"/>
+        </div>
+
+        <div>
+          <h1 className="text-3xl font-bold">{system.name}</h1>
+          <div className="text-zinc-600 mt-1">{system.type} {system.depth_mm ? `• ${system.depth_mm} mm` : ""}</div>
+
+          <p className="mt-4 text-zinc-700">
+            This Crealco system is suitable for residential and commercial use.
+            Specs vary by opening size, wind loads, glazing mass and hardware selection.
+          </p>
+
+          {/* Quick spec blocks */}
+          <div className="mt-6 grid sm:grid-cols-2 gap-4">
+            <SpecCard title="Configurations" items={configurations.map(c=>c.label)} />
+            <SpecCard title="Finishes" items={finishOptions} />
+            <SpecCard title="Glazing" items={glazingOptions} />
+            <SpecCard title="Hardware" items={hardwareOptions} />
+            <SpecCard title="Transoms / Mullions" items={transomOptions} />
+          </div>
+
+          <div className="mt-8 flex gap-3">
+            <button onClick={() => navigate("/builder")} className="px-5 py-3 rounded-2xl bg-zinc-900 text-white">
+              Configure in Builder
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function SpecCard({ title, items }) {
+  return (
+    <div className="rounded-2xl border border-zinc-200 p-4 bg-white">
+      <div className="font-medium">{title}</div>
+      <ul className="mt-2 text-sm text-zinc-700 list-disc list-inside space-y-1">
+        {items.map((x,i)=>(<li key={i}>{x}</li>))}
+      </ul>
     </div>
   );
 }
@@ -788,6 +879,15 @@ function App(){
             <Route path="/compliance" element={<Compliance/>} />
             <Route path="/faq" element={<FAQ/>} />
             <Route path="/contact" element={<Contact/>} />
+            <Route path="/" element={<Home/>} />
+  <Route path="/products" element={<Products/>} />
+  <Route path="/products/:code" element={<ProductDetails/>} /> {/* NEW */}
+  <Route path="/builder" element={<Builder/>} />
+  <Route path="/order" element={<Order/>} />
+  <Route path="/gallery" element={<Gallery/>} />
+  <Route path="/compliance" element={<Compliance/>} />
+  <Route path="/faq" element={<FAQ/>} />
+  <Route path="/contact" element={<Contact/>} />
           </Routes>
         </Shell>
       </OrderProvider>
