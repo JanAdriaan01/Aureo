@@ -291,12 +291,13 @@ function SystemCard({ system }) {
           >
             Details
             {/* Hover tooltip */}
-            {hovered && !expanded && (
-              <div className="absolute left-0 top-full mt-2 w-56 bg-white border border-zinc-200 rounded-xl shadow-lg p-3 text-xs text-zinc-600 z-10">
-                {system.name} — {system.type}. Click for full specs.
-              </div>
-            )}
-          </button>
+        {hovered && !expanded && (
+  <div className="absolute left-1/2 -translate-x-1/2 top-full mt-3 w-64 bg-white border border-zinc-300 rounded-xl shadow-xl p-3 text-xs text-zinc-700 z-20">
+    <div className="font-semibold mb-1">{system.name}</div>
+    <div>{system.type}</div>
+    <div className="text-zinc-500 mt-1">Click for full details</div>
+  </div>
+)}        </button>
         </div>
 
         {/* Expanded details section */}
@@ -315,40 +316,133 @@ function SystemCard({ system }) {
   );
 }
 
-function Products(){
-  const [query, setQuery] = useState("");
-  const [type, setType] = useState("all");
-  const filtered = CREALCO_SYSTEMS.filter(s =>
-    (type === "all" || s.type.toLowerCase().includes(type)) &&
-    (query.trim() === "" || s.name.toLowerCase().includes(query.trim().toLowerCase()))
-  );
+function Products() {
+  const [filters, setFilters] = useState({
+    systems: [],
+    applications: [],
+    types: [],
+    glassThickness: [],
+    glassColour: [],
+    query: "",
+  });
+
+  // Toggle filters on/off
+  const toggleFilter = (category, value) => {
+    setFilters(prev => {
+      const exists = prev[category].includes(value);
+      return {
+        ...prev,
+        [category]: exists
+          ? prev[category].filter(v => v !== value)
+          : [...prev[category], value],
+      };
+    });
+  };
+
+  // Apply filters
+  const filtered = CREALCO_SYSTEMS.filter(s => {
+    const matchSystem =
+      filters.systems.length === 0 ||
+      filters.systems.some(v => s.name.includes(v) || s.code.includes(v));
+
+    const matchType =
+      filters.types.length === 0 ||
+      filters.types.some(v => s.type.toLowerCase().includes(v.toLowerCase()));
+
+    const matchQuery =
+      !filters.query ||
+      s.name.toLowerCase().includes(filters.query.toLowerCase());
+
+    return matchSystem && matchType && matchQuery;
+  });
+
   return (
-    <div>
-      <h1 className="text-3xl font-bold">Crealco systems</h1>
-      <div className="mt-4 flex flex-col sm:flex-row gap-3">
-        <input value={query} onChange={e=>setQuery(e.target.value)} placeholder="Search by name (e.g. Swift 38, Clip 44)" className="px-4 py-2 rounded-xl border border-zinc-300 flex-1"/>
-        <select value={type} onChange={e=>setType(e.target.value)} className="px-4 py-2 rounded-xl border border-zinc-300">
-          <option value="all">All types</option>
-          <option value="sliding">Sliding Window</option>
-          <option value="casement">Casement</option>
-          <option value="pivot">Pivot</option>
-          <option value="tilt">Tilt & Turn</option>
-          <option value="vertical">Vertical Sliding</option>
-          <option value="shopfront">Shopfront</option>
-        </select>
-      </div>
+    <div className="grid lg:grid-cols-[260px,1fr] gap-8">
+      {/* Sidebar */}
+      <aside className="space-y-6 bg-white border border-zinc-200 rounded-2xl p-4 h-max sticky top-24">
+        <h2 className="font-semibold text-zinc-800">Filters</h2>
 
-      <div className="mt-6 grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filtered.map(s=> <SystemCard key={s.code} system={s} />)}
-      </div>
+        <input
+          placeholder="Search product..."
+          value={filters.query}
+          onChange={e => setFilters({ ...filters, query: e.target.value })}
+          className="w-full px-3 py-2 border border-zinc-300 rounded-lg text-sm"
+        />
 
-      <div className="mt-10 text-sm text-zinc-600 max-w-3xl">
-        <p>Notes: Actual profile selection, mullion sizing, maximum sash sizes, and performance ratings depend on opening sizes, wind loads, glazing mass and hardware selection. We confirm all specs during technical review and site measure.</p>
+        <FilterGroup
+          title="System"
+          options={["36", "38", "Sliding", "Shopfront"]}
+          active={filters.systems}
+          onToggle={v => toggleFilter("systems", v)}
+        />
+
+        <FilterGroup
+          title="Application"
+          options={["House", "Shopfront"]}
+          active={filters.applications}
+          onToggle={v => toggleFilter("applications", v)}
+        />
+
+        <FilterGroup
+          title="Type"
+          options={["Sliding", "Casement", "Pivot", "Tilt & Turn"]}
+          active={filters.types}
+          onToggle={v => toggleFilter("types", v)}
+        />
+
+        <FilterGroup
+          title="Glass Thickness"
+          options={["3mm", "4mm", "6.38mm", "24mm DGU"]}
+          active={filters.glassThickness}
+          onToggle={v => toggleFilter("glassThickness", v)}
+        />
+
+        <FilterGroup
+          title="Glass Colour"
+          options={["Clear", "Bronze", "Grey", "Low-E"]}
+          active={filters.glassColour}
+          onToggle={v => toggleFilter("glassColour", v)}
+        />
+      </aside>
+
+      {/* Product grid */}
+      <div>
+        <h1 className="text-3xl font-bold mb-4">Crealco Systems</h1>
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filtered.map(s => (
+            <SystemCard key={s.code} system={s} />
+          ))}
+        </div>
+
+        {filtered.length === 0 && (
+          <p className="text-sm text-zinc-500 mt-6">
+            No products match your filters.
+          </p>
+        )}
       </div>
     </div>
   );
 }
-
+function FilterGroup({ title, options, active, onToggle }) {
+  return (
+    <div>
+      <div className="font-medium text-sm text-zinc-800 mb-2">{title}</div>
+      <div className="space-y-1">
+        {options.map(opt => (
+          <label key={opt} className="flex items-center gap-2 text-sm">
+            <input
+              type="checkbox"
+              checked={active.includes(opt)}
+              onChange={() => onToggle(opt)}
+              className="accent-zinc-900"
+            />
+            {opt}
+          </label>
+        ))}
+      </div>
+    </div>
+  );
+}
 function Builder(){
   const { addItem } = useOrder();
   const [form, setForm] = useState({
