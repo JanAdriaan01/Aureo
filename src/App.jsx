@@ -1,103 +1,82 @@
 import React, { useMemo, useState, useEffect } from "react";
 import { createRoot } from "react-dom/client";
-import { BrowserRouter, Routes, Route, NavLink, useNavigate, useParams } from "react-router-dom";
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+  NavLink,
+  useNavigate,
+  useParams,
+} from "react-router-dom";
+
+import {
+  PRODUCT_LIBRARY,
+  ROOM_PRESETS,
+  GLASS_MULTIPLIER,
+  FINISH_MULTIPLIER,
+  makeSku,
+  parseSku,
+  findProductByPrefix,
+} from "./data/catalog";
 
 /*
-  Crealco Aluminium Windows — Full Website (React SPA)
-
-  Notes for the site owner:
-  - This is a single-file React app that you can drop into any Vite/Next/CRA project as App.jsx.
-  - Uses Tailwind classes for styling (no external CSS required beyond Tailwind).
-  - The "Order" flow collects specs and produces a human-readable PDF/print and CSV export.
-  - All pricing is intentionally omitted — you will price manually after receiving the order.
-  - Replace placeholder images in the IMAGES map with your own product photos.
-
-  Pages:
-  - Home (hero, trust, CTA)
-  - Products (Crealco systems catalogue with filters)
-  - Builder (configure each window/door + add to order)
-  - Order (customer details, final review, export/send)
-  - Gallery (before/after, inspiration; placeholders here)
-  - Compliance (warranty, cleaning & maintenance summary)
-  - FAQ & Contact
+  AUREO INTERNATIONAL — Aluminium Windows (React SPA)
+  Shop grid with filters (Room / Type), preset sizes, instant pricing.
+  - TailwindCSS for styling
+  - Order flow persists via localStorage
+  - Product Details uses base price + glazing/finish multipliers
 */
 
 // ---------- Utilities ----------
 const IMAGES = {
-  elite: "/images/elite.jpg",
   sliding1000: "/images/sliding1000.jpg",
-  swift36: "/images/swift36.jpg",
   swift38: "/images/swift38.jpg",
-  skyline41: "/images/skyline41.jpg",
-  pivot38: "/images/pivot38.jpg",
   edge42: "/images/edge42.jpg",
-  serene52: "/images/serene52.jpg",
-  vert70: "/images/vert70.jpg",
-  clip38: "/images/clip38.jpg",
-  clip44: "/images/clip44.jpg",
+  elite: "/images/elite.jpg",
 };
 
-const CREALCO_SYSTEMS = [
-  { code: "ELITE", name: "Elite™ Sliding Window", type: "Sliding Window", depth_mm: 0, image: IMAGES.elite },
-  { code: "SLENDERLINE500", name: "500 Slenderline Sliding Window", type: "Sliding Window", depth_mm: 0, image: IMAGES.slenderline500 },
-  { code: "SLIDING1000", name: "1000 Sliding Window", type: "Sliding Window", depth_mm: 0, image: IMAGES.sliding1000 },
-  { code: "SWIFT36", name: "Swift™ 36 (36mm) Top/Side Hung", type: "Casement", depth_mm: 36, image: IMAGES.swift36 },
-  { code: "SWIFT38", name: "Swift™ 38 (38mm) Top/Side Hung", type: "Casement", depth_mm: 38, image: IMAGES.swift38 },
-  { code: "SKYLINE41", name: "Skyline™ High Performance (41mm)", type: "Casement/Project", depth_mm: 41, image: IMAGES.skyline41 },
-  { code: "PIVOT38", name: "Pivot 38 (38mm)", type: "Pivot", depth_mm: 38, image: IMAGES.pivot38 },
-  { code: "EDGE42", name: "Edge™ Thermal Break (42mm)", type: "Thermal Break Casement", depth_mm: 42, image: IMAGES.edge42 },
-  { code: "SERENE52", name: "Serene™ Tilt & Turn (52mm)", type: "Tilt & Turn", depth_mm: 52, image: IMAGES.serene52 },
-  { code: "VERT70", name: "Vert 70 Vertical Sliding Window", type: "Vertical Sliding", depth_mm: 70, image: IMAGES.vert70 },
-  { code: "CLIP38", name: "Clip 38 Shopfront", type: "Shopfront", depth_mm: 38, image: IMAGES.clip38 },
-  { code: "CLIP44", name: "Clip 44™ Shopfront", type: "Shopfront", depth_mm: 44, image: IMAGES.clip44 },
-];
+function classNames(...xs) {
+  return xs.filter(Boolean).join(" ");
+}
 
-const FINISHES = ["Natural Anodised", "Bronze Anodised", "Black Anodised", "Powder Coat White", "Powder Coat Charcoal", "Custom RAL/Code"];
-const GLAZING = ["3mm Float", "4mm Float", "6.38mm Laminated", "6.38mm PVB Lam Safety", "Double Glazed 24mm", "Low-E (specify)"];
-const HARDWARE = ["Standard", "Lockable Handle", "Night Latch", "Safety Stays", "Trickle Vent"];
-
-const SASH_TYPES = [
-  { key: "top-hung", label: "Top Hung" },
-  { key: "side-hung", label: "Side Hung" },
-  { key: "fixed", label: "Fixed" },
-  { key: "sliding-2", label: "2-Panel Sliding" },
-  { key: "sliding-3", label: "3-Panel Sliding" },
-  { key: "pivot", label: "Pivot" },
-  { key: "tilt-turn", label: "Tilt & Turn" },
-  { key: "vertical-slide", label: "Vertical Sliding" },
-  { key: "shopfront", label: "Shopfront" },
-];
-
-function classNames(...xs){return xs.filter(Boolean).join(" ");}
-
-function useLocalStorage(key, initial){
-  const [state, setState] = useState(()=>{
-    try{ const raw = localStorage.getItem(key); return raw? JSON.parse(raw): initial; }catch{ return initial; }
+function useLocalStorage(key, initial) {
+  const [state, setState] = useState(() => {
+    try {
+      const raw = localStorage.getItem(key);
+      return raw ? JSON.parse(raw) : initial;
+    } catch {
+      return initial;
+    }
   });
-  useEffect(()=>{ try{ localStorage.setItem(key, JSON.stringify(state)); }catch{} },[key, state]);
+  useEffect(() => {
+    try {
+      localStorage.setItem(key, JSON.stringify(state));
+    } catch {}
+  }, [key, state]);
   return [state, setState];
 }
 
 // ---------- Layout ----------
-function Shell({ children }){
+function Shell({ children }) {
   return (
     <div className="min-h-screen bg-zinc-50 text-zinc-900">
-     
-     <header className="sticky top-0 z-50 backdrop-blur bg-white/80 border-b border-zinc-200"> 
-     <div className="max-w-7xl mx-auto px-4 py-3 flex items-center gap-4"> 
-      <Logo /> <nav className="hidden md:flex gap-4 text-sm"> 
-        <NavItem to="/">Home</NavItem> 
-        <NavItem to="/products">Products</NavItem> 
-        <NavItem to="/builder">Builder</NavItem> 
-        <NavItem to="/order">Order</NavItem> 
-        <NavItem to="/gallery">Gallery</NavItem> 
-        <NavItem to="/compliance">Compliance</NavItem> 
-        <NavItem to="/faq">FAQ</NavItem> 
-        <NavItem to="/contact">Contact</NavItem> 
-        </nav> <div className="ml-auto flex items-center gap-2"> <OrderMini />
-        </div> 
-        </div> 
-        </header>
+      <header className="sticky top-0 z-50 backdrop-blur bg-white/80 border-b border-zinc-200">
+        <div className="max-w-7xl mx-auto px-4 py-3 flex items-center gap-4">
+          <Logo />
+          <nav className="hidden md:flex gap-4 text-sm">
+            <NavItem to="/">Home</NavItem>
+            <NavItem to="/products">Products</NavItem>
+            <NavItem to="/order">Order</NavItem>
+            <NavItem to="/gallery">Gallery</NavItem>
+            <NavItem to="/compliance">Compliance</NavItem>
+            <NavItem to="/faq">FAQ</NavItem>
+            <NavItem to="/contact">Contact</NavItem>
+          </nav>
+          <div className="ml-auto flex items-center gap-2">
+            <OrderMini />
+          </div>
+        </div>
+      </header>
 
       <main className="max-w-7xl mx-auto px-4 py-8">{children}</main>
       <Footer />
@@ -105,15 +84,11 @@ function Shell({ children }){
   );
 }
 
-function Logo(){
+function Logo() {
   return (
     <div className="flex items-center gap-2 font-semibold">
-      <img 
-        src="/images/logo.png" 
-        alt="Aureo Logo" 
-        className="w-14 h-14 object-contain"
-      />
-         <div className="leading-tight">
+      <img src="/images/logo.png" alt="Aureo Logo" className="w-14 h-14 object-contain" />
+      <div className="leading-tight">
         <div>AUREO INTERNATIONAL</div>
         <div className="text-xs text-zinc-500">A Modahaus Company</div>
       </div>
@@ -121,27 +96,38 @@ function Logo(){
   );
 }
 
-function NavItem({ to, children }){
+function NavItem({ to, children }) {
   return (
-    <NavLink end className={({isActive})=>classNames("px-3 py-1.5 rounded-xl hover:bg-zinc-100", isActive && "bg-zinc-900 text-white hover:bg-zinc-900")} to={to}>
+    <NavLink
+      end
+      className={({ isActive }) =>
+        classNames(
+          "px-3 py-1.5 rounded-xl hover:bg-zinc-100",
+          isActive && "bg-zinc-900 text-white hover:bg-zinc-900"
+        )
+      }
+      to={to}
+    >
       {children}
     </NavLink>
   );
 }
 
-function Footer(){
+function Footer() {
   return (
     <footer className="border-t border-zinc-200 mt-16">
       <div className="max-w-7xl mx-auto px-4 py-10 grid gap-8 md:grid-cols-3 text-sm">
         <div>
           <Logo />
-          <p className="mt-3 text-zinc-600">Fabrication & Shipment of aluminium Window systems. SANS compliant. Coastal & inland specs.</p>
+          <p className="mt-3 text-zinc-600">
+            Fabrication & shipment of aluminium window systems. SANS compliant.
+            Coastal & inland specs.
+          </p>
         </div>
         <div>
           <div className="font-semibold mb-2">Quick links</div>
           <ul className="space-y-1">
             <li><a href="/products" className="hover:underline">Products</a></li>
-            <li><a href="/builder" className="hover:underline">Builder</a></li>
             <li><a href="/order" className="hover:underline">Place an Order</a></li>
             <li><a href="/compliance" className="hover:underline">Compliance</a></li>
           </ul>
@@ -160,82 +146,89 @@ function Footer(){
 // ---------- Global Order State ----------
 const OrderContext = React.createContext(null);
 
-function OrderProvider({ children }){
+function OrderProvider({ children }) {
   const [items, setItems] = useLocalStorage("order-items", []);
-  const [customer, setCustomer] = useLocalStorage("order-customer", { name: "", company: "", email: "", phone: "", siteAddress: "", notes: "" });
+  const [customer, setCustomer] = useLocalStorage("order-customer", {
+    name: "",
+    email: "",
+    phone: "",
+    siteAddress: "",
+  });
 
-  const addItem = (item)=> setItems(prev=>[...prev, { id: crypto.randomUUID(), ...item }]);
-  const removeItem = (id)=> setItems(prev=>prev.filter(x=>x.id!==id));
-  const clearOrder = ()=> setItems([]);
+  const addItem = (item) =>
+    setItems((prev) => [...prev, { id: crypto.randomUUID(), ...item }]);
+  const removeItem = (id) => setItems((prev) => prev.filter((x) => x.id !== id));
+  const clearOrder = () => setItems([]);
 
-  const value = useMemo(()=>({ items, addItem, removeItem, clearOrder, customer, setCustomer }), [items, customer]);
-  return <OrderContext.Provider value={value}>{children}</OrderContext.Provider>
+  const value = useMemo(
+    () => ({ items, addItem, removeItem, clearOrder, customer, setCustomer }),
+    [items, customer]
+  );
+
+  return <OrderContext.Provider value={value}>{children}</OrderContext.Provider>;
 }
 
-function useOrder(){
+function useOrder() {
   const ctx = React.useContext(OrderContext);
-  if(!ctx) throw new Error("useOrder must be used inside <OrderProvider>");
+  if (!ctx) throw new Error("useOrder must be used inside <OrderProvider>");
   return ctx;
 }
 
-function OrderMini(){
+function OrderMini() {
   const { items } = useOrder();
   const navigate = useNavigate();
   return (
-    <button onClick={()=>navigate("/order")} className="px-3 py-1.5 rounded-xl bg-zinc-900 text-white text-sm">
+    <button
+      onClick={() => navigate("/order")}
+      className="px-3 py-1.5 rounded-xl bg-zinc-900 text-white text-sm"
+    >
       Order <span className="opacity-80">({items.length})</span>
     </button>
   );
 }
 
 // ---------- Pages ----------
-function Home(){
+function Home() {
   const navigate = useNavigate();
   return (
     <div className="space-y-16">
       <section className="grid md:grid-cols-2 gap-8 items-center">
         <div>
-          <h1 className="text-4xl md:text-6xl font-black tracking-tight"> Aluminium windows, built to youre spec.</h1>
-          <p className="mt-4 text-lg text-zinc-600">Domestic to high-performance systems, powder coated or anodised, glazed to SANS 10400 & 10137 guidelines. Configure online — we’ll price and fabricate.</p>
+          <h1 className="text-4xl md:text-6xl font-black tracking-tight">
+            Aluminium windows, built to your spec.
+          </h1>
+          <p className="mt-4 text-lg text-zinc-600">
+            Premium systems in standard sizes or custom — anodised or powder coated.
+            Live pricing for standard sizes. Configure online; we fabricate.
+          </p>
           <div className="mt-6 flex gap-3">
-            <button onClick={()=>navigate("/builder")} className="px-5 py-3 rounded-2xl bg-zinc-900 text-white">Window Builder</button>
-            <button onClick={()=>navigate("/products")} className="px-5 py-3 rounded-2xl border border-zinc-300">All Products</button>
+            <button
+              onClick={() => navigate("/products")}
+              className="px-5 py-3 rounded-2xl bg-zinc-900 text-white"
+            >
+              Shop Windows
+            </button>
+            <button
+              onClick={() => navigate("/order")}
+              className="px-5 py-3 rounded-2xl border border-zinc-300"
+            >
+              Review Order
+            </button>
           </div>
-          <div className="mt-6 text-sm text-zinc-500">Lead times from 10 working days depending on finish and glazing.</div>
+          <div className="mt-6 text-sm text-zinc-500">
+            Lead times from 10 working days depending on finish and glazing.
+          </div>
         </div>
         <div className="aspect-[4/3] rounded-3xl overflow-hidden shadow-xl">
-          <img src={IMAGES.sliding1000} alt="Elite Range Windows" className="w-full h-full object-cover"/>
+          <img src={IMAGES.sliding1000} alt="Premium Aluminium Windows" className="w-full h-full object-cover" />
         </div>
       </section>
-
       <TrustBar />
-
-      <section>
-        <h2 className="text-2xl font-bold">Popular systems</h2>
-        <div className="mt-4 grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {CREALCO_SYSTEMS.slice(0,6).map(s=> <SystemCard key={s.code} system={s} />)}
-        </div>
-      </section>
-
-      <section className="rounded-3xl bg-gradient-to-br from-zinc-900 to-zinc-700 text-white p-8 md:p-12 grid md:grid-cols-2 gap-8">
-        <div>
-          <h3 className="text-3xl font-bold">Spec with confidence</h3>
-          <ul className="mt-4 space-y-2 text-zinc-100 list-disc list-inside">
-            <li>Crealco systems & genuine Wispeco profiles</li>
-            <li>Glazing options incl. laminated, Low‑E & DGU</li>
-            <li>Marine-grade hardware & coastal sealants</li>
-            <li>Installations to best-practice guidelines</li>
-          </ul>
-        </div>
-        <div className="rounded-2xl overflow-hidden">
-          <img src={IMAGES.elite} alt="Sliding window" className="w-full h-full object-cover" />
-        </div>
-      </section>
     </div>
   );
 }
 
-function TrustBar(){
+function TrustBar() {
   const items = [
     { title: "SANS-aligned", text: "Glazing & wind load checks inline with local standards." },
     { title: "Site-measured", text: "We verify openings before fabrication." },
@@ -244,7 +237,7 @@ function TrustBar(){
   ];
   return (
     <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-      {items.map((x,i)=> (
+      {items.map((x, i) => (
         <div key={i} className="rounded-2xl border border-zinc-200 p-4 bg-white">
           <div className="font-semibold">{x.title}</div>
           <div className="text-sm text-zinc-600">{x.text}</div>
@@ -254,68 +247,103 @@ function TrustBar(){
   );
 }
 
-function SystemCard({ system }) {
-  const [expanded, setExpanded] = React.useState(false);
-  const [hovered, setHovered] = React.useState(false);
+// ---------- Shop (filters + grid) ----------
+function Products() {
+  const navigate = useNavigate();
+  const [room, setRoom] = useState("");           // Bathroom / Bedroom / Kitchen / LivingRoom
+  const [typeFilter, setTypeFilter] = useState(""); // Sliding Window / Casement Window / Fixed Window
+  const presetSizes = room ? ROOM_PRESETS[room] || [] : null;
+
+  const gridItems = useMemo(() => {
+    // Build flat list from PRODUCT_LIBRARY based on filters
+    const items = [];
+    Object.entries(PRODUCT_LIBRARY).forEach(([type, product]) => {
+      if (typeFilter && type !== typeFilter) return;
+
+      Object.entries(product.sizes).forEach(([size, basePrice]) => {
+        if (presetSizes && !presetSizes.includes(size)) return;
+        const sku = makeSku(product.codePrefix, size);
+        items.push({
+          sku,
+          type,
+          size,
+          name: `${type} ${size}`,
+          image: product.image,
+          price: basePrice, // base (clear glass, white frame)
+        });
+      });
+    });
+    return items;
+  }, [room, typeFilter]);
 
   return (
-    <div
-      className="rounded-2xl border border-zinc-200 overflow-hidden bg-white flex flex-col relative group"
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-    >
-      <NavLink
-  to={`/products/${system.code}`}
-  className="block aspect-[4/3] overflow-hidden"
->
-  <img
-    src={system.image}
-    alt={system.name}
-    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-  />
-</NavLink>
+    <div className="grid lg:grid-cols-[280px,1fr] gap-8">
+      {/* Sidebar */}
+      <aside className="space-y-6 bg-white border border-zinc-200 rounded-2xl p-4 h-max sticky top-24">
+        <h2 className="font-semibold text-zinc-800">Filters</h2>
 
-      <div className="p-4 flex-1 flex flex-col">
-        <NavLink
-  to={`/products/${system.code}`}
-  className="font-semibold hover:underline"
->
-  {system.name}
-</NavLink>
-
-        <div className="mt-4 flex gap-2">
-          <a
-            href="/builder"
-            className="px-3 py-1.5 rounded-xl bg-zinc-900 text-white text-sm"
+        {/* Room */}
+        <div>
+          <div className="font-medium text-sm text-zinc-800 mb-1">Room</div>
+          <select
+            value={room}
+            onChange={(e) => setRoom(e.target.value)}
+            className="w-full px-3 py-2 border border-zinc-300 rounded-lg text-sm"
           >
-            Configure
-          </a>
-          <NavLink
-  to={`/products/${system.code}`}
-  className="relative px-3 py-1.5 rounded-xl border border-zinc-300 text-sm hover:bg-zinc-100"
-  onMouseEnter={() => setHovered(true)}
-  onMouseLeave={() => setHovered(false)}
->
-  Details
-  {hovered && (
-    <div className="absolute left-1/2 -translate-x-1/2 top-full mt-3 w-64 bg-white border border-zinc-300 rounded-xl shadow-xl p-3 text-xs text-zinc-700 z-20">
-      <div className="font-semibold mb-1">{system.name}</div>
-      <div>{system.type}</div>
-      <div className="text-zinc-500 mt-1">Click for full details</div>
-    </div>
-  )}
-</NavLink>
+            <option value="">All rooms</option>
+            <option>Bathroom</option>
+            <option>Bedroom</option>
+            <option>Kitchen</option>
+            <option value="LivingRoom">Living Room</option>
+          </select>
+          <div className="text-xs text-zinc-500 mt-1">
+            Presets: {room ? (ROOM_PRESETS[room] || []).join(", ") : "–"}
+          </div>
         </div>
 
-        {/* Expanded details section */}
-        {expanded && (
-          <div className="mt-4 border-t border-zinc-200 pt-3 text-sm text-zinc-700 space-y-1">
-            <div><strong>System:</strong> {system.name}</div>
-            <div><strong>Type:</strong> {system.type}</div>
-            <div><strong>Profile depth:</strong> {system.depth_mm || "N/A"} mm</div>
-            <div>
-              <strong>Description:</strong> Designed for performance and easy fabrication. Compatible with standard Crealco accessories and glazing options.
-            </div>
+        {/* Type */}
+        <div>
+          <div className="font-medium text-sm text-zinc-800 mb-1">Window Type</div>
+          <select
+            value={typeFilter}
+            onChange={(e) => setTypeFilter(e.target.value)}
+            className="w-full px-3 py-2 border border-zinc-300 rounded-lg text-sm"
+          >
+            <option value="">All types</option>
+            {Object.keys(PRODUCT_LIBRARY).map((t) => (
+              <option key={t}>{t}</option>
+            ))}
+          </select>
+        </div>
+
+        <div className="text-xs text-zinc-500">
+          Prices shown are for **clear glass & white frame**. Adjust on the product page.
+        </div>
+      </aside>
+
+      {/* Grid */}
+      <div>
+        <h1 className="text-3xl font-bold mb-4">Shop Windows</h1>
+        {gridItems.length === 0 ? (
+          <div className="text-sm text-zinc-600">No products match your filters.</div>
+        ) : (
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {gridItems.map((item) => (
+              <div key={item.sku} className="rounded-2xl border border-zinc-200 overflow-hidden bg-white">
+                <img src={item.image} alt={item.name} className="w-full aspect-[4/3] object-cover" />
+                <div className="p-4">
+                  <div className="font-semibold">{item.name}</div>
+                  <div className="text-sm text-zinc-600">{item.type}</div>
+                  <div className="mt-1 font-bold">R {item.price.toLocaleString()}</div>
+                  <button
+                    onClick={() => navigate(`/products/${encodeURIComponent(item.sku)}`)}
+                    className="mt-3 px-3 py-1.5 rounded-xl bg-zinc-900 text-white text-sm"
+                  >
+                    View Details
+                  </button>
+                </div>
+              </div>
+            ))}
           </div>
         )}
       </div>
@@ -323,171 +351,61 @@ function SystemCard({ system }) {
   );
 }
 
-function Products() {
-  const [filters, setFilters] = useState({
-    systems: [],
-    applications: [],
-    types: [],
-    glassThickness: [],
-    glassColour: [],
-    query: "",
-  });
-
-  // Toggle filters on/off
-  const toggleFilter = (category, value) => {
-    setFilters(prev => {
-      const exists = prev[category].includes(value);
-      return {
-        ...prev,
-        [category]: exists
-          ? prev[category].filter(v => v !== value)
-          : [...prev[category], value],
-      };
-    });
-  };
-
-  // Apply filters
-  const filtered = CREALCO_SYSTEMS.filter(s => {
-    const matchSystem =
-      filters.systems.length === 0 ||
-      filters.systems.some(v => s.name.includes(v) || s.code.includes(v));
-
-    const matchType =
-      filters.types.length === 0 ||
-      filters.types.some(v => s.type.toLowerCase().includes(v.toLowerCase()));
-
-    const matchQuery =
-      !filters.query ||
-      s.name.toLowerCase().includes(filters.query.toLowerCase());
-
-    return matchSystem && matchType && matchQuery;
-  });
-
-  return (
-    <div className="grid lg:grid-cols-[260px,1fr] gap-8">
-      {/* Sidebar */}
-      <aside className="space-y-6 bg-white border border-zinc-200 rounded-2xl p-4 h-max sticky top-24">
-        <h2 className="font-semibold text-zinc-800">Filters</h2>
-
-        <input
-          placeholder="Search product..."
-          value={filters.query}
-          onChange={e => setFilters({ ...filters, query: e.target.value })}
-          className="w-full px-3 py-2 border border-zinc-300 rounded-lg text-sm"
-        />
-
-        <FilterGroup
-          title="System"
-          options={["36", "38", "Sliding", "Shopfront"]}
-          active={filters.systems}
-          onToggle={v => toggleFilter("systems", v)}
-        />
-
-        <FilterGroup
-          title="Application"
-          options={["House", "Shopfront"]}
-          active={filters.applications}
-          onToggle={v => toggleFilter("applications", v)}
-        />
-
-        <FilterGroup
-          title="Type"
-          options={["Sliding", "Casement", "Pivot", "Tilt & Turn"]}
-          active={filters.types}
-          onToggle={v => toggleFilter("types", v)}
-        />
-
-        <FilterGroup
-          title="Glass Thickness"
-          options={["3mm", "4mm", "6.38mm", "24mm DGU"]}
-          active={filters.glassThickness}
-          onToggle={v => toggleFilter("glassThickness", v)}
-        />
-
-        <FilterGroup
-          title="Glass Colour"
-          options={["Clear", "Bronze", "Grey", "Low-E"]}
-          active={filters.glassColour}
-          onToggle={v => toggleFilter("glassColour", v)}
-        />
-      </aside>
-
-      {/* Product grid */}
-      <div>
-        <h1 className="text-3xl font-bold mb-4">All Products</h1>
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filtered.map(s => (
-            <SystemCard key={s.code} system={s} />
-          ))}
-        </div>
-
-        {filtered.length === 0 && (
-          <p className="text-sm text-zinc-500 mt-6">
-            No products match your filters.
-          </p>
-        )}
-      </div>
-    </div>
-  );
-}
-function FilterGroup({ title, options, active, onToggle }) {
-  return (
-    <div>
-      <div className="font-medium text-sm text-zinc-800 mb-2">{title}</div>
-      <div className="space-y-1">
-        {options.map(opt => (
-          <label key={opt} className="flex items-center gap-2 text-sm">
-            <input
-              type="checkbox"
-              checked={active.includes(opt)}
-              onChange={() => onToggle(opt)}
-              className="accent-zinc-900"
-            />
-            {opt}
-          </label>
-        ))}
-      </div>
-    </div>
-  );
-}
-
+// ---------- Product Details (instant price with multipliers) ----------
 function ProductDetails() {
-  const { code } = useParams();
+  const { code: rawSku } = useParams(); // sku = e.g. CW-1200x1500
+  const sku = decodeURIComponent(rawSku || "");
   const navigate = useNavigate();
+  const { addItem } = useOrder();
 
-  const system = CREALCO_SYSTEMS.find(s => s.code === code);
+  const { prefix, size: initialSize } = parseSku(sku);
+  const productEntry = findProductByPrefix(prefix);
+  const productType = productEntry ? productEntry[0] : null;
+  const product = productEntry ? productEntry[1] : null;
 
-  // --- Add state for user selections ---
   const [config, setConfig] = useState({
-    type: "default",
-    colour: "white",
+    size: initialSize || (product ? Object.keys(product.sizes)[0] : ""),
     glazing: "clear",
+    colour: "white",
+    quantity: 1,
   });
 
-  if (!system) {
+  if (!product) {
     return (
       <div className="space-y-4">
-        <button onClick={() => navigate(-1)} className="text-sm text-zinc-500 hover:underline">← Back</button>
+        <button onClick={() => navigate(-1)} className="text-sm text-zinc-500 hover:underline">
+          ← Back
+        </button>
         <div className="text-zinc-600">Product not found.</div>
       </div>
     );
   }
 
-  // --- Define your images ---
-  const IMAGE_VARIANTS = {
-    default: system.image,
-    "side-hung": "/images/examples/sidehung.jpg",
-    "top-hung": "/images/examples/tophung.jpg",
-    black: "/images/examples/blackframe.jpg",
-    bronze: "/images/examples/bronze.jpg",
-    tinted: "/images/examples/tinted.jpg",
-  };
+  const base = product.sizes[config.size] || 0;
+  const price =
+    Math.round(
+      base *
+        (GLASS_MULTIPLIER[config.glazing] || 1) *
+        (FINISH_MULTIPLIER[config.colour] || 1)
+    / 10) * 10; // round to nearest 10
 
-  // Compute the correct image to display
-  const currentImage =
-    IMAGE_VARIANTS[config.colour] ||
-    IMAGE_VARIANTS[config.type] ||
-    system.image;
+  const handleAdd = () => {
+    if (!base) {
+      alert("Please select a valid size.");
+      return;
+    }
+    addItem({
+      system: product.codePrefix,
+      systemName: `${productType} ${config.size}`,
+      size: config.size,
+      glazing: config.glazing,
+      finish: config.colour,
+      quantity: config.quantity,
+      price,
+      subtotal: price * config.quantity,
+    });
+    alert(`${productType} ${config.size} added to order.`);
+  };
 
   return (
     <div className="space-y-8">
@@ -497,58 +415,88 @@ function ProductDetails() {
 
       <div className="grid md:grid-cols-2 gap-8">
         <div className="rounded-2xl overflow-hidden border border-zinc-200">
-          <img src={currentImage} alt={system.name} className="w-full h-full object-cover transition-all duration-500" />
+          <img src={product.image} alt={productType} className="w-full h-full object-cover" />
         </div>
 
         <div>
-          <h1 className="text-3xl font-bold">{system.name}</h1>
-          <div className="text-zinc-600 mt-1">{system.type}</div>
+          <h1 className="text-3xl font-bold">{productType}</h1>
+          <div className="text-zinc-600 mt-1">{product.description}</div>
 
-          {/* Selectors */}
           <div className="mt-6 space-y-4">
+            {/* Size */}
             <div>
-              <label className="font-medium text-sm text-zinc-700">Configuration</label>
+              <label className="font-medium text-sm text-zinc-700">Select Size</label>
               <select
-                value={config.type}
-                onChange={e => setConfig({ ...config, type: e.target.value })}
+                value={config.size}
+                onChange={(e) => setConfig({ ...config, size: e.target.value })}
                 className="block w-full border border-zinc-300 rounded-lg mt-1 p-2"
               >
-                <option value="default">Select...</option>
-                <option value="side-hung">Side Hung</option>
-                <option value="top-hung">Top Hung</option>
+                {Object.keys(product.sizes).map((sz) => (
+                  <option key={sz} value={sz}>{sz} mm</option>
+                ))}
               </select>
             </div>
 
-            <div>
-              <label className="font-medium text-sm text-zinc-700">Frame Colour</label>
-              <select
-                value={config.colour}
-                onChange={e => setConfig({ ...config, colour: e.target.value })}
-                className="block w-full border border-zinc-300 rounded-lg mt-1 p-2"
-              >
-                <option value="white">White</option>
-                <option value="black">Black</option>
-                <option value="bronze">Bronze</option>
-              </select>
-            </div>
-
+            {/* Glazing */}
             <div>
               <label className="font-medium text-sm text-zinc-700">Glazing</label>
               <select
                 value={config.glazing}
-                onChange={e => setConfig({ ...config, glazing: e.target.value })}
+                onChange={(e) => setConfig({ ...config, glazing: e.target.value })}
                 className="block w-full border border-zinc-300 rounded-lg mt-1 p-2"
               >
                 <option value="clear">Clear</option>
                 <option value="tinted">Tinted</option>
                 <option value="laminated">Laminated</option>
+                <option value="lowe">Low-E</option>
               </select>
+            </div>
+
+            {/* Colour */}
+            <div>
+              <label className="font-medium text-sm text-zinc-700">Frame Colour</label>
+              <select
+                value={config.colour}
+                onChange={(e) => setConfig({ ...config, colour: e.target.value })}
+                className="block w-full border border-zinc-300 rounded-lg mt-1 p-2"
+              >
+                <option value="white">Powder Coat — White</option>
+                <option value="charcoal">Powder Coat — Charcoal</option>
+                <option value="black">Powder Coat — Black</option>
+                <option value="bronze">Anodised — Bronze</option>
+              </select>
+            </div>
+
+            {/* Quantity */}
+            <div>
+              <label className="font-medium text-sm text-zinc-700">Quantity</label>
+              <input
+                type="number"
+                min="1"
+                value={config.quantity}
+                onChange={(e) => setConfig({ ...config, quantity: Number(e.target.value) || 1 })}
+                className="block w-full border border-zinc-300 rounded-lg mt-1 p-2"
+              />
             </div>
           </div>
 
+          {/* Price Display */}
+          <div className="mt-6 text-2xl font-semibold">
+            {base ? `Price: R ${price.toLocaleString()}` : "Select size to see price"}
+          </div>
+
+          {/* Add Button */}
           <div className="mt-8 flex gap-3">
-            <button onClick={() => navigate("/builder")} className="px-5 py-3 rounded-2xl bg-zinc-900 text-white">
-              Configure in Builder
+            <button
+              onClick={handleAdd}
+              disabled={!base}
+              className={`px-6 py-3 rounded-2xl text-base font-medium transition ${
+                base
+                  ? "bg-zinc-900 text-white hover:bg-zinc-800"
+                  : "bg-zinc-300 text-zinc-600 cursor-not-allowed"
+              }`}
+            >
+              🛒 Add to Order
             </button>
           </div>
         </div>
@@ -557,261 +505,227 @@ function ProductDetails() {
   );
 }
 
-function SpecCard({ title, items }) {
-  return (
-    <div className="rounded-2xl border border-zinc-200 p-4 bg-white">
-      <div className="font-medium">{title}</div>
-      <ul className="mt-2 text-sm text-zinc-700 list-disc list-inside space-y-1">
-        {items.map((x,i)=>(<li key={i}>{x}</li>))}
-      </ul>
-    </div>
-  );
-}
-function Builder(){
-  const { addItem } = useOrder();
-  const [form, setForm] = useState({
-    system: "SWIFT38",
-    sashType: "top-hung",
-    width: "", height: "",
-    quantity: 1,
-    glazing: "4mm Float",
-    finish: "Powder Coat White",
-    hardware: "Standard",
-    transom: "None",
-    notes: "",
-    location: "",
-  });
-  const system = CREALCO_SYSTEMS.find(x=>x.code===form.system);
+// ---------- Order ----------
+function Order() {
+  const { items, removeItem, clearOrder, customer, setCustomer } = useOrder();
+  const [stage, setStage] = useState("review"); // review | confirm | success
+  const [orderId, setOrderId] = useState("");
+  const [shipping, setShipping] = useState(0);
 
-  const update = (k,v)=> setForm(prev=> ({...prev, [k]: v}));
-  const add = ()=>{
-    if(!form.width || !form.height) { alert("Please enter dimensions"); return; }
-    addItem({...form, systemName: system?.name});
-    setForm(f=>({...f, width:"", height:"", quantity:1, notes:""}));
-    alert("Added to order");
+  const total = items.reduce((sum, x) => sum + (x.subtotal || 0), 0);
+  const grandTotal = total + shipping;
+
+  const handleCheckout = () => {
+    if (!customer.name || !customer.email || !customer.phone || !customer.siteAddress) {
+      alert("Please complete all customer details before placing order.");
+      return;
+    }
+    const id = `ORD-${Date.now().toString().slice(-6)}`;
+    setOrderId(id);
+    setStage("confirm");
   };
 
+  const confirmPayment = () => {
+    setStage("success");
+    clearOrder();
+  };
+
+  if (stage === "success") {
+    return (
+      <div className="space-y-6 max-w-3xl mx-auto text-center">
+        <h1 className="text-3xl font-bold">Order Placed</h1>
+        <p className="text-zinc-600">
+          Your order <b>{orderId}</b> has been received and is awaiting payment.
+        </p>
+        <p className="text-zinc-600">
+          Please make payment via <b>EFT within 72 hours</b> using your order number as reference.
+          Once payment reflects, a confirmation email with receipt will be sent.
+        </p>
+        <div className="rounded-2xl border border-zinc-200 p-6 bg-white text-left inline-block mt-4">
+          <h2 className="font-semibold mb-2">Bank Details</h2>
+          <div className="text-sm leading-relaxed text-zinc-700">
+            <div><b>Account Name:</b> Modahaus (Pty) Ltd</div>
+            <div><b>Bank:</b> FNB</div>
+            <div><b>Account Number:</b> 62012345678</div>
+            <div><b>Branch Code:</b> 250655</div>
+            <div><b>Reference:</b> {orderId}</div>
+          </div>
+        </div>
+        <p className="text-sm text-zinc-500 mt-4">
+          Orders not paid within 72 hours are automatically cancelled.
+          All orders are shipped from <b>Midrand Warehouse</b> after manufacturing and payment confirmation.
+        </p>
+        <a href="/products" className="inline-block mt-6 px-6 py-3 rounded-2xl bg-zinc-900 text-white">
+          Back to Shop
+        </a>
+      </div>
+    );
+  }
+
+  if (stage === "confirm") {
+    return (
+      <div className="space-y-6 max-w-3xl mx-auto">
+        <h1 className="text-3xl font-bold">Confirm Order</h1>
+        <p className="text-zinc-600">
+          Please confirm your order details below. Shipping will be added based on your address.
+        </p>
+
+        <div className="rounded-2xl border border-zinc-200 p-5 bg-white">
+          <h2 className="font-semibold mb-2">Customer</h2>
+          <div className="text-sm text-zinc-700">
+            {customer.name}, {customer.email}, {customer.phone}
+            <br />
+            {customer.siteAddress}
+          </div>
+        </div>
+
+        <div className="rounded-2xl border border-zinc-200 p-5 bg-white">
+          <h2 className="font-semibold mb-2">Order Items</h2>
+          <ul className="divide-y divide-zinc-200 text-sm">
+            {items.map((x, i) => (
+              <li key={i} className="py-2 flex justify-between">
+                <div>
+                  {x.systemName} ({x.size}) × {x.quantity}
+                </div>
+                <div>R {x.subtotal.toLocaleString()}</div>
+              </li>
+            ))}
+          </ul>
+          <div className="mt-4 text-right font-semibold">
+            Subtotal: R {total.toLocaleString()}
+          </div>
+          {shipping > 0 && (
+            <div className="text-right text-sm text-zinc-600">
+              + Shipping: R {shipping.toLocaleString()}
+            </div>
+          )}
+          <div className="text-right text-xl font-bold mt-1">
+            Total: R {grandTotal.toLocaleString()}
+          </div>
+        </div>
+
+        <div className="text-right">
+          <button
+            onClick={confirmPayment}
+            className="px-6 py-3 rounded-2xl bg-zinc-900 text-white"
+          >
+            Place Order & Show EFT Details
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // Default stage: review
   return (
-    <div className="grid lg:grid-cols-2 gap-8">
-      <div>
-        <h1 className="text-3xl font-bold">Configure</h1>
-        <p className="text-zinc-600 mt-1">Create line items for your order. We’ll verify span limits and hardware during review.</p>
+    <div className="space-y-8">
+      <h1 className="text-3xl font-bold">Your Order</h1>
 
-        <div className="mt-6 space-y-4">
-          <div className="grid sm:grid-cols-2 gap-3">
-            <Select label="System" value={form.system} onChange={v=>update("system", v)} options={CREALCO_SYSTEMS.map(x=>({value:x.code, label:x.name}))} />
-            <Select label="Sash/Configuration" value={form.sashType} onChange={v=>update("sashType", v)} options={SASH_TYPES.map(x=>({value:x.key, label:x.label}))} />
+      {items.length === 0 ? (
+        <div className="rounded-2xl border border-zinc-200 p-6 bg-white">
+          <div className="text-zinc-600">
+            No line items yet. Visit{" "}
+            <a href="/products" className="underline">Products</a> to add windows.
           </div>
+        </div>
+      ) : (
+        <>
+          <div className="overflow-x-auto rounded-2xl border border-zinc-200 bg-white">
+            <table className="min-w-full text-sm">
+              <thead className="bg-zinc-50">
+                <tr className="text-left">
+                  {"# System Size Qty Glazing Finish UnitPrice Total".split(" ").map(
+                    (h, i) => (
+                      <th key={i} className="px-3 py-2 font-medium">{h}</th>
+                    )
+                  )}
+                  <th className="px-3 py-2"></th>
+                </tr>
+              </thead>
+              <tbody>
+                {items.map((x, i) => (
+                  <tr key={x.id} className="border-t border-zinc-100">
+                    <td className="px-3 py-2">{i + 1}</td>
+                    <td className="px-3 py-2">{x.systemName}</td>
+                    <td className="px-3 py-2">{x.size}</td>
+                    <td className="px-3 py-2">{x.quantity}</td>
+                    <td className="px-3 py-2">{x.glazing}</td>
+                    <td className="px-3 py-2">{x.finish}</td>
+                    <td className="px-3 py-2">R {x.price.toLocaleString()}</td>
+                    <td className="px-3 py-2">R {x.subtotal.toLocaleString()}</td>
+                    <td className="px-3 py-2 text-right">
+                      <button
+                        onClick={() => removeItem(x.id)}
+                        className="px-3 py-1.5 rounded-xl border border-zinc-300"
+                      >
+                        Remove
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
 
-          <div className="grid sm:grid-cols-3 gap-3">
-            <Input label="Width (mm)" value={form.width} onChange={v=>update("width", v.replace(/[^0-9]/g, ""))} />
-            <Input label="Height (mm)" value={form.height} onChange={v=>update("height", v.replace(/[^0-9]/g, ""))} />
-            <Input label="Quantity" value={form.quantity} onChange={v=>update("quantity", Number(v)||1)} />
-          </div>
-
-          <div className="grid sm:grid-cols-3 gap-3">
-            <Select label="Glazing" value={form.glazing} onChange={v=>update("glazing", v)} options={GLAZING.map(x=>({value:x, label:x}))} />
-            <Select label="Finish" value={form.finish} onChange={v=>update("finish", v)} options={FINISHES.map(x=>({value:x, label:x}))} />
-            <Select label="Hardware" value={form.hardware} onChange={v=>update("hardware", v)} options={HARDWARE.map(x=>({value:x, label:x}))} />
-          </div>
-
-          <div className="grid sm:grid-cols-3 gap-3">
-            <Select label="Transom/Mullion" value={form.transom} onChange={v=>update("transom", v)} options={["None","Mid-rail","T-bar","Coupled"].map(x=>({value:x, label:x}))} />
-            <Input label="Location/Room" value={form.location} onChange={v=>update("location", v)} />
-            <Input label="Notes" value={form.notes} onChange={v=>update("notes", v)} />
-          </div>
-
-          <div className="rounded-2xl bg-white border border-zinc-200 overflow-hidden">
-            <div className="p-4 border-b border-zinc-200 font-medium">Preview</div>
-            <div className="p-4 grid gap-6 md:grid-cols-2">
-              <div>
-                <img src={system?.image} alt={system?.name} className="rounded-xl w-full aspect-video object-cover"/>
-              </div>
-              <div className="text-sm text-zinc-700 space-y-1">
-                <Detail label="System" value={system?.name} />
-                <Detail label="Config" value={SASH_TYPES.find(x=>x.key===form.sashType)?.label} />
-                <Detail label="Size" value={`${form.width || "—"} x ${form.height || "—"} mm`} />
-                <Detail label="Glazing" value={form.glazing} />
-                <Detail label="Finish" value={form.finish} />
-                <Detail label="Hardware" value={form.hardware} />
-                <Detail label="Qty" value={String(form.quantity)} />
-                <Detail label="Transom/Mullion" value={form.transom} />
-                <Detail label="Location" value={form.location || "—"} />
-                <Detail label="Notes" value={form.notes || "—"} />
-              </div>
+            <div className="text-right text-xl font-bold mt-4 p-4">
+              Subtotal: R {total.toLocaleString()}
             </div>
           </div>
 
-          <div className="flex gap-3">
-            <button onClick={add} className="px-5 py-3 rounded-2xl bg-zinc-900 text-white">Add to Order</button>
-            <a href="/order" className="px-5 py-3 rounded-2xl border border-zinc-300">Review Order</a>
-          </div>
-        </div>
-      </div>
+          <section className="grid lg:grid-cols-2 gap-8">
+            <div className="rounded-2xl border border-zinc-200 p-5 bg-white">
+              <div className="font-semibold">Customer Details</div>
+              <div className="grid sm:grid-cols-2 gap-3 mt-3">
+                <Input label="Full name" value={customer.name} onChange={(v) => setCustomer({ ...customer, name: v })} />
+                <Input label="Email" value={customer.email} onChange={(v) => setCustomer({ ...customer, email: v })} />
+                <Input label="Phone" value={customer.phone} onChange={(v) => setCustomer({ ...customer, phone: v })} />
+                <Input label="Site address" value={customer.siteAddress} onChange={(v) => setCustomer({ ...customer, siteAddress: v })} />
+              </div>
+            </div>
 
-      <div className="lg:sticky lg:top-24 h-max">
-        <Tips />
-      </div>
-    </div>
-  );
-}
-
-function Tips(){
-  const tips = [
-    "Measure structural opening (brick-to-brick) to the nearest millimetre.",
-    "State inside/outside, handing and stack direction for sliders.",
-    "Consider ventilation: add trickle vents or fixed louvres if required.",
-    "Coastal? Prefer anodised or high-spec powder coat with marine hardware.",
-  ];
-  return (
-    <div className="rounded-2xl border border-zinc-200 p-5 bg-white">
-      <div className="font-semibold">Spec tips</div>
-      <ul className="mt-2 list-disc list-inside text-sm text-zinc-600 space-y-1">
-        {tips.map((t,i)=>(<li key={i}>{t}</li>))}
-      </ul>
-    </div>
-  );
-}
-
-function Detail({label, value}){
-  return (
-    <div className="grid grid-cols-[120px,1fr] gap-2"><div className="text-zinc-500">{label}</div><div>{value}</div></div>
-  );
-}
-
-function Input({label, value, onChange, placeholder}){
-  return (
-    <label className="flex flex-col gap-1">
-      <span className="text-sm text-zinc-600">{label}</span>
-      <input value={value} onChange={(e)=>onChange(e.target.value)} placeholder={placeholder} className="px-4 py-2 rounded-xl border border-zinc-300" />
-    </label>
-  );
-}
-
-function Select({label, value, onChange, options}){
-  return (
-    <label className="flex flex-col gap-1">
-      <span className="text-sm text-zinc-600">{label}</span>
-      <select value={value} onChange={(e)=>onChange(e.target.value)} className="px-4 py-2 rounded-xl border border-zinc-300">
-        {options.map(opt => <option key={opt.value||opt} value={opt.value||opt}>{opt.label||opt}</option>)}
-      </select>
-    </label>
-  );
-}
-
-function Order(){
-  const { items, removeItem, clearOrder, customer, setCustomer } = useOrder();
-
-  const csv = useMemo(()=>{
-    const head = ["System","Config","Width(mm)","Height(mm)","Qty","Glazing","Finish","Hardware","Transom","Location","Notes"];
-    const rows = items.map(x=>[
-      x.systemName, x.sashType, x.width, x.height, x.quantity, x.glazing, x.finish, x.hardware, x.transom, x.location, JSON.stringify(x.notes||"")
-    ]);
-    return [head, ...rows].map(r=>r.join(",")).join("\n");
-  },[items]);
-
-  const download = (filename, content, type="text/csv")=>{
-    const blob = new Blob([content], {type});
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url; a.download = filename; a.click();
-    URL.revokeObjectURL(url);
-  };
-
-  const mailto = useMemo(()=>{
-    const subject = encodeURIComponent(`WINDOW ORDER — ${customer.name||"Client"}`);
-    const body = encodeURIComponent([
-      `Name: ${customer.name}`,
-      `Company: ${customer.company}`,
-      `Email: ${customer.email}`,
-      `Phone: ${customer.phone}`,
-      `Site: ${customer.siteAddress}`,
-      `Notes: ${customer.notes}`,
-      "",
-      "Order lines:",
-      ...items.map((x,i)=> `${i+1}. ${x.quantity} x ${x.systemName} ${x.width}x${x.height}mm (${x.sashType}) — ${x.glazing}, ${x.finish}, ${x.hardware}${x.transom!=="None"? ", "+x.transom: ""}${x.location? ", room: "+x.location: ""}${x.notes? " — "+x.notes: ""}`)
-    ].join("\n"));
-    return `mailto:info@modahaus.co.za?subject=${subject}&body=${body}`;
-  },[items, customer]);
-
-  return (
-    <div className="space-y-8">
-      <h1 className="text-3xl font-bold">Your order</h1>
-
-      {items.length===0 ? (
-        <div className="rounded-2xl border border-zinc-200 p-6 bg-white">
-          <div className="text-zinc-600">No line items yet. Use the <a href="/builder" className="underline">Spec Builder</a> to add items.</div>
-        </div>
-      ):(
-        <div className="overflow-x-auto rounded-2xl border border-zinc-200 bg-white">
-          <table className="min-w-full text-sm">
-            <thead className="bg-zinc-50">
-              <tr className="text-left">
-                {"# System Config Size Qty Glazing Finish Hardware Transom Location Notes".split(" ").map((h,i)=>(<th key={i} className="px-3 py-2 font-medium">{h}</th>))}
-                <th className="px-3 py-2"></th>
-              </tr>
-            </thead>
-            <tbody>
-              {items.map((x,i)=> (
-                <tr key={x.id} className="border-t border-zinc-100">
-                  <td className="px-3 py-2">{i+1}</td>
-                  <td className="px-3 py-2">{x.systemName}</td>
-                  <td className="px-3 py-2">{x.sashType}</td>
-                  <td className="px-3 py-2">{x.width}×{x.height}mm</td>
-                  <td className="px-3 py-2">{x.quantity}</td>
-                  <td className="px-3 py-2">{x.glazing}</td>
-                  <td className="px-3 py-2">{x.finish}</td>
-                  <td className="px-3 py-2">{x.hardware}</td>
-                  <td className="px-3 py-2">{x.transom}</td>
-                  <td className="px-3 py-2">{x.location}</td>
-                  <td className="px-3 py-2 max-w-[240px] truncate" title={x.notes}>{x.notes}</td>
-                  <td className="px-3 py-2 text-right">
-                    <button onClick={()=>removeItem(x.id)} className="px-3 py-1.5 rounded-xl border border-zinc-300">Remove</button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+            <div className="rounded-2xl border border-zinc-200 p-5 bg-white h-max">
+              <div className="font-semibold mb-3">Next Step</div>
+              <button
+                onClick={handleCheckout}
+                className="w-full px-4 py-3 rounded-xl bg-zinc-900 text-white font-medium"
+              >
+                Proceed to Checkout (EFT)
+              </button>
+              <p className="text-xs text-zinc-500 mt-3">
+                Shipping will be quoted once address is confirmed.  
+                Orders ship from Midrand Warehouse after manufacturing & payment.
+              </p>
+            </div>
+          </section>
+        </>
       )}
-
-      <section className="grid lg:grid-cols-2 gap-8">
-        <div className="rounded-2xl border border-zinc-200 p-5 bg-white">
-          <div className="font-semibold">Customer & site details</div>
-          <div className="grid sm:grid-cols-2 gap-3 mt-3">
-            <Input label="Full name" value={customer.name} onChange={v=>setCustomer({...customer, name:v})} />
-            <Input label="Company (optional)" value={customer.company} onChange={v=>setCustomer({...customer, company:v})} />
-            <Input label="Email" value={customer.email} onChange={v=>setCustomer({...customer, email:v})} />
-            <Input label="Phone" value={customer.phone} onChange={v=>setCustomer({...customer, phone:v})} />
-            <Input label="Site address" value={customer.siteAddress} onChange={v=>setCustomer({...customer, siteAddress:v})} />
-            <Input label="Notes" value={customer.notes} onChange={v=>setCustomer({...customer, notes:v})} />
-          </div>
-        </div>
-
-        <div className="rounded-2xl border border-zinc-200 p-5 bg-white h-max">
-          <div className="font-semibold">Export & submit</div>
-          <div className="mt-3 flex flex-wrap gap-3">
-            <button onClick={()=>download("order.csv", csv)} className="px-4 py-2 rounded-xl border border-zinc-300">Download CSV</button>
-            <button onClick={()=>window.print()} className="px-4 py-2 rounded-xl border border-zinc-300">Print / Save PDF</button>
-            <a href={mailto} className="px-4 py-2 rounded-xl bg-zinc-900 text-white">Email Order</a>
-            <button onClick={clearOrder} className="px-4 py-2 rounded-xl border border-red-300 text-red-600">Clear</button>
-          </div>
-          <div className="text-xs text-zinc-500 mt-3">No prices shown online. We’ll reply with a formal quote & lead time.</div>
-        </div>
-      </section>
     </div>
   );
 }
 
-function Gallery(){
-  const imgs = [IMAGES.elite, IMAGES.slenderline500, IMAGES.swift38, IMAGES.edge42, IMAGES.vert70, IMAGES.clip44];
+
+function Input({ label, value, onChange }) {
+  return (
+    <label className="flex flex-col gap-1">
+      <span className="text-sm text-zinc-600">{label}</span>
+      <input
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className="px-4 py-2 rounded-xl border border-zinc-300"
+      />
+    </label>
+  );
+}
+
+// ---------- Other Pages ----------
+function Gallery() {
+  const imgs = [IMAGES.elite, IMAGES.swift38, IMAGES.edge42, IMAGES.sliding1000];
   return (
     <div>
       <h1 className="text-3xl font-bold">Gallery</h1>
       <div className="mt-4 grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {imgs.map((src,i)=>(
+        {imgs.map((src, i) => (
           <div key={i} className="rounded-2xl overflow-hidden border border-zinc-200 aspect-[4/3]">
-            <img src={src} alt="Project" className="w-full h-full object-cover"/>
+            <img src={src} alt="Project" className="w-full h-full object-cover" />
           </div>
         ))}
       </div>
@@ -819,44 +733,33 @@ function Gallery(){
   );
 }
 
-function Compliance(){
-  const bullets = [
-    "Fabrication from genuine Wispeco/Crealco profiles only.",
-    "Joint sealing with compatible silicone; we ensure all mechanical joints are sealed.",
-    "Installation, cleaning and maintenance as per manufacturer guidance.",
-    "Performance certificates and manuals available on request for each system.",
-  ];
+function Compliance() {
   return (
     <div className="space-y-6">
-      <h1 className="text-3xl font-bold">Compliance & care</h1>
-      <p className="text-zinc-600 max-w-3xl">We adhere to manufacturer manuals during fabrication and installation and align glazing to SANS guidelines. After installation we provide cleaning & maintenance guidance to maximise lifespan, particularly in coastal environments.</p>
+      <h1 className="text-3xl font-bold">Compliance & Care</h1>
+      <p className="text-zinc-600 max-w-3xl">
+        We adhere to manufacturer manuals during fabrication and installation and align glazing to SANS guidelines.
+      </p>
       <ul className="list-disc list-inside space-y-1 text-zinc-700">
-        {bullets.map((b,i)=>(<li key={i}>{b}</li>))}
+        <li>Fabrication from genuine Wispeco/Crealco profiles only.</li>
+        <li>Joint sealing with compatible silicone.</li>
+        <li>Performance certificates and manuals available on request.</li>
       </ul>
-      <div className="rounded-2xl border border-zinc-200 p-5 bg-white">
-        <div className="font-semibold">Available documents</div>
-        <ul className="mt-2 text-sm list-disc list-inside text-zinc-700">
-          <li>Product manuals per system (e.g. Swift™ 38, Edge™ Thermal Break, 4500 series)</li>
-          <li>Installation, Cleaning & Maintenance guidelines</li>
-          <li>Performance certificates and wall charts</li>
-        </ul>
-      </div>
     </div>
   );
 }
 
-function FAQ(){
+function FAQ() {
   const faqs = [
-    { q: "How are orders priced?", a: "Submit your specs; a technician reviews spans, hardware, finish and glazing, then we reply with a formal quote." },
-    { q: "Lead time?", a: "Typically 10–20 working days after deposit and site measure. Anodise colours or DGUs may extend this." },
-    { q: "Do you install?", a: "Yes. Our trained teams install to best-practice, including perimeter sealing and setting blocks as per glazing standards." },
-    { q: "Do you work with architects?", a: "Absolutely. We share CAD blocks on request and coordinate details early." },
+    { q: "How are orders priced?", a: "Live prices for standard sizes (clear glass & white frame). Extras adjust on PDP." },
+    { q: "Lead time?", a: "Typically 10–20 working days after deposit and site measure." },
+    { q: "Do you install?", a: "Yes. Our trained teams install to best practice." },
   ];
   return (
     <div>
       <h1 className="text-3xl font-bold">FAQs</h1>
       <div className="mt-4 grid gap-4">
-        {faqs.map((f,i)=> (
+        {faqs.map((f, i) => (
           <details key={i} className="rounded-2xl border border-zinc-200 bg-white p-4">
             <summary className="font-medium cursor-pointer">{f.q}</summary>
             <div className="text-zinc-700 mt-2">{f.a}</div>
@@ -867,14 +770,18 @@ function FAQ(){
   );
 }
 
-function Contact(){
-  const [msg, setMsg] = useState({ name:"", email:"", phone:"", message:"" });
-  const submit = (e)=>{ e.preventDefault(); alert("Thanks! We’ll get back to you."); setMsg({name:"",email:"",phone:"",message:""}); };
+function Contact() {
+  const [msg, setMsg] = useState({ name: "", email: "", phone: "", message: "" });
+  const submit = (e) => {
+    e.preventDefault();
+    alert("Thanks! We’ll get back to you.");
+    setMsg({ name: "", email: "", phone: "", message: "" });
+  };
   return (
     <div className="grid md:grid-cols-2 gap-8">
       <div>
         <h1 className="text-3xl font-bold">Contact</h1>
-        <p className="text-zinc-600 mt-1">Send a message or call us to discuss your project. We can meet on site or assist off plan.</p>
+        <p className="text-zinc-600 mt-1">Send a message or call us to discuss your project.</p>
         <div className="mt-6 space-y-2 text-zinc-700">
           <div><span className="font-medium">Phone:</span> +27 (0) 61 193 3931</div>
           <div><span className="font-medium">Email:</span> info@modahaus.co.za</div>
@@ -883,44 +790,41 @@ function Contact(){
       </div>
       <form onSubmit={submit} className="rounded-2xl border border-zinc-200 p-5 bg-white">
         <div className="grid sm:grid-cols-2 gap-3">
-          <Input label="Full name" value={msg.name} onChange={v=>setMsg({...msg, name:v})} />
-          <Input label="Email" value={msg.email} onChange={v=>setMsg({...msg, email:v})} />
-          <Input label="Phone" value={msg.phone} onChange={v=>setMsg({...msg, phone:v})} />
+          <Input label="Full name" value={msg.name} onChange={(v) => setMsg({ ...msg, name: v })} />
+          <Input label="Email" value={msg.email} onChange={(v) => setMsg({ ...msg, email: v })} />
+          <Input label="Phone" value={msg.phone} onChange={(v) => setMsg({ ...msg, phone: v })} />
         </div>
         <label className="flex flex-col gap-1 mt-3">
           <span className="text-sm text-zinc-600">Message</span>
-          <textarea value={msg.message} onChange={e=>setMsg({...msg, message:e.target.value})} className="px-4 py-2 rounded-xl border border-zinc-300 min-h-[120px]"/>
+          <textarea
+            value={msg.message}
+            onChange={(e) => setMsg({ ...msg, message: e.target.value })}
+            className="px-4 py-2 rounded-xl border border-zinc-300 min-h-[120px]"
+          />
         </label>
-        <div className="mt-4"><button className="px-5 py-3 rounded-2xl bg-zinc-900 text-white">Send</button></div>
+        <div className="mt-4">
+          <button className="px-5 py-3 rounded-2xl bg-zinc-900 text-white">Send</button>
+        </div>
       </form>
     </div>
   );
 }
 
 // ---------- App ----------
-function App(){
+function App() {
   return (
     <BrowserRouter>
       <OrderProvider>
         <Shell>
           <Routes>
-            <Route path="/" element={<Home/>} />
-            <Route path="/products" element={<Products/>} />
-            <Route path="/builder" element={<Builder/>} />
-            <Route path="/order" element={<Order/>} />
-            <Route path="/gallery" element={<Gallery/>} />
-            <Route path="/compliance" element={<Compliance/>} />
-            <Route path="/faq" element={<FAQ/>} />
-            <Route path="/contact" element={<Contact/>} />
-            <Route path="/" element={<Home/>} />
-  <Route path="/products" element={<Products/>} />
-  <Route path="/products/:code" element={<ProductDetails/>} /> {/* NEW */}
-  <Route path="/builder" element={<Builder/>} />
-  <Route path="/order" element={<Order/>} />
-  <Route path="/gallery" element={<Gallery/>} />
-  <Route path="/compliance" element={<Compliance/>} />
-  <Route path="/faq" element={<FAQ/>} />
-  <Route path="/contact" element={<Contact/>} />
+            <Route path="/" element={<Home />} />
+            <Route path="/products" element={<Products />} />
+            <Route path="/products/:code" element={<ProductDetails />} />
+            <Route path="/order" element={<Order />} />
+            <Route path="/gallery" element={<Gallery />} />
+            <Route path="/compliance" element={<Compliance />} />
+            <Route path="/faq" element={<FAQ />} />
+            <Route path="/contact" element={<Contact />} />
           </Routes>
         </Shell>
       </OrderProvider>
@@ -930,6 +834,6 @@ function App(){
 
 export default App;
 
-// If you want to render directly in a plain HTML page, uncomment below:
+// For plain HTML mounting:
 // const root = createRoot(document.getElementById("root"));
 // root.render(<App />);
