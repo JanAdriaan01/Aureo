@@ -506,6 +506,7 @@ function ProductDetails() {
 }
 
 // ---------- Order ----------
+// ---------- Order ----------
 function Order() {
   const { items, removeItem, clearOrder, customer, setCustomer } = useOrder();
   const [stage, setStage] = useState("review"); // review | confirm | success
@@ -520,7 +521,7 @@ function Order() {
       alert("Please complete all customer details before placing order.");
       return;
     }
-    const id = `ORD-${Date.now().toString().slice(-6)}`;
+    const id = `ORD-${Date.now().toString().slice(-6)}`; // ✅ FIXED
     setOrderId(id);
     setStage("confirm");
   };
@@ -530,6 +531,7 @@ function Order() {
     clearOrder();
   };
 
+  // ---------- SUCCESS ----------
   if (stage === "success") {
     return (
       <div className="space-y-6 max-w-3xl mx-auto text-center">
@@ -538,9 +540,10 @@ function Order() {
           Your order <b>{orderId}</b> has been received and is awaiting payment.
         </p>
         <p className="text-zinc-600">
-          Please make payment via <b>EFT within 72 hours</b> using your order number as reference.
-          Once payment reflects, a confirmation email with receipt will be sent.
+          Please make payment via <b>EFT within 72 hours</b> using your order number as
+          reference. Once payment reflects, a confirmation email with receipt will be sent.
         </p>
+
         <div className="rounded-2xl border border-zinc-200 p-6 bg-white text-left inline-block mt-4">
           <h2 className="font-semibold mb-2">Bank Details</h2>
           <div className="text-sm leading-relaxed text-zinc-700">
@@ -551,17 +554,22 @@ function Order() {
             <div><b>Reference:</b> {orderId}</div>
           </div>
         </div>
+
         <p className="text-sm text-zinc-500 mt-4">
-          Orders not paid within 72 hours are automatically cancelled.
-          All orders are shipped from <b>Midrand Warehouse</b> after manufacturing and payment confirmation.
+          Orders not paid within 72 hours are automatically cancelled. All orders are shipped
+          from <b>Midrand Warehouse</b> after manufacturing and payment confirmation.
         </p>
-        <a href="/products" className="inline-block mt-6 px-6 py-3 rounded-2xl bg-zinc-900 text-white">
+        <a
+          href="/products"
+          className="inline-block mt-6 px-6 py-3 rounded-2xl bg-zinc-900 text-white"
+        >
           Back to Shop
         </a>
       </div>
     );
   }
 
+  // ---------- CONFIRM ----------
   if (stage === "confirm") {
     return (
       <div className="space-y-6 max-w-3xl mx-auto">
@@ -591,6 +599,7 @@ function Order() {
               </li>
             ))}
           </ul>
+
           <div className="mt-4 text-right font-semibold">
             Subtotal: R {total.toLocaleString()}
           </div>
@@ -616,7 +625,7 @@ function Order() {
     );
   }
 
-  // Default stage: review
+  // ---------- REVIEW ----------
   return (
     <div className="space-y-8">
       <h1 className="text-3xl font-bold">Your Order</h1>
@@ -625,7 +634,10 @@ function Order() {
         <div className="rounded-2xl border border-zinc-200 p-6 bg-white">
           <div className="text-zinc-600">
             No line items yet. Visit{" "}
-            <a href="/products" className="underline">Products</a> to add windows.
+            <a href="/products" className="underline">
+              Products
+            </a>{" "}
+            to add windows.
           </div>
         </div>
       ) : (
@@ -634,11 +646,13 @@ function Order() {
             <table className="min-w-full text-sm">
               <thead className="bg-zinc-50">
                 <tr className="text-left">
-                  {"# System Size Qty Glazing Finish UnitPrice Total".split(" ").map(
-                    (h, i) => (
-                      <th key={i} className="px-3 py-2 font-medium">{h}</th>
-                    )
-                  )}
+                  {"# System Size Qty Glazing Finish UnitPrice Total"
+                    .split(" ")
+                    .map((h, i) => (
+                      <th key={i} className="px-3 py-2 font-medium">
+                        {h}
+                      </th>
+                    ))}
                   <th className="px-3 py-2"></th>
                 </tr>
               </thead>
@@ -675,10 +689,26 @@ function Order() {
             <div className="rounded-2xl border border-zinc-200 p-5 bg-white">
               <div className="font-semibold">Customer Details</div>
               <div className="grid sm:grid-cols-2 gap-3 mt-3">
-                <Input label="Full name" value={customer.name} onChange={(v) => setCustomer({ ...customer, name: v })} />
-                <Input label="Email" value={customer.email} onChange={(v) => setCustomer({ ...customer, email: v })} />
-                <Input label="Phone" value={customer.phone} onChange={(v) => setCustomer({ ...customer, phone: v })} />
-                <Input label="Site address" value={customer.siteAddress} onChange={(v) => setCustomer({ ...customer, siteAddress: v })} />
+                <Input
+                  label="Full name"
+                  value={customer.name}
+                  onChange={(v) => setCustomer({ ...customer, name: v })}
+                />
+                <Input
+                  label="Email"
+                  value={customer.email}
+                  onChange={(v) => setCustomer({ ...customer, email: v })}
+                />
+                <Input
+                  label="Phone"
+                  value={customer.phone}
+                  onChange={(v) => setCustomer({ ...customer, phone: v })}
+                />
+                <Input
+                  label="Site address"
+                  value={customer.siteAddress}
+                  onChange={(v) => setCustomer({ ...customer, siteAddress: v })}
+                />
               </div>
             </div>
 
@@ -691,8 +721,8 @@ function Order() {
                 Proceed to Checkout (EFT)
               </button>
               <p className="text-xs text-zinc-500 mt-3">
-                Shipping will be quoted once address is confirmed.  
-                Orders ship from Midrand Warehouse after manufacturing & payment.
+                Shipping will be quoted once address is confirmed. Orders ship from Midrand
+                Warehouse after manufacturing & payment.
               </p>
             </div>
           </section>
@@ -701,7 +731,6 @@ function Order() {
     </div>
   );
 }
-
 
 function Input({ label, value, onChange }) {
   return (
