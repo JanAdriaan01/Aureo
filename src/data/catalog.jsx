@@ -279,22 +279,11 @@ export const PRODUCT_REVIEWS = {
       comment: "The sliding mechanism is smooth and the finish is excellent. Installation team was professional.",
       helpful: 12,
       images: ["/images/reviews/sw-livingroom-1.jpg"]
-    },
-    {
-      id: "rev_002", 
-      customerName: "Sarah M.",
-      verified: true,
-      rating: 4,
-      date: "2024-01-08",
-      title: "Great value, minor adjustment needed",
-      comment: "Love the windows! Had to adjust the rollers slightly after installation but working perfectly now.",
-      helpful: 8,
-      images: []
     }
   ],
   "CWT-900x1200": [
     {
-      id: "rev_003",
+      id: "rev_002",
       customerName: "Mike T.",
       verified: true,
       rating: 5,
@@ -306,3 +295,8 @@ export const PRODUCT_REVIEWS = {
     }
   ]
 };
+
+// Helper function to get reviews by SKU
+export function getReviewsBySku(sku) {
+  return PRODUCT_REVIEWS[sku] || [];
+}

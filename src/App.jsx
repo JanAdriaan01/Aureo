@@ -519,9 +519,12 @@ function ProductDetails() {
           </div>
         </div>
       </div>
+
+      {/* Reviews Section - MOVED OUTSIDE the grid */}
+      <ProductReviews sku={sku} reviews={reviews} averageRating={averageRating} />
     </div>
   );
-  } 
+}
 // ---------- Product Reviews Component ----------
 function ProductReviews({ sku, reviews, averageRating }) {
   const [sortBy, setSortBy] = useState('recent');
