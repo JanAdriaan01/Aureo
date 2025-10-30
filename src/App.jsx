@@ -74,11 +74,13 @@ function Shell({ children }) {
           </nav>
           <div className="ml-auto flex items-center gap-2">
             <OrderMini />
+           
           </div>
         </div>
       </header>
 
       <main className="max-w-7xl mx-auto px-4 py-8">{children}</main>
+       <ChatButton />
       <Footer />
     </div>
   );
@@ -360,9 +362,14 @@ function ProductDetails() {
 
   const { prefix, size: initialSize } = parseSku(sku);
   const productEntry = findProductByPrefix(prefix);
+  
+  // FIX: Check if productEntry exists and destructure properly
   const productType = productEntry ? productEntry[0] : null;
   const product = productEntry ? productEntry[1] : null;
 
+  // Add debug logging
+  console.log('ProductDetails debug:', { sku, prefix, productEntry, productType, product });
+  
   const [config, setConfig] = useState({
     size: initialSize || (product ? Object.keys(product.sizes)[0] : ""),
     glazing: "clear",
@@ -503,25 +510,117 @@ function ProductDetails() {
       </div>
     </div>
   );
-}
+  } 
 
 // ---------- Order ----------
-// ---------- Order ----------
+
 function Order() {
-  const { items, removeItem, clearOrder, customer, setCustomer } = useOrder();
-  const [stage, setStage] = useState("review"); // review | confirm | success
+
+   console.log('Order component rendering'); // Add this line
+  const ctx = useOrder();
+  if (!ctx) {
+    return (
+      <div className="text-center text-zinc-600 py-20">
+        Loading order context...
+      </div>
+    );
+  }
+
+  const { items, removeItem, clearOrder, customer, setCustomer } = ctx;
+  const [stage, setStage] = useState("review");
   const [orderId, setOrderId] = useState("");
   const [shipping, setShipping] = useState(0);
+  const [customerErrors, setCustomerErrors] = useState({});
 
   const total = items.reduce((sum, x) => sum + (x.subtotal || 0), 0);
   const grandTotal = total + shipping;
 
+  // Validation function
+  const validateCustomer = (customer) => {
+    const errors = [];
+    
+    if (!customer.name?.trim()) {
+      errors.push("Full name is required");
+    }
+    
+    if (!customer.email?.trim()) {
+      errors.push("Email is required");
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(customer.email)) {
+      errors.push("Valid email address is required");
+    }
+    
+    if (!customer.phone?.trim()) {
+      errors.push("Phone number is required");
+    } else if (!/^[\+]?[0-9\s\-\(\)]{10,}$/.test(customer.phone.replace(/\s/g, ''))) {
+      errors.push("Valid phone number is required");
+    }
+    
+    if (!customer.siteAddress?.trim()) {
+      errors.push("Site address is required");
+    }
+    
+    return {
+      isValid: errors.length === 0,
+      errors
+    };
+  };
+
+  // Real-time field validation
+  const validateField = (field, value) => {
+    const errors = { ...customerErrors };
+    
+    switch (field) {
+      case 'email':
+        if (!value.trim()) {
+          errors.email = "Email is required";
+        } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+          errors.email = "Valid email is required";
+        } else {
+          delete errors.email;
+        }
+        break;
+      case 'phone':
+        if (!value.trim()) {
+          errors.phone = "Phone is required";
+        } else if (!/^[\+]?[0-9\s\-\(\)]{10,}$/.test(value.replace(/\s/g, ''))) {
+          errors.phone = "Valid phone number is required";
+        } else {
+          delete errors.phone;
+        }
+        break;
+      case 'name':
+        if (!value.trim()) {
+          errors.name = "Full name is required";
+        } else {
+          delete errors.name;
+        }
+        break;
+      case 'siteAddress':
+        if (!value.trim()) {
+          errors.siteAddress = "Site address is required";
+        } else {
+          delete errors.siteAddress;
+        }
+        break;
+      default:
+        if (!value.trim()) {
+          errors[field] = `${field} is required`;
+        } else {
+          delete errors[field];
+        }
+    }
+    
+    setCustomerErrors(errors);
+  };
+
   const handleCheckout = () => {
-    if (!customer.name || !customer.email || !customer.phone || !customer.siteAddress) {
-      alert("Please complete all customer details before placing order.");
+    const validation = validateCustomer(customer);
+    if (!validation.isValid) {
+      alert(`Please fix the following errors:\n\n• ${validation.errors.join('\n• ')}`);
       return;
     }
-    const id = `ORD-${Date.now().toString().slice(-6)}`; // ✅ FIXED
+
+    const id = `ORD-${Date.now().toString().slice(-6)}`;
     setOrderId(id);
     setStage("confirm");
   };
@@ -556,9 +655,10 @@ function Order() {
         </div>
 
         <p className="text-sm text-zinc-500 mt-4">
-          Orders not paid within 72 hours are automatically cancelled. All orders are shipped
-          from <b>Midrand Warehouse</b> after manufacturing and payment confirmation.
+          Orders not paid within 72 hours are automatically cancelled.
+          Orders are shipped from <b>Midrand Warehouse</b> after manufacturing and payment.
         </p>
+
         <a
           href="/products"
           className="inline-block mt-6 px-6 py-3 rounded-2xl bg-zinc-900 text-white"
@@ -599,7 +699,6 @@ function Order() {
               </li>
             ))}
           </ul>
-
           <div className="mt-4 text-right font-semibold">
             Subtotal: R {total.toLocaleString()}
           </div>
@@ -679,7 +778,6 @@ function Order() {
                 ))}
               </tbody>
             </table>
-
             <div className="text-right text-xl font-bold mt-4 p-4">
               Subtotal: R {total.toLocaleString()}
             </div>
@@ -692,22 +790,42 @@ function Order() {
                 <Input
                   label="Full name"
                   value={customer.name}
-                  onChange={(v) => setCustomer({ ...customer, name: v })}
+                  onChange={(v) => {
+                    setCustomer({ ...customer, name: v });
+                    validateField('name', v);
+                  }}
+                  required
+                  error={customerErrors.name}
                 />
                 <Input
                   label="Email"
                   value={customer.email}
-                  onChange={(v) => setCustomer({ ...customer, email: v })}
+                  onChange={(v) => {
+                    setCustomer({ ...customer, email: v });
+                    validateField('email', v);
+                  }}
+                  required
+                  error={customerErrors.email}
                 />
                 <Input
                   label="Phone"
                   value={customer.phone}
-                  onChange={(v) => setCustomer({ ...customer, phone: v })}
+                  onChange={(v) => {
+                    setCustomer({ ...customer, phone: v });
+                    validateField('phone', v);
+                  }}
+                  required
+                  error={customerErrors.phone}
                 />
                 <Input
                   label="Site address"
                   value={customer.siteAddress}
-                  onChange={(v) => setCustomer({ ...customer, siteAddress: v })}
+                  onChange={(v) => {
+                    setCustomer({ ...customer, siteAddress: v });
+                    validateField('siteAddress', v);
+                  }}
+                  required
+                  error={customerErrors.siteAddress}
                 />
               </div>
             </div>
@@ -731,16 +849,44 @@ function Order() {
     </div>
   );
 }
+//--------- WhatsApp Chat Button ----------
+function ChatButton() {
+  const phoneNumber = "+27611933931"; // Your phone number
+  const message = "Hi, I'm interested in your aluminium windows. Can you help me?";
+  
+  const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
+  
+  return (
+    <a
+      href={whatsappUrl}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="fixed bottom-6 right-6 z-50 flex items-center justify-center w-14 h-14 bg-green-500 hover:bg-green-600 rounded-full shadow-lg transition-all duration-200 hover:scale-110"
+      aria-label="Chat on WhatsApp"
+    >
+      <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
+        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893c0-3.189-1.248-6.189-3.515-8.444"/>
+      </svg>
+    </a>
+  );
+}
 
-function Input({ label, value, onChange }) {
+// ---------- Reusable Input Component ----------
+function Input({ label, value, onChange, type = "text", required = false, error }) {
   return (
     <label className="flex flex-col gap-1">
-      <span className="text-sm text-zinc-600">{label}</span>
+      <span className="text-sm text-zinc-600">
+        {label} {required && <span className="text-red-500">*</span>}
+      </span>
       <input
+        type={type}
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="px-4 py-2 rounded-xl border border-zinc-300"
+        className={`px-4 py-2 rounded-xl border ${
+          error ? 'border-red-300 bg-red-50' : 'border-zinc-300'
+        }`}
       />
+      {error && <span className="text-xs text-red-500 mt-1">{error}</span>}
     </label>
   );
 }
