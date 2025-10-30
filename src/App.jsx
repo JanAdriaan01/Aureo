@@ -17,6 +17,7 @@ import {
   makeSku,
   parseSku,
   findProductByPrefix,
+  PRODUCT_REVIEWS,
 } from "./data/catalog";
 
 /*
@@ -336,7 +337,11 @@ function Products() {
                 <div className="p-4">
                   <div className="font-semibold">{item.name}</div>
                   <div className="text-sm text-zinc-600">{item.type}</div>
+                  <ReviewSummary sku={item.sku} />
+      </div>
                   <div className="mt-1 font-bold">R {item.price.toLocaleString()}</div>
+                   <div className="mt-2">
+        
                   <button
                     onClick={() => navigate(`/products/${encodeURIComponent(item.sku)}`)}
                     className="mt-3 px-3 py-1.5 rounded-xl bg-zinc-900 text-white text-sm"
@@ -366,6 +371,12 @@ function ProductDetails() {
   // FIX: Check if productEntry exists and destructure properly
   const productType = productEntry ? productEntry[0] : null;
   const product = productEntry ? productEntry[1] : null;
+
+  // ADD THESE LINES FOR REVIEWS
+  const reviews = PRODUCT_REVIEWS[sku] || [];
+  const averageRating = reviews.length > 0 
+    ? reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length 
+    : 0;
 
   // Add debug logging
   console.log('ProductDetails debug:', { sku, prefix, productEntry, productType, product });
@@ -511,7 +522,131 @@ function ProductDetails() {
     </div>
   );
   } 
+// ---------- Product Reviews Component ----------
+function ProductReviews({ sku, reviews, averageRating }) {
+  const [sortBy, setSortBy] = useState('recent');
+  
+  const sortedReviews = [...reviews].sort((a, b) => {
+    if (sortBy === 'recent') return new Date(b.date) - new Date(a.date);
+    if (sortBy === 'helpful') return b.helpful - a.helpful;
+    if (sortBy === 'highest') return b.rating - a.rating;
+    return a.rating - b.rating;
+  });
 
+  return (
+    <section className="border-t border-zinc-200 pt-8">
+      <h2 className="text-2xl font-bold mb-6">Customer Reviews</h2>
+      
+      {/* Review Summary Header */}
+      <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center gap-4">
+          <div className="text-center">
+            <div className="text-4xl font-bold text-zinc-900">{averageRating.toFixed(1)}</div>
+            <div className="flex items-center gap-1 mt-1">
+              {[1, 2, 3, 4, 5].map((star) => (
+                <svg
+                  key={star}
+                  className={`w-4 h-4 ${star <= Math.round(averageRating) ? 'text-yellow-400 fill-current' : 'text-zinc-300'}`}
+                  viewBox="0 0 20 20"
+                >
+                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                </svg>
+              ))}
+            </div>
+            <div className="text-sm text-zinc-500 mt-1">
+              {reviews.length} review{reviews.length !== 1 ? 's' : ''}
+            </div>
+          </div>
+        </div>
+        
+        {/* Sort Dropdown */}
+        <select
+          value={sortBy}
+          onChange={(e) => setSortBy(e.target.value)}
+          className="px-3 py-2 border border-zinc-300 rounded-lg text-sm"
+        >
+          <option value="recent">Most Recent</option>
+          <option value="helpful">Most Helpful</option>
+          <option value="highest">Highest Rating</option>
+          <option value="lowest">Lowest Rating</option>
+        </select>
+      </div>
+
+      {/* Reviews List */}
+      <div className="space-y-6">
+        {sortedReviews.map((review) => (
+          <div key={review.id} className="border-b border-zinc-100 pb-6">
+            <div className="flex items-start justify-between mb-2">
+              <div>
+                <div className="flex items-center gap-2 mb-1">
+                  <div className="flex items-center gap-1">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <svg
+                        key={star}
+                        className={`w-4 h-4 ${star <= review.rating ? 'text-yellow-400 fill-current' : 'text-zinc-300'}`}
+                        viewBox="0 0 20 20"
+                      >
+                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                      </svg>
+                    ))}
+                  </div>
+                  {review.verified && (
+                    <span className="inline-flex items-center gap-1 px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">
+                      <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/>
+                      </svg>
+                      Verified Purchase
+                    </span>
+                  )}
+                </div>
+                <h3 className="font-semibold text-zinc-900">{review.title}</h3>
+              </div>
+              <span className="text-sm text-zinc-500">{new Date(review.date).toLocaleDateString()}</span>
+            </div>
+            
+            <p className="text-zinc-700 mb-3">{review.comment}</p>
+            
+            {/* Review Images */}
+            {review.images.length > 0 && (
+              <div className="flex gap-2 mb-3">
+                {review.images.map((img, index) => (
+                  <img
+                    key={index}
+                    src={img}
+                    alt="Review"
+                    className="w-20 h-20 object-cover rounded-lg border border-zinc-200 cursor-pointer"
+                    onClick={() => window.open(img, '_blank')}
+                  />
+                ))}
+              </div>
+            )}
+            
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-zinc-600">By {review.customerName}</span>
+              <button className="flex items-center gap-1 text-sm text-zinc-500 hover:text-zinc-700">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5"/>
+                </svg>
+                Helpful ({review.helpful})
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* No Reviews State */}
+      {reviews.length === 0 && (
+        <div className="text-center py-12">
+          <svg className="w-16 h-16 text-zinc-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/>
+          </svg>
+          <h3 className="text-lg font-semibold text-zinc-600 mb-2">No reviews yet</h3>
+          <p className="text-zinc-500">Be the first to review this product</p>
+        </div>
+      )}
+    </section>
+  );
+}
 // ---------- Order ----------
 
 function Order() {
@@ -868,6 +1003,49 @@ function ChatButton() {
         <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893c0-3.189-1.248-6.189-3.515-8.444"/>
       </svg>
     </a>
+  );
+}
+
+// ---------- Product Review Summary ----------
+function ReviewSummary({ sku, showCount = true }) {
+  const reviews = PRODUCT_REVIEWS[sku] || [];
+  const averageRating = reviews.length > 0 
+    ? reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length 
+    : 0;
+  
+  if (reviews.length === 0) {
+    return showCount ? (
+      <div className="flex items-center gap-1 text-sm text-zinc-500">
+        <span>No reviews yet</span>
+      </div>
+    ) : null;
+  }
+
+  return (
+    <div className="flex items-center gap-2">
+      {/* Star Rating */}
+      <div className="flex items-center gap-1">
+        {[1, 2, 3, 4, 5].map((star) => (
+          <svg
+            key={star}
+            className={`w-3 h-3 ${star <= Math.round(averageRating) ? 'text-yellow-400 fill-current' : 'text-zinc-300'}`}
+            viewBox="0 0 20 20"
+          >
+            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+          </svg>
+        ))}
+        <span className="text-sm font-medium text-zinc-700 ml-1">
+          {averageRating.toFixed(1)}
+        </span>
+      </div>
+      
+      {/* Review Count */}
+      {showCount && (
+        <span className="text-sm text-zinc-500">
+          ({reviews.length} review{reviews.length !== 1 ? 's' : ''})
+        </span>
+      )}
+    </div>
   );
 }
 

@@ -264,4 +264,45 @@ export function findProductByPrefix(prefix) {
   return Object.entries(PRODUCT_LIBRARY).find(
     ([, p]) => p.codePrefix === prefix
   );
-}
+} // ← This closing brace was misplaced
+
+// ---------- PRODUCT REVIEWS DATA ----------
+export const PRODUCT_REVIEWS = {
+  "SW-1500x1200": [
+    {
+      id: "rev_001",
+      customerName: "John D.",
+      verified: true,
+      rating: 5,
+      date: "2024-01-15",
+      title: "Perfect for our living room",
+      comment: "The sliding mechanism is smooth and the finish is excellent. Installation team was professional.",
+      helpful: 12,
+      images: ["/images/reviews/sw-livingroom-1.jpg"]
+    },
+    {
+      id: "rev_002", 
+      customerName: "Sarah M.",
+      verified: true,
+      rating: 4,
+      date: "2024-01-08",
+      title: "Great value, minor adjustment needed",
+      comment: "Love the windows! Had to adjust the rollers slightly after installation but working perfectly now.",
+      helpful: 8,
+      images: []
+    }
+  ],
+  "CWT-900x1200": [
+    {
+      id: "rev_003",
+      customerName: "Mike T.",
+      verified: true,
+      rating: 5,
+      date: "2024-01-20", 
+      title: "Excellent bathroom windows",
+      comment: "Top-hung design is perfect for ventilation without letting rain in. Very happy with the quality.",
+      helpful: 15,
+      images: ["/images/reviews/cwt-bathroom-1.jpg"]
+    }
+  ]
+};
