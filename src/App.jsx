@@ -94,8 +94,8 @@ function Logo() {
     <div className="flex items-center gap-2 font-semibold">
       <img src="/images/logo.png" alt="Aureo Logo" className="w-14 h-14 object-contain" />
       <div className="leading-tight">
-        <div>AUREO INTERNATIONAL</div>
-        <div className="text-xs text-zinc-500">A Modahaus Company</div>
+        <div>Modahaus</div>
+        <div className="text-xs text-zinc-500">Global</div>
       </div>
     </div>
   );
