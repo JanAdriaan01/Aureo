@@ -20,6 +20,8 @@ import {
   PRODUCT_REVIEWS,
 } from "./data/catalog";
 
+import { sendOrderEmail } from './utils/emailService';
+
 /*
   AUREO INTERNATIONAL — Aluminium Windows (React SPA)
   Shop grid with filters (Room / Type), preset sizes, instant pricing.
@@ -407,23 +409,39 @@ function ProductDetails() {
         (FINISH_MULTIPLIER[config.colour] || 1)
     / 10) * 10; // round to nearest 10
 
-  const handleAdd = () => {
-    if (!base) {
-      alert("Please select a valid size.");
-      return;
-    }
-    addItem({
-      system: product.codePrefix,
-      systemName: `${productType} ${config.size}`,
-      size: config.size,
-      glazing: config.glazing,
-      finish: config.colour,
-      quantity: config.quantity,
-      price,
-      subtotal: price * config.quantity,
-    });
-    alert(`${productType} ${config.size} added to order.`);
+const handleAdd = async () => {  // ← Add 'async' here
+  if (!base) {
+    alert("Please select a valid size.");
+    return;
+  }
+  
+  // Create the item object
+  const item = {
+    system: product.codePrefix,
+    systemName: `${productType} ${config.size}`,
+    size: config.size,
+    glazing: config.glazing,
+    finish: config.colour,
+    quantity: config.quantity,
+    price,
+    subtotal: price * config.quantity,
+    timestamp: new Date().toISOString()  // ← Add timestamp
   };
+  
+  // Add to cart
+  addItem(item);
+  
+  // Send email notification - ADD THIS BLOCK
+  try {
+    await sendOrderEmail(item);
+    console.log('Order notification sent to info@modahaus.co.za');
+  } catch (error) {
+    console.warn('Email notification failed, but order was added:', error);
+    // Optional: Show a subtle warning or continue silently
+  }
+  
+  alert(`${productType} ${config.size} added to order.`);
+};
 
   return (
     <div className="space-y-8">
