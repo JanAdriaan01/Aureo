@@ -1,3 +1,4 @@
+// In your emailService.js, make sure you're passing customerInfo
 export const sendOrderEmail = async (orderData, customerInfo = {}) => {
   try {
     const response = await fetch('/api/send-order', {
@@ -23,7 +24,7 @@ export const sendOrderEmail = async (orderData, customerInfo = {}) => {
       throw new Error(result.error || `Failed to send email: ${response.status}`);
     }
 
-    console.log('📧 Email sent successfully:', result);
+    console.log('📧 Emails sent successfully:', result);
     return result;
 
   } catch (error) {
