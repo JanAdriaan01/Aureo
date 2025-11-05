@@ -68,7 +68,7 @@ function Shell({ children }) {
           <Logo />
           <nav className="hidden md:flex gap-4 text-sm">
             <NavItem to="/">Home</NavItem>
-            <NavItem to="/products">Products</NavItem>
+            <NavItem to="/products">Shop</NavItem>
             <NavItem to="/order">Order</NavItem>
             <NavItem to="/gallery">Gallery</NavItem>
             <NavItem to="/compliance">Compliance</NavItem>
@@ -200,7 +200,7 @@ function Home() {
       <section className="grid md:grid-cols-2 gap-8 items-center">
         <div>
           <h1 className="text-4xl md:text-6xl font-black tracking-tight">
-            Aluminium windows, doors & louvres.
+            Aluminium Windows, Doors & Louvres.
           </h1>
           <p className="mt-4 text-lg text-zinc-600">
             Premium systems in standard sizes or custom — anodised or powder coated.
@@ -211,7 +211,7 @@ function Home() {
               onClick={() => navigate("/products")}
               className="px-5 py-3 rounded-2xl bg-zinc-900 text-white"
             >
-              Shop Windows
+              Shop Now
             </button>
             <button
               onClick={() => navigate("/order")}
@@ -220,9 +220,7 @@ function Home() {
               Review Order
             </button>
           </div>
-          <div className="mt-6 text-sm text-zinc-500">
-            Lead times from 10 working days depending on finish and glazing.
-          </div>
+        
         </div>
         <div className="aspect-[4/3] rounded-3xl overflow-hidden shadow-xl">
           <img src={IMAGES.sliding1000} alt="Premium Aluminium Windows" className="w-full h-full object-cover" />
@@ -324,6 +322,11 @@ function Products() {
         <div className="text-xs text-zinc-500">
           Prices shown are for **clear glass & white frame**. Adjust on the product page.
         </div>
+
+        <div className="mt-6 text-sm text-zinc-500">
+            Lead times from 10 working days depending on finish and glazing.
+          </div>
+          
       </aside>
 
       {/* Grid */}
