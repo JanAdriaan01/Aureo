@@ -23,7 +23,7 @@ import {
 import { sendOrderEmail } from './utils/emailService';
 
 /*
-  AUREO INTERNATIONAL — Aluminium Windows (React SPA)
+  Modahaus International — Aluminium Windows & Doors (React SPA)
   Shop grid with filters (Room / Type), preset sizes, instant pricing.
   - TailwindCSS for styling
   - Order flow persists via localStorage
@@ -92,7 +92,7 @@ function Shell({ children }) {
 function Logo() {
   return (
     <div className="flex items-center gap-2 font-semibold">
-      <img src="/images/logo.png" alt="Aureo Logo" className="w-14 h-14 object-contain" />
+      <img src="/images/logo.png" alt="Modahaus Logo" className="w-14 h-14 object-contain" />
       <div className="leading-tight">
         <div>Modahaus</div>
         <div className="text-xs text-zinc-500">Global</div>
@@ -125,7 +125,7 @@ function Footer() {
         <div>
           <Logo />
           <p className="mt-3 text-zinc-600">
-            Fabrication & shipment of aluminium window systems. SANS compliant.
+            Fabrication & shipment of aluminium window & Door systems. SANS compliant.
             Coastal & inland specs.
           </p>
         </div>
@@ -362,33 +362,205 @@ function Products() {
 
 // ---------- Product Details (instant price with multipliers) ----------
 function ProductDetails() {
-  const { code: rawSku } = useParams(); // sku = e.g. CW-1200x1500
+  const { code: rawSku } = useParams();
   const sku = decodeURIComponent(rawSku || "");
   const navigate = useNavigate();
   const { addItem } = useOrder();
 
   const { prefix, size: initialSize } = parseSku(sku);
   const productEntry = findProductByPrefix(prefix);
-  
-  // FIX: Check if productEntry exists and destructure properly
   const productType = productEntry ? productEntry[0] : null;
   const product = productEntry ? productEntry[1] : null;
 
-  // ADD THESE LINES FOR REVIEWS
   const reviews = PRODUCT_REVIEWS[sku] || [];
   const averageRating = reviews.length > 0 
     ? reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length 
     : 0;
 
-  // Add debug logging
-  console.log('ProductDetails debug:', { sku, prefix, productEntry, productType, product });
-  
   const [config, setConfig] = useState({
     size: initialSize || (product ? Object.keys(product.sizes)[0] : ""),
     glazing: "clear",
     colour: "white",
     quantity: 1,
   });
+
+  // Enhanced handleAdd function with popup form
+  const handleAdd = async () => {
+    if (!base) {
+      alert("Please select a valid size.");
+      return;
+    }
+    
+    // Create the item object
+    const item = {
+      system: product.codePrefix,
+      systemName: `${productType} ${config.size}`,
+      size: config.size,
+      glazing: config.glazing,
+      finish: config.colour,
+      quantity: config.quantity,
+      price,
+      subtotal: price * config.quantity,
+      timestamp: new Date().toISOString()
+    };
+    
+    // Add to cart
+    addItem(item);
+    
+    // Create popup form for customer info
+    const customerInfo = await showCustomerInfoPopup();
+    
+    if (customerInfo) {
+      try {
+        await sendOrderEmail(item, customerInfo);
+        console.log('✅ Order notification sent');
+        
+        if (customerInfo.email && customerInfo.email !== "orders@modahaus.co.za") {
+          alert(`${productType} added to order! Confirmation sent to ${customerInfo.email}`);
+        } else {
+          alert(`${productType} added to order! We'll contact you shortly.`);
+        }
+      } catch (error) {
+        console.warn('❌ Email notification failed:', error);
+        alert(`${productType} added to order! (Email notification failed)`);
+      }
+    } else {
+      alert(`${productType} added to order!`);
+    }
+  };
+
+  // Popup form function
+  const showCustomerInfoPopup = () => {
+    return new Promise((resolve) => {
+      // Create overlay
+      const overlay = document.createElement('div');
+      overlay.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+      `;
+
+      // Create popup form
+      const popup = document.createElement('div');
+      popup.style.cssText = `
+        background: white;
+        padding: 2rem;
+        border-radius: 1rem;
+        width: 90%;
+        max-width: 400px;
+        box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);
+      `;
+
+      popup.innerHTML = `
+        <h3 class="text-xl font-bold mb-4">Order Confirmation</h3>
+        <p class="text-zinc-600 mb-4">Enter your details to receive order confirmation:</p>
+        
+        <div class="space-y-3">
+          <div>
+            <label class="block text-sm font-medium text-zinc-700 mb-1">Full Name *</label>
+            <input type="text" id="customerName" 
+              class="w-full px-3 py-2 border border-zinc-300 rounded-lg" 
+              placeholder="Your full name" required>
+          </div>
+          
+          <div>
+            <label class="block text-sm font-medium text-zinc-700 mb-1">Email Address *</label>
+            <input type="email" id="customerEmail" 
+              class="w-full px-3 py-2 border border-zinc-300 rounded-lg" 
+              placeholder="your.email@example.com" required>
+          </div>
+          
+          <div>
+            <label class="block text-sm font-medium text-zinc-700 mb-1">Phone Number</label>
+            <input type="tel" id="customerPhone" 
+              class="w-full px-3 py-2 border border-zinc-300 rounded-lg" 
+              placeholder="+27 ...">
+          </div>
+          
+          <div>
+            <label class="block text-sm font-medium text-zinc-700 mb-1">Site Address</label>
+            <textarea id="customerAddress" 
+              class="w-full px-3 py-2 border border-zinc-300 rounded-lg" 
+              placeholder="Installation address" rows="2"></textarea>
+          </div>
+        </div>
+        
+        <div class="flex gap-3 mt-6">
+          <button type="button" id="cancelBtn" 
+            class="flex-1 px-4 py-2 border border-zinc-300 rounded-lg text-zinc-700 hover:bg-zinc-50">
+            Skip Email
+          </button>
+          <button type="button" id="submitBtn" 
+            class="flex-1 px-4 py-2 bg-zinc-900 text-white rounded-lg hover:bg-zinc-800">
+            Confirm & Email
+          </button>
+        </div>
+      `;
+
+      overlay.appendChild(popup);
+      document.body.appendChild(overlay);
+
+      // Handle form submission
+      const submitBtn = popup.querySelector('#submitBtn');
+      const cancelBtn = popup.querySelector('#cancelBtn');
+
+      const submitForm = () => {
+        const name = popup.querySelector('#customerName').value.trim();
+        const email = popup.querySelector('#customerEmail').value.trim();
+        const phone = popup.querySelector('#customerPhone').value.trim();
+        const address = popup.querySelector('#customerAddress').value.trim();
+
+        // Basic validation
+        if (!name || !email) {
+          alert('Please fill in at least your name and email address.');
+          return;
+        }
+
+        if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+          alert('Please enter a valid email address.');
+          return;
+        }
+
+        document.body.removeChild(overlay);
+        resolve({
+          name,
+          email: email || 'info@modahaus.co.za',
+          phone: phone || 'Not provided',
+          address: address || 'Not provided',
+          source: 'Product Details Page'
+        });
+      };
+
+      const cancelForm = () => {
+        document.body.removeChild(overlay);
+        resolve(null);
+      };
+
+      submitBtn.addEventListener('click', submitForm);
+      cancelBtn.addEventListener('click', cancelForm);
+
+      // Enter key to submit
+      popup.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') submitForm();
+      });
+    });
+  };
+
+  // Calculate price (keep your existing price calculation)
+  const base = product?.sizes[config.size] || 0;
+  const price = base ?
+    Math.round(
+      base *
+        (GLASS_MULTIPLIER[config.glazing] || 1) *
+        (FINISH_MULTIPLIER[config.colour] || 1) / 10
+    ) * 10 : 0;
 
   if (!product) {
     return (
@@ -401,48 +573,6 @@ function ProductDetails() {
     );
   }
 
-  const base = product.sizes[config.size] || 0;
-  const price =
-    Math.round(
-      base *
-        (GLASS_MULTIPLIER[config.glazing] || 1) *
-        (FINISH_MULTIPLIER[config.colour] || 1)
-    / 10) * 10; // round to nearest 10
-
-const handleAdd = async () => {  // ← Add 'async' here
-  if (!base) {
-    alert("Please select a valid size.");
-    return;
-  }
-  
-  // Create the item object
-  const item = {
-    system: product.codePrefix,
-    systemName: `${productType} ${config.size}`,
-    size: config.size,
-    glazing: config.glazing,
-    finish: config.colour,
-    quantity: config.quantity,
-    price,
-    subtotal: price * config.quantity,
-    timestamp: new Date().toISOString()  // ← Add timestamp
-  };
-  
-  // Add to cart
-  addItem(item);
-  
-  // Send email notification - ADD THIS BLOCK
-  try {
-    await sendOrderEmail(item);
-    console.log('Order notification sent to info@modahaus.co.za');
-  } catch (error) {
-    console.warn('Email notification failed, but order was added:', error);
-    // Optional: Show a subtle warning or continue silently
-  }
-  
-  alert(`${productType} ${config.size} added to order.`);
-};
-
   return (
     <div className="space-y-8">
       <button onClick={() => navigate(-1)} className="text-sm text-zinc-500 hover:underline">
@@ -450,16 +580,18 @@ const handleAdd = async () => {  // ← Add 'async' here
       </button>
 
       <div className="grid md:grid-cols-2 gap-8">
+        {/* Left column - Image */}
         <div className="rounded-2xl overflow-hidden border border-zinc-200">
           <img src={product.image} alt={productType} className="w-full h-full object-cover" />
         </div>
 
+        {/* Right column - Product details and configuration */}
         <div>
           <h1 className="text-3xl font-bold">{productType}</h1>
           <div className="text-zinc-600 mt-1">{product.description}</div>
 
           <div className="mt-6 space-y-4">
-            {/* Size */}
+            {/* Size selection */}
             <div>
               <label className="font-medium text-sm text-zinc-700">Select Size</label>
               <select
@@ -473,7 +605,7 @@ const handleAdd = async () => {  // ← Add 'async' here
               </select>
             </div>
 
-            {/* Glazing */}
+            {/* Glazing selection */}
             <div>
               <label className="font-medium text-sm text-zinc-700">Glazing</label>
               <select
@@ -488,7 +620,7 @@ const handleAdd = async () => {  // ← Add 'async' here
               </select>
             </div>
 
-            {/* Colour */}
+            {/* Colour selection */}
             <div>
               <label className="font-medium text-sm text-zinc-700">Frame Colour</label>
               <select
@@ -503,7 +635,7 @@ const handleAdd = async () => {  // ← Add 'async' here
               </select>
             </div>
 
-            {/* Quantity */}
+            {/* Quantity selection */}
             <div>
               <label className="font-medium text-sm text-zinc-700">Quantity</label>
               <input
@@ -532,12 +664,12 @@ const handleAdd = async () => {  // ← Add 'async' here
                   : "bg-zinc-300 text-zinc-600 cursor-not-allowed"
               }`}
             >
-              🛒 Add to Order
+              🛒 Add to Order & Confirm
             </button>
           </div>
         </div>
       </div>
-
+ 
       {/* Reviews Section - MOVED OUTSIDE the grid */}
       <ProductReviews sku={sku} reviews={reviews} averageRating={averageRating} />
     </div>
