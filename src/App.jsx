@@ -200,7 +200,7 @@ function Home() {
       <section className="grid md:grid-cols-2 gap-8 items-center">
         <div>
           <h1 className="text-4xl md:text-6xl font-black tracking-tight">
-            Aluminium windows, built to your spec.
+            Aluminium windows, doors & louvres.
           </h1>
           <p className="mt-4 text-lg text-zinc-600">
             Premium systems in standard sizes or custom — anodised or powder coated.
@@ -328,7 +328,7 @@ function Products() {
 
       {/* Grid */}
       <div>
-        <h1 className="text-3xl font-bold mb-4">Shop Windows</h1>
+        <h1 className="text-3xl font-bold mb-4">Shop</h1>
         {gridItems.length === 0 ? (
           <div className="text-sm text-zinc-600">No products match your filters.</div>
         ) : (
