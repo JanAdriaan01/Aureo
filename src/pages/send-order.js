@@ -171,9 +171,10 @@ export default async function handler(req, res) {
       <h3>Payment Instructions:</h3>
       <p>Please make payment via EFT within 72 hours:</p>
       <ul>
-        <li><strong>Bank:</strong> FNB</li>
+        <li><strong>Bank:</strong> Standard Bank </li>
         <li><strong>Account Name:</strong> Modahaus (Pty) Ltd</li>
-        <li><strong>Account Number:</strong> 62012345678</li>
+        <li><strong>Account Number:</strong> 10256640074</li>
+        <li><strong>Internation Payments Swift Code :</strong> SBZAZAJJ</li>
         <li><strong>Reference:</strong> ${orderId}</li>
         <li><strong>Amount:</strong> R ${order.subtotal?.toLocaleString() || '0'}</li>
       </ul>

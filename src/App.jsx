@@ -935,9 +935,10 @@ function Order() {
           <h2 className="font-semibold mb-2">Bank Details</h2>
           <div className="text-sm leading-relaxed text-zinc-700">
             <div><b>Account Name:</b> Modahaus (Pty) Ltd</div>
-            <div><b>Bank:</b> FNB</div>
-            <div><b>Account Number:</b> 62012345678</div>
-            <div><b>Branch Code:</b> 250655</div>
+            <div><b>Bank:</b> Standard Bank</div>
+            <div><b>Account Number:</b> 10256640074</div>
+            <div><b>Branch Code:</b> 4906</div>
+             <div><b>(International Payments) SWIFT Code :</b> SBZAZAJJ</div>
             <div><b>Reference:</b> {orderId}</div>
           </div>
         </div>
