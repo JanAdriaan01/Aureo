@@ -323,9 +323,7 @@ function Products() {
           Prices shown are for **clear glass & white frame**. Adjust on the product page.
         </div>
 
-        <div className="mt-6 text-sm text-zinc-500">
-            Lead times from 10 working days depending on finish and glazing.
-          </div>
+      
           
       </aside>
 
@@ -670,6 +668,11 @@ function ProductDetails() {
               🛒 Add to Order & Confirm
             </button>
           </div>
+          
+            <div className="mt-6 text-sm text-zinc-500">
+            Lead times from 10 working days depending on finish and glazing.
+          </div>
+
         </div>
       </div>
  
