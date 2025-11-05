@@ -21,7 +21,7 @@ import {
 } from "./data/catalog";
 
 import { sendOrderEmail } from './utils/emailService';
-import { Analytics } from "@vercel/analytics/next"
+
 /*
   Modahaus International — Aluminium Windows & Doors (React SPA)
   Shop grid with filters (Room / Type), preset sizes, instant pricing.
