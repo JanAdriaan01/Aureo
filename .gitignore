@@ -25,3 +25,8 @@ pnpm-debug.log*
 .vercel
 dist
 
+
+# Vercel and build output
+.vercel
+dist
+
