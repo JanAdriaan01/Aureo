@@ -20,3 +20,8 @@ pnpm-debug.log*
 # editor/misc
 .DS_Store
 .vscode/
+
+# Vercel/Build output
+.vercel
+dist
+
