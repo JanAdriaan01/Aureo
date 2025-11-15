@@ -3,7 +3,7 @@ import { createRoot } from "react-dom/client";
 import { BrowserRouter, Routes, Route, NavLink } from "react-router-dom";
 import { useNavigate, useParams } from "react-router-dom";
 import Shell from "./components/Shell";
-import { OrderProvider } from "./components/OrderContext";
+import { OrderProvider, useOrder } from "./components/OrderContext";
 
 import {
   PRODUCT_LIBRARY,
@@ -16,7 +16,6 @@ import {
   PRODUCT_REVIEWS,
 } from "./data/catalog";
 
-import { sendOrderEmail } from './utils/emailService';
 
 /*
   Modahaus International — Aluminium Windows & Doors (React SPA)
@@ -117,8 +116,10 @@ function TrustBar() {
 // ---------- Shop (filters + grid) ----------
 function Products() {
   const navigate = useNavigate();
-  const [room, setRoom] = useState("");           // Bathroom / Bedroom / Kitchen / LivingRoom
+  const [room, setRoom] = useState("");             // Bathroom / Bedroom / Kitchen / LivingRoom
   const [typeFilter, setTypeFilter] = useState(""); // Sliding Window / Casement Window / Fixed Window
+  const [sortBy, setSortBy] = useState("price-asc"); // sort state
+  const [filtersOpen, setFiltersOpen] = useState(true); // sidebar retractable
   const presetSizes = room ? ROOM_PRESETS[room] || [] : null;
 
   const gridItems = useMemo(() => {
@@ -140,81 +141,136 @@ function Products() {
         });
       });
     });
+
+    // Apply sorting
+    if (sortBy === "price-asc") {
+      return [...items].sort((a, b) => a.price - b.price);
+    }
+    if (sortBy === "price-desc") {
+      return [...items].sort((a, b) => b.price - a.price);
+    }
     return items;
-  }, [room, typeFilter]);
+  }, [room, typeFilter, presetSizes, sortBy]);
 
   return (
-    <div className="grid lg:grid-cols-[280px,1fr] gap-8">
+    <div
+      className={
+        filtersOpen
+          ? "grid grid-cols-[260px_minmax(0,1fr)] gap-4 md:gap-8 items-start"
+          : "grid grid-cols-1 gap-4 md:gap-8 items-start"
+      }
+    >
       {/* Sidebar */}
-      <aside className="space-y-6 bg-white border border-zinc-200 rounded-2xl p-4 h-max sticky top-24">
-        <h2 className="font-semibold text-zinc-800">Filters</h2>
+      {filtersOpen && (
+        <aside className="space-y-6 bg-white border border-zinc-200 rounded-2xl p-4 h-max sticky top-24">
+          <h2 className="font-semibold text-zinc-800">Filters</h2>
 
-        {/* Room */}
-        <div>
-          <div className="font-medium text-sm text-zinc-800 mb-1">Room</div>
-          <select
-            value={room}
-            onChange={(e) => setRoom(e.target.value)}
-            className="w-full px-3 py-2 border border-zinc-300 rounded-lg text-sm"
-          >
-            <option value="">All rooms</option>
-            <option>Bathroom</option>
-            <option>Bedroom</option>
-            <option>Kitchen</option>
-            <option value="LivingRoom">Living Room</option>
-          </select>
-          <div className="text-xs text-zinc-500 mt-1">
-            Presets: {room ? (ROOM_PRESETS[room] || []).join(", ") : "–"}
+          {/* Room */}
+          <div>
+            <div className="font-medium text-sm text-zinc-800 mb-1">Room</div>
+            <select
+              value={room}
+              onChange={(e) => setRoom(e.target.value)}
+              className="w-full px-3 py-2 border border-zinc-300 rounded-lg text-sm"
+            >
+              <option value="">All rooms</option>
+              <option>Bathroom</option>
+              <option>Bedroom</option>
+              <option>Kitchen</option>
+              <option value="LivingRoom">Living Room</option>
+            </select>
+            <div className="text-xs text-zinc-500 mt-1">
+              Presets: {room ? (ROOM_PRESETS[room] || []).join(", ") : "–"}
+            </div>
+          </div>
+
+          {/* Type */}
+          <div>
+            <div className="font-medium text-sm text-zinc-800 mb-1">Window Type</div>
+            <select
+              value={typeFilter}
+              onChange={(e) => setTypeFilter(e.target.value)}
+              className="w-full px-3 py-2 border border-zinc-300 rounded-lg text-sm"
+            >
+              <option value="">All types</option>
+              {Object.keys(PRODUCT_LIBRARY).map((t) => (
+                <option key={t}>{t}</option>
+              ))}
+            </select>
+          </div>
+
+          <div className="text-xs text-zinc-500">
+            Prices shown are for <b>clear glass &amp; white frame</b>. Adjust on the product page.
+          </div>
+        </aside>
+      )}
+
+      {/* Grid + header */}
+      <div className="min-w-0">
+        {/* Sort header (non-sticky now, no overlap) */}
+        <div className="mb-4 pb-3 border-b border-zinc-200 bg-white">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <h1 className="text-3xl font-bold">Shop</h1>
+              <p className="text-xs text-zinc-500">
+                Showing {gridItems.length} item{gridItems.length !== 1 ? "s" : ""}
+              </p>
+            </div>
+
+            <div className="flex items-center gap-2">
+              {/* Toggle filters */}
+              <button
+                type="button"
+                onClick={() => setFiltersOpen((v) => !v)}
+                className="text-xs border border-zinc-300 rounded-md px-2 py-1 bg-white"
+              >
+                {filtersOpen ? "Hide filters" : "Show filters"}
+              </button>
+
+              {/* Sort */}
+              <span className="text-xs text-zinc-500">Sort by</span>
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+                className="text-sm border border-zinc-300 rounded-md px-2 py-1 bg-white"
+              >
+                <option value="price-asc">Price (low → high)</option>
+                <option value="price-desc">Price (high → low)</option>
+              </select>
+            </div>
           </div>
         </div>
 
-        {/* Type */}
-        <div>
-          <div className="font-medium text-sm text-zinc-800 mb-1">Window Type</div>
-          <select
-            value={typeFilter}
-            onChange={(e) => setTypeFilter(e.target.value)}
-            className="w-full px-3 py-2 border border-zinc-300 rounded-lg text-sm"
-          >
-            <option value="">All types</option>
-            {Object.keys(PRODUCT_LIBRARY).map((t) => (
-              <option key={t}>{t}</option>
-            ))}
-          </select>
-        </div>
-
-        <div className="text-xs text-zinc-500">
-          Prices shown are for **clear glass & white frame**. Adjust on the product page.
-        </div>
-
-      
-          
-      </aside>
-
-      {/* Grid */}
-      <div>
-        <h1 className="text-3xl font-bold mb-4">Shop</h1>
         {gridItems.length === 0 ? (
           <div className="text-sm text-zinc-600">No products match your filters.</div>
         ) : (
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {gridItems.map((item) => (
-              <div key={item.sku} className="rounded-2xl border border-zinc-200 overflow-hidden bg-white">
-                <img src={item.image} alt={item.name} className="w-full aspect-[4/3] object-cover" />
+              <div
+                key={item.sku}
+                className="rounded-2xl border border-zinc-200 overflow-hidden bg-white"
+              >
+                <img
+                  src={item.image}
+                  alt={item.name}
+                  className="w-full aspect-[4/3] object-cover"
+                />
                 <div className="p-4">
                   <div className="font-semibold">{item.name}</div>
                   <div className="text-sm text-zinc-600">{item.type}</div>
                   <ReviewSummary sku={item.sku} />
-      </div>
-                  <div className="mt-1 font-bold">R {item.price.toLocaleString()}</div>
-                   <div className="mt-2">
-        
-                  <button
-                    onClick={() => navigate(`/products/${encodeURIComponent(item.sku)}`)}
-                    className="mt-3 px-3 py-1.5 rounded-xl bg-zinc-900 text-white text-sm"
-                  >
-                    View Details
-                  </button>
+                  <div className="mt-1 font-bold">
+                    R {item.price.toLocaleString()}
+                  </div>
+                  <div className="mt-2">
+                    <button
+                      onClick={() =>
+                        navigate(`/products/${encodeURIComponent(item.sku)}`)}
+                      className="mt-3 px-3 py-1.5 rounded-xl bg-zinc-900 text-white text-sm"
+                    >
+                      View Details
+                    </button>
+                  </div>
                 </div>
               </div>
             ))}
@@ -238,9 +294,10 @@ function ProductDetails() {
   const product = productEntry ? productEntry[1] : null;
 
   const reviews = PRODUCT_REVIEWS[sku] || [];
-  const averageRating = reviews.length > 0 
-    ? reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length 
-    : 0;
+  const averageRating =
+    reviews.length > 0
+      ? reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length
+      : 0;
 
   const [config, setConfig] = useState({
     size: initialSize || (product ? Object.keys(product.sizes)[0] : ""),
@@ -249,14 +306,60 @@ function ProductDetails() {
     quantity: 1,
   });
 
-  // Enhanced handleAdd function with popup form
-  const handleAdd = async () => {
+  // Tabs: Description / Additional information
+  const [detailTab, setDetailTab] = useState("description"); // 'description' | 'additional'
+
+  // For share buttons
+  const [shareUrl, setShareUrl] = useState("");
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setShareUrl(window.location.href);
+    }
+  }, []);
+
+  // Related products: other sizes of the same product type
+  const relatedItems = useMemo(() => {
+    if (!product || !productType) return [];
+    const items = [];
+
+    Object.entries(PRODUCT_LIBRARY).forEach(([type, prod]) => {
+      if (type !== productType) return;
+
+      Object.entries(prod.sizes).forEach(([size, basePrice]) => {
+        const relSku = makeSku(prod.codePrefix, size);
+        if (relSku === sku) return; // skip current
+        items.push({
+          sku: relSku,
+          type,
+          size,
+          name: `${type} ${size}`,
+          image: prod.image,
+          price: basePrice,
+        });
+      });
+    });
+
+    return items.slice(0, 4); // show up to 4
+  }, [product, productType, sku]);
+
+  // Calculate price
+  const base = product?.sizes[config.size] || 0;
+  const price = base
+    ? Math.round(
+        (base *
+          (GLASS_MULTIPLIER[config.glazing] || 1) *
+          (FINISH_MULTIPLIER[config.colour] || 1)) /
+          10
+      ) * 10
+    : 0;
+
+  // Add to order + open cart drawer
+  const handleAdd = () => {
     if (!base) {
       alert("Please select a valid size.");
       return;
     }
-    
-    // Create the item object
+
     const item = {
       system: product.codePrefix,
       systemName: `${productType} ${config.size}`,
@@ -266,171 +369,20 @@ function ProductDetails() {
       quantity: config.quantity,
       price,
       subtotal: price * config.quantity,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     };
-    
-    // Add to cart
+
     addItem(item);
-    
-    // Create popup form for customer info
-    const customerInfo = await showCustomerInfoPopup();
-    
-    if (customerInfo) {
-      try {
-        await sendOrderEmail(item, customerInfo);
-        console.log('✅ Order notification sent');
-        
-        if (customerInfo.email && customerInfo.email !== "orders@modahaus.co.za") {
-          alert(`${productType} added to order! Confirmation sent to ${customerInfo.email}`);
-        } else {
-          alert(`${productType} added to order! We'll contact you shortly.`);
-        }
-      } catch (error) {
-        console.warn('❌ Email notification failed:', error);
-        alert(`${productType} added to order! (Email notification failed)`);
-      }
-    } else {
-      alert(`${productType} added to order!`);
-    }
+    window.dispatchEvent(new Event("cart:open"));
   };
-
-  // Popup form function
-  const showCustomerInfoPopup = () => {
-    return new Promise((resolve) => {
-      // Create overlay
-      const overlay = document.createElement('div');
-      overlay.style.cssText = `
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0,0,0,0.5);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        z-index: 1000;
-      `;
-
-      // Create popup form
-      const popup = document.createElement('div');
-      popup.style.cssText = `
-        background: white;
-        padding: 2rem;
-        border-radius: 1rem;
-        width: 90%;
-        max-width: 400px;
-        box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);
-      `;
-
-      popup.innerHTML = `
-        <h3 class="text-xl font-bold mb-4">Order Confirmation</h3>
-        <p class="text-zinc-600 mb-4">Enter your details to receive order confirmation:</p>
-        
-        <div class="space-y-3">
-          <div>
-            <label class="block text-sm font-medium text-zinc-700 mb-1">Full Name *</label>
-            <input type="text" id="customerName" 
-              class="w-full px-3 py-2 border border-zinc-300 rounded-lg" 
-              placeholder="Your full name" required>
-          </div>
-          
-          <div>
-            <label class="block text-sm font-medium text-zinc-700 mb-1">Email Address *</label>
-            <input type="email" id="customerEmail" 
-              class="w-full px-3 py-2 border border-zinc-300 rounded-lg" 
-              placeholder="your.email@example.com" required>
-          </div>
-          
-          <div>
-            <label class="block text-sm font-medium text-zinc-700 mb-1">Phone Number</label>
-            <input type="tel" id="customerPhone" 
-              class="w-full px-3 py-2 border border-zinc-300 rounded-lg" 
-              placeholder="+27 ...">
-          </div>
-          
-          <div>
-            <label class="block text-sm font-medium text-zinc-700 mb-1">Site Address</label>
-            <textarea id="customerAddress" 
-              class="w-full px-3 py-2 border border-zinc-300 rounded-lg" 
-              placeholder="Installation address" rows="2"></textarea>
-          </div>
-        </div>
-        
-        <div class="flex gap-3 mt-6">
-          <button type="button" id="cancelBtn" 
-            class="flex-1 px-4 py-2 border border-zinc-300 rounded-lg text-zinc-700 hover:bg-zinc-50">
-            Skip Email
-          </button>
-          <button type="button" id="submitBtn" 
-            class="flex-1 px-4 py-2 bg-zinc-900 text-white rounded-lg hover:bg-zinc-800">
-            Confirm & Email
-          </button>
-        </div>
-      `;
-
-      overlay.appendChild(popup);
-      document.body.appendChild(overlay);
-
-      // Handle form submission
-      const submitBtn = popup.querySelector('#submitBtn');
-      const cancelBtn = popup.querySelector('#cancelBtn');
-
-      const submitForm = () => {
-        const name = popup.querySelector('#customerName').value.trim();
-        const email = popup.querySelector('#customerEmail').value.trim();
-        const phone = popup.querySelector('#customerPhone').value.trim();
-        const address = popup.querySelector('#customerAddress').value.trim();
-
-        // Basic validation
-        if (!name || !email) {
-          alert('Please fill in at least your name and email address.');
-          return;
-        }
-
-        if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-          alert('Please enter a valid email address.');
-          return;
-        }
-
-        document.body.removeChild(overlay);
-        resolve({
-          name,
-          email: email || 'info@modahaus.co.za',
-          phone: phone || 'Not provided',
-          address: address || 'Not provided',
-          source: 'Product Details Page'
-        });
-      };
-
-      const cancelForm = () => {
-        document.body.removeChild(overlay);
-        resolve(null);
-      };
-
-      submitBtn.addEventListener('click', submitForm);
-      cancelBtn.addEventListener('click', cancelForm);
-
-      // Enter key to submit
-      popup.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') submitForm();
-      });
-    });
-  };
-
-  // Calculate price (keep your existing price calculation)
-  const base = product?.sizes[config.size] || 0;
-  const price = base ?
-    Math.round(
-      base *
-        (GLASS_MULTIPLIER[config.glazing] || 1) *
-        (FINISH_MULTIPLIER[config.colour] || 1) / 10
-    ) * 10 : 0;
 
   if (!product) {
     return (
       <div className="space-y-4">
-        <button onClick={() => navigate(-1)} className="text-sm text-zinc-500 hover:underline">
+        <button
+          onClick={() => navigate(-1)}
+          className="text-sm text-zinc-500 hover:underline"
+        >
           ← Back
         </button>
         <div className="text-zinc-600">Product not found.</div>
@@ -440,14 +392,21 @@ function ProductDetails() {
 
   return (
     <div className="space-y-8">
-      <button onClick={() => navigate(-1)} className="text-sm text-zinc-500 hover:underline">
+      <button
+        onClick={() => navigate(-1)}
+        className="text-sm text-zinc-500 hover:underline"
+      >
         ← Back to Products
       </button>
 
       <div className="grid md:grid-cols-2 gap-8">
         {/* Left column - Image */}
         <div className="rounded-2xl overflow-hidden border border-zinc-200">
-          <img src={product.image} alt={productType} className="w-full h-full object-cover" />
+          <img
+            src={product.image}
+            alt={productType}
+            className="w-full h-full object-cover"
+          />
         </div>
 
         {/* Right column - Product details and configuration */}
@@ -458,24 +417,34 @@ function ProductDetails() {
           <div className="mt-6 space-y-4">
             {/* Size selection */}
             <div>
-              <label className="font-medium text-sm text-zinc-700">Select Size</label>
+              <label className="font-medium text-sm text-zinc-700">
+                Select Size
+              </label>
               <select
                 value={config.size}
-                onChange={(e) => setConfig({ ...config, size: e.target.value })}
+                onChange={(e) =>
+                  setConfig({ ...config, size: e.target.value })
+                }
                 className="block w-full border border-zinc-300 rounded-lg mt-1 p-2"
               >
                 {Object.keys(product.sizes).map((sz) => (
-                  <option key={sz} value={sz}>{sz} mm</option>
+                  <option key={sz} value={sz}>
+                    {sz} mm
+                  </option>
                 ))}
               </select>
             </div>
 
             {/* Glazing selection */}
             <div>
-              <label className="font-medium text-sm text-zinc-700">Glazing</label>
+              <label className="font-medium text-sm text-zinc-700">
+                Glazing
+              </label>
               <select
                 value={config.glazing}
-                onChange={(e) => setConfig({ ...config, glazing: e.target.value })}
+                onChange={(e) =>
+                  setConfig({ ...config, glazing: e.target.value })
+                }
                 className="block w-full border border-zinc-300 rounded-lg mt-1 p-2"
               >
                 <option value="clear">Clear</option>
@@ -487,10 +456,14 @@ function ProductDetails() {
 
             {/* Colour selection */}
             <div>
-              <label className="font-medium text-sm text-zinc-700">Frame Colour</label>
+              <label className="font-medium text-sm text-zinc-700">
+                Frame Colour
+              </label>
               <select
                 value={config.colour}
-                onChange={(e) => setConfig({ ...config, colour: e.target.value })}
+                onChange={(e) =>
+                  setConfig({ ...config, colour: e.target.value })
+                }
                 className="block w-full border border-zinc-300 rounded-lg mt-1 p-2"
               >
                 <option value="white">Powder Coat — White</option>
@@ -502,12 +475,19 @@ function ProductDetails() {
 
             {/* Quantity selection */}
             <div>
-              <label className="font-medium text-sm text-zinc-700">Quantity</label>
+              <label className="font-medium text-sm text-zinc-700">
+                Quantity
+              </label>
               <input
                 type="number"
                 min="1"
                 value={config.quantity}
-                onChange={(e) => setConfig({ ...config, quantity: Number(e.target.value) || 1 })}
+                onChange={(e) =>
+                  setConfig({
+                    ...config,
+                    quantity: Number(e.target.value) || 1,
+                  })
+                }
                 className="block w-full border border-zinc-300 rounded-lg mt-1 p-2"
               />
             </div>
@@ -515,11 +495,13 @@ function ProductDetails() {
 
           {/* Price Display */}
           <div className="mt-6 text-2xl font-semibold">
-            {base ? `Price: R ${price.toLocaleString()}` : "Select size to see price"}
+            {base
+              ? `Price: R ${price.toLocaleString()}`
+              : "Select size to see price"}
           </div>
 
           {/* Add Button */}
-          <div className="mt-8 flex gap-3">
+          <div className="mt-8 flex flex-col gap-3">
             <button
               onClick={handleAdd}
               disabled={!base}
@@ -529,22 +511,208 @@ function ProductDetails() {
                   : "bg-zinc-300 text-zinc-600 cursor-not-allowed"
               }`}
             >
-              🛒 Add to Order & Confirm
+              🛒 Add to Order
             </button>
-          </div>
-          
-            <div className="mt-6 text-sm text-zinc-500">
-            Lead times from 10 working days depending on finish and glazing.
+
+            {/* Share buttons */}
+            {shareUrl && (
+              <div className="flex flex-wrap items-center gap-2 text-sm">
+                <span className="text-zinc-500 mr-1">Share:</span>
+
+                <a
+                  href={`https://wa.me/?text=${encodeURIComponent(
+                    `${productType} – ${shareUrl}`
+                  )}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-3 py-1 rounded-full border border-zinc-300 hover:bg-zinc-50"
+                >
+                  WhatsApp
+                </a>
+
+                <a
+                  href={`mailto:?subject=${encodeURIComponent(
+                    productType
+                  )}&body=${encodeURIComponent(
+                    `Have a look at this product: ${shareUrl}`
+                  )}`}
+                  className="px-3 py-1 rounded-full border border-zinc-300 hover:bg-zinc-50"
+                >
+                  Email
+                </a>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (navigator.clipboard && shareUrl) {
+                      navigator.clipboard.writeText(shareUrl);
+                      alert("Product link copied to clipboard");
+                    }
+                  }}
+                  className="px-3 py-1 rounded-full border border-zinc-300 hover:bg-zinc-50"
+                >
+                  Copy link
+                </button>
+              </div>
+            )}
           </div>
 
+          <div className="mt-6 text-sm text-zinc-500">
+            Lead times from 10 working days depending on finish and glazing.
+          </div>
         </div>
       </div>
- 
-      {/* Reviews Section - MOVED OUTSIDE the grid */}
-      <ProductReviews sku={sku} reviews={reviews} averageRating={averageRating} />
+
+      {/* Description / Additional information tabs */}
+      <div className="border border-zinc-200 rounded-2xl bg-white overflow-hidden">
+        {/* Tab headers */}
+        <div className="grid grid-cols-2 text-sm font-semibold border-b border-zinc-200 bg-zinc-100">
+          <button
+            type="button"
+            onClick={() => setDetailTab("description")}
+            className={
+              "px-4 py-2 text-left " +
+              (detailTab === "description"
+                ? "bg-white border-b-2 border-zinc-900"
+                : "text-zinc-500")
+            }
+          >
+            Description
+          </button>
+          <button
+            type="button"
+            onClick={() => setDetailTab("additional")}
+            className={
+              "px-4 py-2 text-left " +
+              (detailTab === "additional"
+                ? "bg-white border-b-2 border-zinc-900"
+                : "text-zinc-500")
+            }
+          >
+            Additional information
+          </button>
+        </div>
+
+        {/* Tab content */}
+        <div className="p-5 text-sm text-zinc-700 leading-relaxed">
+          {detailTab === "description" ? (
+            <>
+              {/* Replace with your full description text */}
+              <p className="mb-3">
+                10mm clear float glass is a type of glass that is made by
+                floating molten glass on a bed of molten metal, typically tin.
+                This process allows the glass to be made with a uniform
+                thickness and smooth surface, ideal for a variety of
+                applications.
+              </p>
+              <p>
+                It is commonly used in applications where a thin, transparent
+                material is required, such as in windows, doors and other types
+                of glazing.
+              </p>
+            </>
+          ) : (
+            <>
+              {/* Replace with your full glass limitations list */}
+              <p className="font-semibold mb-2">
+                10mm Monolithic Annealed Glass – Glass Limitations
+              </p>
+              <ul className="list-disc pl-5 space-y-1">
+                <li>
+                  Maximum Pane Area 6.0sqm – dimensions for vertical glass
+                  supported in a frame on all sides in{" "}
+                  <strong>external walls</strong>.
+                </li>
+                <li>
+                  Maximum Pane Area 6.0sqm – dimensions for vertical glass
+                  supported in a frame on all sides in{" "}
+                  <strong>internal walls</strong>.
+                </li>
+                <li>
+                  Maximum span between supports 1m for external walls where
+                  height does not exceed 10m.
+                </li>
+                <li>
+                  Maximum span between supports 1.55m for internal walls where
+                  height does not exceed 10m.
+                </li>
+              </ul>
+            </>
+          )}
+        </div>
+      </div>
+
+      {/* Reviews Section */}
+      <ProductReviews
+        sku={sku}
+        reviews={reviews}
+        averageRating={averageRating}
+      />
+
+      {/* Related products */}
+      {relatedItems.length > 0 && (
+        <section className="mt-10">
+          <h2 className="text-2xl font-bold mb-4">Related products</h2>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {relatedItems.map((item) => (
+              <div
+                key={item.sku}
+                className="rounded-2xl border border-zinc-200 overflow-hidden bg-white"
+              >
+                <img
+                  src={item.image}
+                  alt={item.name}
+                  className="w-full aspect-[4/3] object-cover"
+                />
+                <div className="p-4">
+                  <div className="font-semibold text-sm">{item.name}</div>
+                  <div className="text-xs text-zinc-600 mb-1">
+                    {item.type} • {item.size} mm
+                  </div>
+                  <ReviewSummary sku={item.sku} showCount={false} />
+                  <div className="mt-1 font-bold text-sm">
+                    R {item.price.toLocaleString()}
+                  </div>
+                  <div className="mt-3 flex gap-2">
+                    <button
+                      onClick={() =>
+                        navigate(`/products/${encodeURIComponent(item.sku)}`)
+                      }
+                      className="px-3 py-1.5 rounded-xl bg-zinc-900 text-white text-xs"
+                    >
+                      View
+                    </button>
+                    <button
+                      onClick={() => {
+                        const quickItem = {
+                          system: product.codePrefix,
+                          systemName: item.name,
+                          size: item.size,
+                          glazing: "clear",
+                          finish: "white",
+                          quantity: 1,
+                          price: item.price,
+                          subtotal: item.price,
+                          timestamp: new Date().toISOString(),
+                        };
+                        addItem(quickItem);
+                        window.dispatchEvent(new Event("cart:open"));
+                      }}
+                      className="px-3 py-1.5 rounded-xl border border-zinc-300 text-xs"
+                    >
+                      Add
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
     </div>
   );
 }
+
 // ---------- Product Reviews Component ----------
 function ProductReviews({ sku, reviews, averageRating }) {
   const [sortBy, setSortBy] = useState('recent');
@@ -1187,24 +1355,153 @@ function Contact() {
   );
 }
 
-// ---------- App ----------
+function CartDrawer() {
+  const { items } = useOrder();
+  const navigate = useNavigate();
+  const [open, setOpen] = useState(false);
+
+  // Open when "cart:open" event is dispatched
+  useEffect(() => {
+    const handler = () => setOpen(true);
+    window.addEventListener("cart:open", handler);
+    return () => window.removeEventListener("cart:open", handler);
+  }, []);
+
+  const itemCount = items.reduce((sum, x) => sum + (x.quantity || 0), 0);
+  const subtotal = items.reduce((sum, x) => sum + (x.subtotal || 0), 0);
+
+  // Always show a small handle on the side
+  return (
+    <>
+      {/* Handle button */}
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        className="fixed top-1/2 -translate-y-1/2 right-0 z-40 rounded-l-2xl px-3 py-2 text-xs bg-zinc-900 text-white shadow-lg"
+      >
+        Cart ({itemCount})
+      </button>
+
+      {/* Drawer + backdrop */}
+      {open && (
+        <>
+          {/* Backdrop (click to close) */}
+          <div
+            className="fixed inset-0 bg-black/30 z-40"
+            onClick={() => setOpen(false)}
+          />
+
+          {/* Drawer */}
+          <div className="fixed right-0 top-0 h-full w-80 max-w-[90vw] bg-white shadow-2xl z-50 flex flex-col">
+            <div className="flex items-center justify-between px-4 py-3 border-b border-zinc-200">
+              <div>
+                <div className="text-sm font-semibold">Order Summary</div>
+                <div className="text-xs text-zinc-500">
+                  {itemCount === 0
+                    ? "No items yet"
+                    : `${itemCount} item${itemCount !== 1 ? "s" : ""} in order`}
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setOpen(false)}
+                className="text-xs text-zinc-500 hover:text-zinc-800"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="flex-1 overflow-y-auto px-4 py-3 space-y-3">
+              {items.length === 0 ? (
+                <div className="text-sm text-zinc-500">
+                  Your order is empty. Add a product to see it here.
+                </div>
+              ) : (
+                items.map((x) => (
+                  <div
+                    key={x.id || `${x.system}-${x.size}-${x.timestamp}`}
+                    className="border border-zinc-200 rounded-xl p-3 text-xs"
+                  >
+                    <div className="font-semibold text-zinc-800">
+                      {x.systemName}
+                    </div>
+                    <div className="text-zinc-500">
+                      Size: {x.size} · Qty: {x.quantity}
+                    </div>
+                    <div className="text-zinc-500">
+                      {x.glazing} · {x.finish}
+                    </div>
+                    <div className="mt-1 font-semibold text-zinc-900">
+                      R {x.subtotal.toLocaleString()}
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+
+            <div className="border-t border-zinc-200 px-4 py-3 space-y-2">
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-zinc-600">Subtotal</span>
+                <span className="font-semibold">
+                  R {subtotal.toLocaleString()}
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  setOpen(false);
+                  navigate("/order");
+                }}
+                className="w-full mt-1 px-4 py-2 rounded-xl bg-zinc-900 text-white text-sm font-medium"
+              >
+                Review & Place Order
+              </button>
+              <p className="text-[11px] text-zinc-500">
+                Customer details & payment instructions will be captured on the
+                order page.
+              </p>
+            </div>
+          </div>
+        </>
+      )}
+    </>
+  );
+}
+
 function App() {
   return (
     <BrowserRouter>
-      <OrderProvider>
-        <Shell>
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/products" element={<Products />} />
-            <Route path="/products/:code" element={<ProductDetails />} />
-            <Route path="/order" element={<Order />} />
-            <Route path="/gallery" element={<Gallery />} />
-            <Route path="/compliance" element={<Compliance />} />
-            <Route path="/faq" element={<FAQ />} />
-            <Route path="/contact" element={<Contact />} />
-          </Routes>
-        </Shell>
-      </OrderProvider>
+-      <OrderProvider>
+-        <Shell>
+-          <Routes>
+-            <Route path="/" element={<Home />} />
+-            <Route path="/products" element={<Products />} />
+-            <Route path="/products/:code" element={<ProductDetails />} />
+-            <Route path="/order" element={<Order />} />
+-            <Route path="/gallery" element={<Gallery />} />
+-            <Route path="/compliance" element={<Compliance />} />
+-            <Route path="/faq" element={<FAQ />} />
+-            <Route path="/contact" element={<Contact />} />
+-          </Routes>
+-        </Shell>
+-      </OrderProvider>
++      <OrderProvider>
++        <Shell>
++          <Routes>
++            <Route path="/" element={<Home />} />
++            <Route path="/products" element={<Products />} />
++            <Route path="/products/:code" element={<ProductDetails />} />
++            <Route path="/order" element={<Order />} />
++            <Route path="/gallery" element={<Gallery />} />
++            <Route path="/compliance" element={<Compliance />} />
++            <Route path="/faq" element={<FAQ />} />
++            <Route path="/contact" element={<Contact />} />
++          </Routes>
++        </Shell>
++
++        {/* Side cart drawer / handle */}
++        <CartDrawer />
++      </OrderProvider>
     </BrowserRouter>
   );
 }
