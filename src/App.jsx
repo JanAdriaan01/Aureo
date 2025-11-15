@@ -2,6 +2,8 @@ import React, { useMemo, useState, useEffect } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter, Routes, Route, NavLink } from "react-router-dom";
 import { useNavigate, useParams } from "react-router-dom";
+import Shell from "./components/Shell";
+import { OrderProvider } from "./components/OrderContext";
 
 import {
   PRODUCT_LIBRARY,
@@ -53,138 +55,6 @@ function useLocalStorage(key, initial) {
   return [state, setState];
 }
 
-// ---------- Layout ----------
-function Shell({ children }) {
-  return (
-    <div className="min-h-screen bg-zinc-50 text-zinc-900">
-      <header className="sticky top-0 z-50 backdrop-blur bg-white/80 border-b border-zinc-200">
-        <div className="max-w-7xl mx-auto px-4 py-3 flex items-center gap-4">
-          <Logo />
-          <nav className="hidden md:flex gap-4 text-sm">
-            <NavItem to="/">Home</NavItem>
-            <NavItem to="/products">Shop</NavItem>
-            <NavItem to="/order">Order</NavItem>
-            <NavItem to="/gallery">Gallery</NavItem>
-            <NavItem to="/compliance">Compliance</NavItem>
-            <NavItem to="/faq">FAQ</NavItem>
-            <NavItem to="/contact">Contact</NavItem>
-          </nav>
-          <div className="ml-auto flex items-center gap-2">
-            <OrderMini />
-           
-          </div>
-        </div>
-      </header>
-
-      <main className="max-w-7xl mx-auto px-4 py-8">{children}</main>
-       <ChatButton />
-      <Footer />
-    </div>
-  );
-}
-
-function Logo() {
-  return (
-    <div className="flex items-center gap-2 font-semibold">
-      <img src="/images/logo.png" alt="Modahaus Logo" className="w-14 h-14 object-contain" />
-      <div className="leading-tight">
-        <div>Modahaus</div>
-        <div className="text-xs text-zinc-500">Global</div>
-      </div>
-    </div>
-  );
-}
-
-function NavItem({ to, children }) {
-  return (
-    <NavLink
-      end
-      className={({ isActive }) =>
-        classNames(
-          "px-3 py-1.5 rounded-xl hover:bg-zinc-100",
-          isActive && "bg-zinc-900 text-white hover:bg-zinc-900"
-        )
-      }
-      to={to}
-    >
-      {children}
-    </NavLink>
-  );
-}
-
-function Footer() {
-  return (
-    <footer className="border-t border-zinc-200 mt-16">
-      <div className="max-w-7xl mx-auto px-4 py-10 grid gap-8 md:grid-cols-3 text-sm">
-        <div>
-          <Logo />
-          <p className="mt-3 text-zinc-600">
-            Fabrication & shipment of aluminium window & Door systems. SANS compliant.
-            Coastal & inland specs.
-          </p>
-        </div>
-        <div>
-          <div className="font-semibold mb-2">Quick links</div>
-          <ul className="space-y-1">
-            <li><a href="/products" className="hover:underline">Products</a></li>
-            <li><a href="/order" className="hover:underline">Place an Order</a></li>
-            <li><a href="/compliance" className="hover:underline">Compliance</a></li>
-          </ul>
-        </div>
-        <div>
-          <div className="font-semibold mb-2">Contact</div>
-          <div className="text-zinc-600">Johannesburg</div>
-          <div className="text-zinc-600">+27 (0) 61 193 3931</div>
-          <div className="text-zinc-600">info@modahaus.co.za</div>
-        </div>
-      </div>
-    </footer>
-  );
-}
-
-// ---------- Global Order State ----------
-const OrderContext = React.createContext(null);
-
-function OrderProvider({ children }) {
-  const [items, setItems] = useLocalStorage("order-items", []);
-  const [customer, setCustomer] = useLocalStorage("order-customer", {
-    name: "",
-    email: "",
-    phone: "",
-    siteAddress: "",
-  });
-
-  const addItem = (item) =>
-    setItems((prev) => [...prev, { id: crypto.randomUUID(), ...item }]);
-  const removeItem = (id) => setItems((prev) => prev.filter((x) => x.id !== id));
-  const clearOrder = () => setItems([]);
-
-  const value = useMemo(
-    () => ({ items, addItem, removeItem, clearOrder, customer, setCustomer }),
-    [items, customer]
-  );
-
-  return <OrderContext.Provider value={value}>{children}</OrderContext.Provider>;
-}
-
-function useOrder() {
-  const ctx = React.useContext(OrderContext);
-  if (!ctx) throw new Error("useOrder must be used inside <OrderProvider>");
-  return ctx;
-}
-
-function OrderMini() {
-  const { items } = useOrder();
-  const navigate = useNavigate();
-  return (
-    <button
-      onClick={() => navigate("/order")}
-      className="px-3 py-1.5 rounded-xl bg-zinc-900 text-white text-sm"
-    >
-      Order <span className="opacity-80">({items.length})</span>
-    </button>
-  );
-}
 
 // ---------- Pages ----------
 function Home() {
@@ -1248,7 +1118,7 @@ function Compliance() {
         We adhere to manufacturer manuals during fabrication and installation and align glazing to SANS guidelines.
       </p>
       <ul className="list-disc list-inside space-y-1 text-zinc-700">
-        <li>Fabrication from genuine Wispeco/Crealco profiles only.</li>
+        <li>Fabrication from genuine aluminium profiles only.</li>
         <li>Joint sealing with compatible silicone.</li>
         <li>Performance certificates and manuals available on request.</li>
       </ul>
