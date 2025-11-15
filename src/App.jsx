@@ -296,7 +296,7 @@ function ProductDetails() {
   const reviews = PRODUCT_REVIEWS[sku] || [];
   const averageRating =
     reviews.length > 0
-      ? reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length
+      ? reviews.reduce((s, r) => s + r.rating, 0) / reviews.length
       : 0;
 
   const [config, setConfig] = useState({
@@ -306,10 +306,8 @@ function ProductDetails() {
     quantity: 1,
   });
 
-  // Tabs: Description / Additional information
-  const [detailTab, setDetailTab] = useState("description"); // 'description' | 'additional'
+  const [detailTab, setDetailTab] = useState("description");
 
-  // For share buttons
   const [shareUrl, setShareUrl] = useState("");
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -317,43 +315,42 @@ function ProductDetails() {
     }
   }, []);
 
-  // Related products: other sizes of the same product type
+  // ---------- Related Products ----------
   const relatedItems = useMemo(() => {
     if (!product || !productType) return [];
+
     const items = [];
+    const libraryEntry = PRODUCT_LIBRARY[productType];
+    if (!libraryEntry) return [];
 
-    Object.entries(PRODUCT_LIBRARY).forEach(([type, prod]) => {
-      if (type !== productType) return;
+    Object.entries(libraryEntry.sizes).forEach(([size, basePrice]) => {
+      const relSku = makeSku(libraryEntry.codePrefix, size);
+      if (relSku === sku) return;
 
-      Object.entries(prod.sizes).forEach(([size, basePrice]) => {
-        const relSku = makeSku(prod.codePrefix, size);
-        if (relSku === sku) return; // skip current
-        items.push({
-          sku: relSku,
-          type,
-          size,
-          name: `${type} ${size}`,
-          image: prod.image,
-          price: basePrice,
-        });
+      items.push({
+        sku: relSku,
+        type: productType,
+        size,
+        name: `${productType} ${size}`,
+        price: basePrice,
+        image: libraryEntry.image,
       });
     });
 
-    return items.slice(0, 4); // show up to 4
+    return items.slice(0, 4);
   }, [product, productType, sku]);
 
-  // Calculate price
+  // ---------- Price Calculation ----------
   const base = product?.sizes[config.size] || 0;
   const price = base
     ? Math.round(
         (base *
           (GLASS_MULTIPLIER[config.glazing] || 1) *
-          (FINISH_MULTIPLIER[config.colour] || 1)) /
-          10
+          (FINISH_MULTIPLIER[config.colour] || 1)) / 10
       ) * 10
     : 0;
 
-  // Add to order + open cart drawer
+  // ---------- Add To Cart ----------
   const handleAdd = () => {
     if (!base) {
       alert("Please select a valid size.");
@@ -390,6 +387,10 @@ function ProductDetails() {
     );
   }
 
+  // ===========================================================
+  // ===============       RENDER START       ===================
+  // ===========================================================
+
   return (
     <div className="space-y-8">
       <button
@@ -400,7 +401,7 @@ function ProductDetails() {
       </button>
 
       <div className="grid md:grid-cols-2 gap-8">
-        {/* Left column - Image */}
+        {/* Left - Image */}
         <div className="rounded-2xl overflow-hidden border border-zinc-200">
           <img
             src={product.image}
@@ -409,17 +410,15 @@ function ProductDetails() {
           />
         </div>
 
-        {/* Right column - Product details and configuration */}
+        {/* Right - Product Config */}
         <div>
           <h1 className="text-3xl font-bold">{productType}</h1>
           <div className="text-zinc-600 mt-1">{product.description}</div>
 
           <div className="mt-6 space-y-4">
-            {/* Size selection */}
+            {/* Size */}
             <div>
-              <label className="font-medium text-sm text-zinc-700">
-                Select Size
-              </label>
+              <label className="font-medium text-sm">Select Size</label>
               <select
                 value={config.size}
                 onChange={(e) =>
@@ -435,11 +434,9 @@ function ProductDetails() {
               </select>
             </div>
 
-            {/* Glazing selection */}
+            {/* Glazing */}
             <div>
-              <label className="font-medium text-sm text-zinc-700">
-                Glazing
-              </label>
+              <label className="font-medium text-sm">Glazing</label>
               <select
                 value={config.glazing}
                 onChange={(e) =>
@@ -454,11 +451,9 @@ function ProductDetails() {
               </select>
             </div>
 
-            {/* Colour selection */}
+            {/* Colour */}
             <div>
-              <label className="font-medium text-sm text-zinc-700">
-                Frame Colour
-              </label>
+              <label className="font-medium text-sm">Frame Colour</label>
               <select
                 value={config.colour}
                 onChange={(e) =>
@@ -473,11 +468,9 @@ function ProductDetails() {
               </select>
             </div>
 
-            {/* Quantity selection */}
+            {/* Quantity */}
             <div>
-              <label className="font-medium text-sm text-zinc-700">
-                Quantity
-              </label>
+              <label className="font-medium text-sm">Quantity</label>
               <input
                 type="number"
                 min="1"
@@ -493,14 +486,14 @@ function ProductDetails() {
             </div>
           </div>
 
-          {/* Price Display */}
+          {/* Price */}
           <div className="mt-6 text-2xl font-semibold">
             {base
               ? `Price: R ${price.toLocaleString()}`
               : "Select size to see price"}
           </div>
 
-          {/* Add Button */}
+          {/* Add Button + Share Buttons */}
           <div className="mt-8 flex flex-col gap-3">
             <button
               onClick={handleAdd}
@@ -514,10 +507,9 @@ function ProductDetails() {
               🛒 Add to Order
             </button>
 
-            {/* Share buttons */}
             {shareUrl && (
               <div className="flex flex-wrap items-center gap-2 text-sm">
-                <span className="text-zinc-500 mr-1">Share:</span>
+                <span className="text-zinc-500">Share:</span>
 
                 <a
                   href={`https://wa.me/?text=${encodeURIComponent(
@@ -534,7 +526,7 @@ function ProductDetails() {
                   href={`mailto:?subject=${encodeURIComponent(
                     productType
                   )}&body=${encodeURIComponent(
-                    `Have a look at this product: ${shareUrl}`
+                    `Take a look at this product: ${shareUrl}`
                   )}`}
                   className="px-3 py-1 rounded-full border border-zinc-300 hover:bg-zinc-50"
                 >
@@ -542,12 +534,9 @@ function ProductDetails() {
                 </a>
 
                 <button
-                  type="button"
                   onClick={() => {
-                    if (navigator.clipboard && shareUrl) {
-                      navigator.clipboard.writeText(shareUrl);
-                      alert("Product link copied to clipboard");
-                    }
+                    navigator.clipboard.writeText(shareUrl);
+                    alert("Product link copied");
                   }}
                   className="px-3 py-1 rounded-full border border-zinc-300 hover:bg-zinc-50"
                 >
@@ -563,12 +552,10 @@ function ProductDetails() {
         </div>
       </div>
 
-      {/* Description / Additional information tabs */}
+      {/* Tabs */}
       <div className="border border-zinc-200 rounded-2xl bg-white overflow-hidden">
-        {/* Tab headers */}
         <div className="grid grid-cols-2 text-sm font-semibold border-b border-zinc-200 bg-zinc-100">
           <button
-            type="button"
             onClick={() => setDetailTab("description")}
             className={
               "px-4 py-2 text-left " +
@@ -579,8 +566,8 @@ function ProductDetails() {
           >
             Description
           </button>
+
           <button
-            type="button"
             onClick={() => setDetailTab("additional")}
             className={
               "px-4 py-2 text-left " +
@@ -593,63 +580,41 @@ function ProductDetails() {
           </button>
         </div>
 
-        {/* Tab content */}
         <div className="p-5 text-sm text-zinc-700 leading-relaxed">
           {detailTab === "description" ? (
             <>
-              {/* Replace with your full description text */}
               <p className="mb-3">
-                10mm clear float glass is a type of glass that is made by
-                floating molten glass on a bed of molten metal, typically tin.
-                This process allows the glass to be made with a uniform
-                thickness and smooth surface, ideal for a variety of
-                applications.
+                10mm clear float glass is a uniform-thickness, high-clarity glass
+                used for windows, doors and structural glazing.
               </p>
               <p>
-                It is commonly used in applications where a thin, transparent
-                material is required, such as in windows, doors and other types
-                of glazing.
+                It is ideal for transparent applications requiring strength and
+                durability.
               </p>
             </>
           ) : (
             <>
-              {/* Replace with your full glass limitations list */}
               <p className="font-semibold mb-2">
-                10mm Monolithic Annealed Glass – Glass Limitations
+                10mm Monolithic Annealed Glass – Limitations
               </p>
               <ul className="list-disc pl-5 space-y-1">
-                <li>
-                  Maximum Pane Area 6.0sqm – dimensions for vertical glass
-                  supported in a frame on all sides in{" "}
-                  <strong>external walls</strong>.
-                </li>
-                <li>
-                  Maximum Pane Area 6.0sqm – dimensions for vertical glass
-                  supported in a frame on all sides in{" "}
-                  <strong>internal walls</strong>.
-                </li>
-                <li>
-                  Maximum span between supports 1m for external walls where
-                  height does not exceed 10m.
-                </li>
-                <li>
-                  Maximum span between supports 1.55m for internal walls where
-                  height does not exceed 10m.
-                </li>
+                <li>Maximum pane area: 6.0 sqm (internal & external).</li>
+                <li>Maximum span between supports: 1–1.55 m.</li>
+                <li>Height limit: 10 m.</li>
               </ul>
             </>
           )}
         </div>
       </div>
 
-      {/* Reviews Section */}
+      {/* Reviews */}
       <ProductReviews
         sku={sku}
         reviews={reviews}
         averageRating={averageRating}
       />
 
-      {/* Related products */}
+      {/* Related Products */}
       {relatedItems.length > 0 && (
         <section className="mt-10">
           <h2 className="text-2xl font-bold mb-4">Related products</h2>
@@ -669,10 +634,13 @@ function ProductDetails() {
                   <div className="text-xs text-zinc-600 mb-1">
                     {item.type} • {item.size} mm
                   </div>
+
                   <ReviewSummary sku={item.sku} showCount={false} />
+
                   <div className="mt-1 font-bold text-sm">
                     R {item.price.toLocaleString()}
                   </div>
+
                   <div className="mt-3 flex gap-2">
                     <button
                       onClick={() =>
@@ -682,10 +650,12 @@ function ProductDetails() {
                     >
                       View
                     </button>
+
+                    {/* FIXED ADD BUTTON */}
                     <button
                       onClick={() => {
                         const quickItem = {
-                          system: product.codePrefix,
+                          system: item.sku.split("-")[0], // FIXED!
                           systemName: item.name,
                           size: item.size,
                           glazing: "clear",
