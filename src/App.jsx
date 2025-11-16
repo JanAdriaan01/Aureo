@@ -1564,27 +1564,10 @@ function App() {
 -            <Route path="/faq" element={<FAQ />} />
 -            <Route path="/contact" element={<Contact />} />
 -          </Routes>
--        </Shell>
--      </OrderProvider>
-+      <OrderProvider>
-+        <Shell>
-+          <Routes>
-+            <Route path="/" element={<Home />} />
-+            <Route path="/products" element={<Products />} />
-+            <Route path="/products/:code" element={<ProductDetails />} />
-+            <Route path="/order" element={<Order />} />
-+            <Route path="/gallery" element={<Gallery />} />
-+            <Route path="/compliance" element={<Compliance />} />
-+            <Route path="/faq" element={<FAQ />} />
-+            <Route path="/contact" element={<Contact />} />
-+          </Routes>
 {/* Side cart drawer / handle */} 
      <CartDrawer />
- </Shell>
-+
-+       
-+   
-+      </OrderProvider>
+-        </Shell>
+-      </OrderProvider>
     </BrowserRouter>
   );
 }
