@@ -1578,8 +1578,7 @@ function App() {
 +            <Route path="/faq" element={<FAQ />} />
 +            <Route path="/contact" element={<Contact />} />
 +          </Routes>
-
-+       {/* Side cart drawer / handle */} 
+{/* Side cart drawer / handle */} 
      <CartDrawer />
  </Shell>
 +
