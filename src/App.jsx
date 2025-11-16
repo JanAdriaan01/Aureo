@@ -385,9 +385,8 @@ function ProductDetails() {
   const base = product?.sizes[config.size] || 0;
   const price = base
     ? Math.round(
-        (base *
-          (GLASS_MULTIPLIER[config.glazing] || 1) *
-          (FINISH_MULTIPLIER[config.colour] || 1)) / 10
+        base * (GLASS_MULTIPLIER[config.glazing] || 1) *
+        (FINISH_MULTIPLIER[config.colour] || 1) / 10
       ) * 10
     : 0;
 
@@ -433,7 +432,21 @@ function ProductDetails() {
   // ===========================================================
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 relative">
+      {/* WhatsApp button fixed bottom right */}
+      {shareUrl && (
+        <a
+          href={`https://wa.me/?text=${encodeURIComponent(
+            `${productType} – ${shareUrl}`
+          )}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="fixed bottom-6 right-6 z-50 px-4 py-3 bg-green-500 text-white rounded-full shadow-lg hover:bg-green-600"
+        >
+          WhatsApp
+        </a>
+      )}
+
       <button
         onClick={() => navigate(-1)}
         className="text-sm text-zinc-500 hover:underline"
@@ -505,26 +518,42 @@ function ProductDetails() {
                 <option value="white">Powder Coat — White</option>
                 <option value="charcoal">Powder Coat — Charcoal</option>
                 <option value="black">Powder Coat — Black</option>
-                 <option value="black">Powder Coat — Natural</option>
+                <option value="natural">Powder Coat — Natural</option>
                 <option value="bronze">Anodised — Bronze</option>
               </select>
             </div>
 
-            {/* Quantity */}
+            {/* Quantity (drop-down + editable input) */}
             <div>
               <label className="font-medium text-sm">Quantity</label>
-              <input
-                type="number"
-                min="1"
-                value={config.quantity}
-                onChange={(e) =>
-                  setConfig({
-                    ...config,
-                    quantity: Number(e.target.value) || 1,
-                  })
-                }
-                className="block w-full border border-zinc-300 rounded-lg mt-1 p-2"
-              />
+              <div className="flex gap-2 items-center mt-1">
+                <select
+                  value={config.quantity}
+                  onChange={(e) =>
+                    setConfig({ ...config, quantity: Number(e.target.value) })
+                  }
+                  className="border border-zinc-300 rounded-lg p-2"
+                >
+                  {Array.from({ length: 50 }, (_, i) => i + 1).map((num) => (
+                    <option key={num} value={num}>
+                      {num}
+                    </option>
+                  ))}
+                </select>
+                <input
+                  type="number"
+                  min="1"
+                  max="50"
+                  value={config.quantity}
+                  onChange={(e) =>
+                    setConfig({
+                      ...config,
+                      quantity: Math.max(1, Math.min(50, Number(e.target.value) || 1)),
+                    })
+                  }
+                  className="block border border-zinc-300 rounded-lg p-2 w-20"
+                />
+              </div>
             </div>
           </div>
 
@@ -548,44 +577,6 @@ function ProductDetails() {
             >
               🛒 Add to Order
             </button>
-
-            {shareUrl && (
-              <div className="flex flex-wrap items-center gap-2 text-sm">
-                <span className="text-zinc-500">Share:</span>
-
-                <a
-                  href={`https://wa.me/?text=${encodeURIComponent(
-                    `${productType} – ${shareUrl}`
-                  )}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="px-3 py-1 rounded-full border border-zinc-300 hover:bg-zinc-50"
-                >
-                  WhatsApp
-                </a>
-
-                <a
-                  href={`mailto:?subject=${encodeURIComponent(
-                    productType
-                  )}&body=${encodeURIComponent(
-                    `Take a look at this product: ${shareUrl}`
-                  )}`}
-                  className="px-3 py-1 rounded-full border border-zinc-300 hover:bg-zinc-50"
-                >
-                  Email
-                </a>
-
-                <button
-                  onClick={() => {
-                    navigator.clipboard.writeText(shareUrl);
-                    alert("Product link copied");
-                  }}
-                  className="px-3 py-1 rounded-full border border-zinc-300 hover:bg-zinc-50"
-                >
-                  Copy link
-                </button>
-              </div>
-            )}
           </div>
 
           <div className="mt-6 text-sm text-zinc-500">
@@ -693,11 +684,10 @@ function ProductDetails() {
                       View
                     </button>
 
-                    {/* FIXED ADD BUTTON */}
                     <button
                       onClick={() => {
                         const quickItem = {
-                          system: item.sku.split("-")[0], // FIXED!
+                          system: item.sku.split("-")[0],
                           systemName: item.name,
                           size: item.size,
                           glazing: "clear",
@@ -724,7 +714,6 @@ function ProductDetails() {
     </div>
   );
 }
-
 // ---------- Product Reviews Component ----------
 function ProductReviews({ sku, reviews, averageRating }) {
   const [sortBy, setSortBy] = useState('recent');
