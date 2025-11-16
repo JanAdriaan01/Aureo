@@ -28,7 +28,7 @@ function Header() {
         <Logo />
         <nav className="hidden md:flex gap-4 text-sm">
           <NavItem to="/">Home</NavItem>
-          <NavItem to="/products">Products</NavItem>
+          <NavItem to="/products">Shop</NavItem>
           <NavItem to="/order">Order</NavItem>
           <NavItem to="/gallery">Gallery</NavItem>
           <NavItem to="/compliance">Compliance</NavItem>
@@ -51,8 +51,8 @@ function Logo() {
     <div className="flex items-center gap-2 font-semibold">
       <img src="/images/logo.png" alt="Aureo" className="w-10 h-10 object-contain" />
       <div className="leading-tight">
-        <div>AUREO INTERNATIONAL</div>
-        <div className="text-xs text-zinc-500">A Modahaus Company</div>
+        <div>Modahaus</div>
+        <div className="text-xs text-zinc-500">Online Store</div>
       </div>
     </div>
   );
@@ -89,7 +89,7 @@ function Footer() {
         <div>
           <div className="font-semibold mb-2">Quick links</div>
           <ul className="space-y-1">
-            <li><NavLink to="/products">Products</NavLink></li>
+            <li><NavLink to="/products">Shop</NavLink></li>
             <li><NavLink to="/order">Order</NavLink></li>
             <li><NavLink to="/compliance">Compliance</NavLink></li>
           </ul>

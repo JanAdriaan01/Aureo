@@ -66,7 +66,7 @@ function Home() {
             Aluminium Windows, Doors & Louvres.
           </h1>
           <p className="mt-4 text-lg text-zinc-600">
-            Premium systems in standard sizes or custom — anodised or powder coated.
+            Premium systems in standard sizes— anodised or powder coated.
             Live pricing for standard sizes. Configure online; we fabricate.
           </p>
           <div className="mt-6 flex gap-3">
@@ -119,15 +119,13 @@ function Products() {
   const [room, setRoom] = useState("");             // Bathroom / Bedroom / Kitchen / LivingRoom
   const [typeFilter, setTypeFilter] = useState(""); // Sliding Window / Casement Window / Fixed Window
   const [sortBy, setSortBy] = useState("price-asc"); // sort state
-  const [filtersOpen, setFiltersOpen] = useState(false); // mobile drawer toggle
+  const [filtersOpen, setFiltersOpen] = useState(false); // mobile drawer starts closed
   const presetSizes = room ? ROOM_PRESETS[room] || [] : null;
 
   const gridItems = useMemo(() => {
-    // Build flat list from PRODUCT_LIBRARY based on filters
     const items = [];
     Object.entries(PRODUCT_LIBRARY).forEach(([type, product]) => {
       if (typeFilter && type !== typeFilter) return;
-
       Object.entries(product.sizes).forEach(([size, basePrice]) => {
         if (presetSizes && !presetSizes.includes(size)) return;
         const sku = makeSku(product.codePrefix, size);
@@ -137,12 +135,11 @@ function Products() {
           size,
           name: `${type} ${size}`,
           image: product.image,
-          price: basePrice, // base (clear glass, white frame)
+          price: basePrice,
         });
       });
     });
 
-    // Apply sorting
     if (sortBy === "price-asc") return [...items].sort((a, b) => a.price - b.price);
     if (sortBy === "price-desc") return [...items].sort((a, b) => b.price - a.price);
     return items;
@@ -150,17 +147,18 @@ function Products() {
 
   return (
     <div className="relative">
-      {/* Mobile filter drawer */}
+      {/* Mobile Filter Drawer */}
       <div
-        className={`fixed inset-0 z-30 md:hidden transition-transform duration-300 ${
+        className={`fixed inset-0 z-50 md:hidden transition-transform duration-300 ${
           filtersOpen ? "translate-x-0" : "translate-x-full"
         }`}
+        style={{ top: "72px" }} // adjust to match header height
       >
         <div
           className="absolute inset-0 bg-black/30"
           onClick={() => setFiltersOpen(false)}
         ></div>
-        <aside className="absolute right-0 w-72 bg-white p-4 h-full overflow-auto border-l border-zinc-200">
+        <aside className="absolute right-0 w-72 bg-white p-4 h-[calc(100%-72px)] overflow-auto border-l border-zinc-200 rounded-l-2xl">
           <h2 className="font-semibold text-zinc-800 mb-4">Filters</h2>
 
           {/* Room */}
@@ -203,13 +201,9 @@ function Products() {
         </aside>
       </div>
 
-      {/* Desktop + mobile layout */}
-      <div
-        className={
-          "grid grid-cols-1 md:grid-cols-[260px_minmax(0,1fr)] gap-4 md:gap-8 items-start"
-        }
-      >
-        {/* Desktop sidebar */}
+      {/* Main Content */}
+      <div className="grid md:grid-cols-[260px_minmax(0,1fr)] gap-4 md:gap-8 items-start">
+        {/* Desktop Sidebar */}
         <aside className="hidden md:block space-y-6 bg-white border border-zinc-200 rounded-2xl p-4 h-max sticky top-24">
           <h2 className="font-semibold text-zinc-800 mb-4">Filters</h2>
 
@@ -252,9 +246,9 @@ function Products() {
           </div>
         </aside>
 
-        {/* Main content */}
+        {/* Grid + header */}
         <div className="min-w-0">
-          {/* Header + controls */}
+          {/* Header + Sort */}
           <div className="mb-4 pb-3 border-b border-zinc-200 bg-white flex flex-wrap items-center justify-between gap-3">
             <div>
               <h1 className="text-3xl font-bold">Shop</h1>
@@ -264,13 +258,13 @@ function Products() {
             </div>
 
             <div className="flex items-center gap-2">
-              {/* Mobile filter button */}
+              {/* Mobile toggle filters */}
               <button
                 type="button"
-                onClick={() => setFiltersOpen(true)}
+                onClick={() => setFiltersOpen((v) => !v)}
                 className="text-xs border border-zinc-300 rounded-md px-2 py-1 bg-white md:hidden"
               >
-                Show filters
+                {filtersOpen ? "Hide filters" : "Show filters"}
               </button>
 
               {/* Sort */}
@@ -286,6 +280,7 @@ function Products() {
             </div>
           </div>
 
+          {/* Product Grid */}
           {gridItems.length === 0 ? (
             <div className="text-sm text-zinc-600">No products match your filters.</div>
           ) : (
@@ -304,12 +299,13 @@ function Products() {
                     <div className="font-semibold">{item.name}</div>
                     <div className="text-sm text-zinc-600">{item.type}</div>
                     <ReviewSummary sku={item.sku} />
-                    <div className="mt-1 font-bold">R {item.price.toLocaleString()}</div>
+                    <div className="mt-1 font-bold">
+                      R {item.price.toLocaleString()}
+                    </div>
                     <div className="mt-2">
                       <button
                         onClick={() =>
-                          navigate(`/products/${encodeURIComponent(item.sku)}`)
-                        }
+                          navigate(`/products/${encodeURIComponent(item.sku)}`)}
                         className="mt-3 px-3 py-1.5 rounded-xl bg-zinc-900 text-white text-sm"
                       >
                         View Details
@@ -442,7 +438,7 @@ function ProductDetails() {
         onClick={() => navigate(-1)}
         className="text-sm text-zinc-500 hover:underline"
       >
-        ← Back to Products
+        ← Back to Shop
       </button>
 
       <div className="grid md:grid-cols-2 gap-8">
@@ -509,6 +505,7 @@ function ProductDetails() {
                 <option value="white">Powder Coat — White</option>
                 <option value="charcoal">Powder Coat — Charcoal</option>
                 <option value="black">Powder Coat — Black</option>
+                 <option value="black">Powder Coat — Natural</option>
                 <option value="bronze">Anodised — Bronze</option>
               </select>
             </div>
@@ -592,7 +589,7 @@ function ProductDetails() {
           </div>
 
           <div className="mt-6 text-sm text-zinc-500">
-            Lead times from 10 working days depending on finish and glazing.
+            Lead times from 4 working days depending on finish and glazing.
           </div>
         </div>
       </div>
@@ -1292,7 +1289,7 @@ Modahaus
                 Proceed to Checkout (EFT)
               </button>
               <p className="text-xs text-zinc-500 mt-3">
-                Shipping will be quoted once address is confirmed. Orders ship
+                Shipping will be quoted once address is confirmed and order is placed. Orders ship
                 from Midrand Warehouse after manufacturing & payment.
               </p>
             </div>
@@ -1455,7 +1452,7 @@ function Contact() {
         <p className="text-zinc-600 mt-1">Send a message or call us to discuss your project.</p>
         <div className="mt-6 space-y-2 text-zinc-700">
           <div><span className="font-medium">Phone:</span> +27 (0) 61 193 3931</div>
-          <div><span className="font-medium">Email:</span> info@modahaus.co.za</div>
+          <div><span className="font-medium">Email:</span> orders@modahaus.co.za</div>
           <div><span className="font-medium">Hours:</span> Mon–Sun 08:00–17:00</div>
         </div>
       </div>
