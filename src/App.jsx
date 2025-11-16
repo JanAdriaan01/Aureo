@@ -4,6 +4,7 @@ import { BrowserRouter, Routes, Route, NavLink } from "react-router-dom";
 import { useNavigate, useParams } from "react-router-dom";
 import Shell from "./components/Shell";
 import { OrderProvider, useOrder } from "./components/OrderContext";
+import WhatsAppChat from "./components/WhatsAppChat";
 
 import {
   PRODUCT_LIBRARY,
@@ -432,287 +433,302 @@ function ProductDetails() {
   // ===========================================================
 
   return (
-    <div className="space-y-8 relative">
-      {/* WhatsApp button fixed bottom right */}
-      {shareUrl && (
-        <a
-          href={`https://wa.me/?text=${encodeURIComponent(
-            `${productType} – ${shareUrl}`
-          )}`}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="fixed bottom-6 right-6 z-50 px-4 py-3 bg-green-500 text-white rounded-full shadow-lg hover:bg-green-600"
-        >
-          WhatsApp
-        </a>
-      )}
+  <div className="space-y-8 relative">
+    <button
+      onClick={() => navigate(-1)}
+      className="text-sm text-zinc-500 hover:underline"
+    >
+      ← Back to Shop
+    </button>
 
-      <button
-        onClick={() => navigate(-1)}
-        className="text-sm text-zinc-500 hover:underline"
-      >
-        ← Back to Shop
-      </button>
+    <div className="grid md:grid-cols-2 gap-8">
+      {/* Left - Image */}
+      <div className="rounded-2xl overflow-hidden border border-zinc-200">
+        <img
+          src={product.image}
+          alt={productType}
+          className="w-full h-full object-cover"
+        />
+      </div>
 
-      <div className="grid md:grid-cols-2 gap-8">
-        {/* Left - Image */}
-        <div className="rounded-2xl overflow-hidden border border-zinc-200">
-          <img
-            src={product.image}
-            alt={productType}
-            className="w-full h-full object-cover"
-          />
-        </div>
+      {/* Right - Product Config */}
+      <div>
+        <h1 className="text-3xl font-bold">{productType}</h1>
+        <div className="text-zinc-600 mt-1">{product.description}</div>
 
-        {/* Right - Product Config */}
-        <div>
-          <h1 className="text-3xl font-bold">{productType}</h1>
-          <div className="text-zinc-600 mt-1">{product.description}</div>
+        <div className="mt-6 space-y-4">
+          {/* Size */}
+          <div>
+            <label className="font-medium text-sm">Select Size</label>
+            <select
+              value={config.size}
+              onChange={(e) =>
+                setConfig({ ...config, size: e.target.value })
+              }
+              className="block w-full border border-zinc-300 rounded-lg mt-1 p-2"
+            >
+              {Object.keys(product.sizes).map((sz) => (
+                <option key={sz} value={sz}>
+                  {sz} mm
+                </option>
+              ))}
+            </select>
+          </div>
 
-          <div className="mt-6 space-y-4">
-            {/* Size */}
-            <div>
-              <label className="font-medium text-sm">Select Size</label>
+          {/* Glazing */}
+          <div>
+            <label className="font-medium text-sm">Glazing</label>
+            <select
+              value={config.glazing}
+              onChange={(e) =>
+                setConfig({ ...config, glazing: e.target.value })
+              }
+              className="block w-full border border-zinc-300 rounded-lg mt-1 p-2"
+            >
+              <option value="clear">Clear</option>
+              <option value="tinted">Tinted</option>
+              <option value="laminated">Laminated</option>
+              <option value="lowe">Low-E</option>
+            </select>
+          </div>
+
+          {/* Colour */}
+          <div>
+            <label className="font-medium text-sm">Frame Colour</label>
+            <select
+              value={config.colour}
+              onChange={(e) =>
+                setConfig({ ...config, colour: e.target.value })
+              }
+              className="block w-full border border-zinc-300 rounded-lg mt-1 p-2"
+            >
+              <option value="white">Powder Coat — White</option>
+              <option value="charcoal">Powder Coat — Charcoal</option>
+              <option value="black">Powder Coat — Black</option>
+              <option value="natural">Powder Coat — Natural</option>
+              <option value="bronze">Anodised — Bronze</option>
+            </select>
+          </div>
+
+          {/* Quantity (drop-down + editable input) */}
+          <div>
+            <label className="font-medium text-sm">Quantity</label>
+            <div className="flex gap-2 items-center mt-1">
               <select
-                value={config.size}
+                value={config.quantity}
                 onChange={(e) =>
-                  setConfig({ ...config, size: e.target.value })
+                  setConfig({ ...config, quantity: Number(e.target.value) })
                 }
-                className="block w-full border border-zinc-300 rounded-lg mt-1 p-2"
+                className="border border-zinc-300 rounded-lg p-2"
               >
-                {Object.keys(product.sizes).map((sz) => (
-                  <option key={sz} value={sz}>
-                    {sz} mm
+                {Array.from({ length: 50 }, (_, i) => i + 1).map((num) => (
+                  <option key={num} value={num}>
+                    {num}
                   </option>
                 ))}
               </select>
-            </div>
-
-            {/* Glazing */}
-            <div>
-              <label className="font-medium text-sm">Glazing</label>
-              <select
-                value={config.glazing}
+              <input
+                type="number"
+                min="1"
+                max="50"
+                value={config.quantity}
                 onChange={(e) =>
-                  setConfig({ ...config, glazing: e.target.value })
+                  setConfig({
+                    ...config,
+                    quantity: Math.max(1, Math.min(50, Number(e.target.value) || 1)),
+                  })
                 }
-                className="block w-full border border-zinc-300 rounded-lg mt-1 p-2"
-              >
-                <option value="clear">Clear</option>
-                <option value="tinted">Tinted</option>
-                <option value="laminated">Laminated</option>
-                <option value="lowe">Low-E</option>
-              </select>
+                className="block border border-zinc-300 rounded-lg p-2 w-20"
+              />
             </div>
-
-            {/* Colour */}
-            <div>
-              <label className="font-medium text-sm">Frame Colour</label>
-              <select
-                value={config.colour}
-                onChange={(e) =>
-                  setConfig({ ...config, colour: e.target.value })
-                }
-                className="block w-full border border-zinc-300 rounded-lg mt-1 p-2"
-              >
-                <option value="white">Powder Coat — White</option>
-                <option value="charcoal">Powder Coat — Charcoal</option>
-                <option value="black">Powder Coat — Black</option>
-                <option value="natural">Powder Coat — Natural</option>
-                <option value="bronze">Anodised — Bronze</option>
-              </select>
-            </div>
-
-            {/* Quantity (drop-down + editable input) */}
-            <div>
-              <label className="font-medium text-sm">Quantity</label>
-              <div className="flex gap-2 items-center mt-1">
-                <select
-                  value={config.quantity}
-                  onChange={(e) =>
-                    setConfig({ ...config, quantity: Number(e.target.value) })
-                  }
-                  className="border border-zinc-300 rounded-lg p-2"
-                >
-                  {Array.from({ length: 50 }, (_, i) => i + 1).map((num) => (
-                    <option key={num} value={num}>
-                      {num}
-                    </option>
-                  ))}
-                </select>
-                <input
-                  type="number"
-                  min="1"
-                  max="50"
-                  value={config.quantity}
-                  onChange={(e) =>
-                    setConfig({
-                      ...config,
-                      quantity: Math.max(1, Math.min(50, Number(e.target.value) || 1)),
-                    })
-                  }
-                  className="block border border-zinc-300 rounded-lg p-2 w-20"
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* Price */}
-          <div className="mt-6 text-2xl font-semibold">
-            {base
-              ? `Price: R ${price.toLocaleString()}`
-              : "Select size to see price"}
-          </div>
-
-          {/* Add Button + Share Buttons */}
-          <div className="mt-8 flex flex-col gap-3">
-            <button
-              onClick={handleAdd}
-              disabled={!base}
-              className={`px-6 py-3 rounded-2xl text-base font-medium transition ${
-                base
-                  ? "bg-zinc-900 text-white hover:bg-zinc-800"
-                  : "bg-zinc-300 text-zinc-600 cursor-not-allowed"
-              }`}
-            >
-              🛒 Add to Order
-            </button>
-          </div>
-
-          <div className="mt-6 text-sm text-zinc-500">
-            Lead times from 4 working days depending on finish and glazing.
           </div>
         </div>
-      </div>
 
-      {/* Tabs */}
-      <div className="border border-zinc-200 rounded-2xl bg-white overflow-hidden">
-        <div className="grid grid-cols-2 text-sm font-semibold border-b border-zinc-200 bg-zinc-100">
-          <button
-            onClick={() => setDetailTab("description")}
-            className={
-              "px-4 py-2 text-left " +
-              (detailTab === "description"
-                ? "bg-white border-b-2 border-zinc-900"
-                : "text-zinc-500")
-            }
-          >
-            Description
-          </button>
-
-          <button
-            onClick={() => setDetailTab("additional")}
-            className={
-              "px-4 py-2 text-left " +
-              (detailTab === "additional"
-                ? "bg-white border-b-2 border-zinc-900"
-                : "text-zinc-500")
-            }
-          >
-            Additional information
-          </button>
+        {/* Price */}
+        <div className="mt-6 text-2xl font-semibold">
+          {base ? `Price: R ${price.toLocaleString()}` : "Select size to see price"}
         </div>
 
-        <div className="p-5 text-sm text-zinc-700 leading-relaxed">
-          {detailTab === "description" ? (
-            <>
-              <p className="mb-3">
-                10mm clear float glass is a uniform-thickness, high-clarity glass
-                used for windows, doors and structural glazing.
-              </p>
-              <p>
-                It is ideal for transparent applications requiring strength and
-                durability.
-              </p>
-            </>
-          ) : (
-            <>
-              <p className="font-semibold mb-2">
-                10mm Monolithic Annealed Glass – Limitations
-              </p>
-              <ul className="list-disc pl-5 space-y-1">
-                <li>Maximum pane area: 6.0 sqm (internal & external).</li>
-                <li>Maximum span between supports: 1–1.55 m.</li>
-                <li>Height limit: 10 m.</li>
-              </ul>
-            </>
+        {/* Add Button + restored inline Share Buttons */}
+        <div className="mt-8 flex flex-col gap-3">
+          <button
+            onClick={handleAdd}
+            disabled={!base || config.quantity < 1}
+            className={`px-6 py-3 rounded-2xl text-base font-medium transition ${
+              base && config.quantity >= 1
+                ? "bg-zinc-900 text-white hover:bg-zinc-800"
+                : "bg-zinc-300 text-zinc-600 cursor-not-allowed"
+            }`}
+          >
+            🛒 Add to Order
+          </button>
+
+          {shareUrl && (
+            <div className="flex flex-wrap items-center gap-2 text-sm">
+              <span className="text-zinc-500">Share:</span>
+
+              {/* WhatsApp share */}
+              <a
+                href={`https://wa.me/?text=${encodeURIComponent(`${productType} – ${shareUrl}`)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-zinc-300 hover:bg-zinc-50 text-sm"
+                aria-label="Share on WhatsApp"
+              >
+                <span className="leading-none">💬</span>
+                <span>WhatsApp</span>
+              </a>
+
+              {/* Email share */}
+              <a
+                href={`mailto:?subject=${encodeURIComponent(productType)}&body=${encodeURIComponent(
+                  `Take a look at this product: ${shareUrl}`
+                )}`}
+                className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-zinc-300 hover:bg-zinc-50 text-sm"
+                aria-label="Share by email"
+              >
+                <span>Email</span>
+              </a>
+
+              {/* Copy link */}
+              <button
+                onClick={async () => {
+                  try {
+                    await navigator.clipboard.writeText(shareUrl);
+                    // quick confirmation (replace with toast if you have one)
+                    alert("Product link copied to clipboard");
+                  } catch (err) {
+                    const fallback = window.prompt("Copy this link", shareUrl);
+                    if (fallback) {
+                      /* user copied via prompt */
+                    }
+                  }
+                }}
+                className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-zinc-300 hover:bg-zinc-50 text-sm"
+                aria-label="Copy product link"
+              >
+                <span>Copy link</span>
+              </button>
+            </div>
           )}
         </div>
+
+        <div className="mt-6 text-sm text-zinc-500">
+          Lead times from 10 t0 15 working days depending on finish and glazing.
+        </div>
+      </div>
+    </div>
+
+    {/* Tabs */}
+    <div className="border border-zinc-200 rounded-2xl bg-white overflow-hidden">
+      <div className="grid grid-cols-2 text-sm font-semibold border-b border-zinc-200 bg-zinc-100">
+        <button
+          onClick={() => setDetailTab("description")}
+          className={
+            "px-4 py-2 text-left " +
+            (detailTab === "description" ? "bg-white border-b-2 border-zinc-900" : "text-zinc-500")
+          }
+        >
+          Description
+        </button>
+
+        <button
+          onClick={() => setDetailTab("additional")}
+          className={
+            "px-4 py-2 text-left " +
+            (detailTab === "additional" ? "bg-white border-b-2 border-zinc-900" : "text-zinc-500")
+          }
+        >
+          Additional information
+        </button>
       </div>
 
-      {/* Reviews */}
-      <ProductReviews
-        sku={sku}
-        reviews={reviews}
-        averageRating={averageRating}
-      />
+      <div className="p-5 text-sm text-zinc-700 leading-relaxed">
+        {detailTab === "description" ? (
+          <>
+            <p className="mb-3">
+              10mm clear float glass is a uniform-thickness, high-clarity glass
+              used for windows, doors and structural glazing.
+            </p>
+            <p>
+              It is ideal for transparent applications requiring strength and
+              durability.
+            </p>
+          </>
+        ) : (
+          <>
+            <p className="font-semibold mb-2">10mm Monolithic Annealed Glass – Limitations</p>
+            <ul className="list-disc pl-5 space-y-1">
+              <li>Maximum pane area: 6.0 sqm (internal & external).</li>
+              <li>Maximum span between supports: 1–1.55 m.</li>
+              <li>Height limit: 10 m.</li>
+            </ul>
+          </>
+        )}
+      </div>
+    </div>
 
-      {/* Related Products */}
-      {relatedItems.length > 0 && (
-        <section className="mt-10">
-          <h2 className="text-2xl font-bold mb-4">Related products</h2>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {relatedItems.map((item) => (
-              <div
-                key={item.sku}
-                className="rounded-2xl border border-zinc-200 overflow-hidden bg-white"
-              >
-                <img
-                  src={item.image}
-                  alt={item.name}
-                  className="w-full aspect-[4/3] object-cover"
-                />
-                <div className="p-4">
-                  <div className="font-semibold text-sm">{item.name}</div>
-                  <div className="text-xs text-zinc-600 mb-1">
-                    {item.type} • {item.size} mm
-                  </div>
+    {/* Reviews */}
+    <ProductReviews sku={sku} reviews={reviews} averageRating={averageRating} />
 
-                  <ReviewSummary sku={item.sku} showCount={false} />
+    {/* Related Products */}
+    {relatedItems.length > 0 && (
+      <section className="mt-10">
+        <h2 className="text-2xl font-bold mb-4">Related products</h2>
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {relatedItems.map((item) => (
+            <div
+              key={item.sku}
+              className="rounded-2xl border border-zinc-200 overflow-hidden bg-white"
+            >
+              <img src={item.image} alt={item.name} className="w-full aspect-[4/3] object-cover" />
+              <div className="p-4">
+                <div className="font-semibold text-sm">{item.name}</div>
+                <div className="text-xs text-zinc-600 mb-1">
+                  {item.type} • {item.size} mm
+                </div>
 
-                  <div className="mt-1 font-bold text-sm">
-                    R {item.price.toLocaleString()}
-                  </div>
+                <ReviewSummary sku={item.sku} showCount={false} />
 
-                  <div className="mt-3 flex gap-2">
-                    <button
-                      onClick={() =>
-                        navigate(`/products/${encodeURIComponent(item.sku)}`)
-                      }
-                      className="px-3 py-1.5 rounded-xl bg-zinc-900 text-white text-xs"
-                    >
-                      View
-                    </button>
+                <div className="mt-1 font-bold text-sm">R {item.price.toLocaleString()}</div>
 
-                    <button
-                      onClick={() => {
-                        const quickItem = {
-                          system: item.sku.split("-")[0],
-                          systemName: item.name,
-                          size: item.size,
-                          glazing: "clear",
-                          finish: "white",
-                          quantity: 1,
-                          price: item.price,
-                          subtotal: item.price,
-                          timestamp: new Date().toISOString(),
-                        };
-                        addItem(quickItem);
-                        window.dispatchEvent(new Event("cart:open"));
-                      }}
-                      className="px-3 py-1.5 rounded-xl border border-zinc-300 text-xs"
-                    >
-                      Add
-                    </button>
-                  </div>
+                <div className="mt-3 flex gap-2">
+                  <button
+                    onClick={() => navigate(`/products/${encodeURIComponent(item.sku)}`)}
+                    className="px-3 py-1.5 rounded-xl bg-zinc-900 text-white text-xs"
+                  >
+                    View
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      const quickItem = {
+                        system: item.sku.split("-")[0],
+                        systemName: item.name,
+                        size: item.size,
+                        glazing: "clear",
+                        finish: "white",
+                        quantity: 1,
+                        price: item.price,
+                        subtotal: item.price,
+                        timestamp: new Date().toISOString(),
+                      };
+                      addItem(quickItem);
+                      window.dispatchEvent(new Event("cart:open"));
+                    }}
+                    className="px-3 py-1.5 rounded-xl border border-zinc-300 text-xs"
+                  >
+                    Add
+                  </button>
                 </div>
               </div>
-            ))}
-          </div>
-        </section>
-      )}
-    </div>
-  );
+            </div>
+          ))}
+        </div>
+      </section>
+    )}
+  </div>
+);
 }
 // ---------- Product Reviews Component ----------
 function ProductReviews({ sku, reviews, averageRating }) {
@@ -1597,6 +1613,7 @@ function App() {
 -          </Routes>
 {/* Side cart drawer / handle */} 
      <CartDrawer />
+     <WhatsAppChat number="27611933931" message="Hi, I need help with a product." />
 -        </Shell>
 -      </OrderProvider>
     </BrowserRouter>
