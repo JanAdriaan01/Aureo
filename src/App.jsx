@@ -115,10 +115,11 @@ function TrustBar() {
 
 function Products() {
   const navigate = useNavigate();
-  const [room, setRoom] = useState("");             // Bathroom / Bedroom / Kitchen / LivingRoom
-  const [typeFilter, setTypeFilter] = useState(""); // Sliding Window / Casement Window / Fixed Window
-  const [sortBy, setSortBy] = useState("price-asc"); // sort state
-  const [filtersOpen, setFiltersOpen] = useState(true); // sidebar retractable
+  const [room, setRoom] = useState("");
+  const [typeFilter, setTypeFilter] = useState("");
+  const [sortBy, setSortBy] = useState("price-asc");
+  const [filtersOpen, setFiltersOpen] = useState(true);
+  const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
   const presetSizes = room ? ROOM_PRESETS[room] || [] : null;
 
   const gridItems = useMemo(() => {
@@ -145,78 +146,87 @@ function Products() {
     return items;
   }, [room, typeFilter, presetSizes, sortBy]);
 
-  return (
-    <div className="relative">
-      {/* ---------- Mobile Header + Filter Toggle ---------- */}
-      <div className="flex justify-between items-center mb-4 md:hidden px-2">
-        <h1 className="text-3xl font-bold">Shop</h1>
-        <button
-          onClick={() => setFiltersOpen((v) => !v)}
-          className="px-3 py-1.5 bg-zinc-900 text-white rounded-md text-sm"
+  // ---------- Filters Sidebar Content ----------
+  const FiltersSidebar = (
+    <div className="space-y-6 bg-white border border-zinc-200 rounded-2xl p-4 h-max md:sticky md:top-24">
+      <h2 className="font-semibold text-zinc-800">Filters</h2>
+
+      {/* Room */}
+      <div>
+        <div className="font-medium text-sm text-zinc-800 mb-1">Room</div>
+        <select
+          value={room}
+          onChange={(e) => setRoom(e.target.value)}
+          className="w-full px-3 py-2 border border-zinc-300 rounded-lg text-sm"
         >
-          {filtersOpen ? "Close Filters" : "Filters"}
-        </button>
+          <option value="">All rooms</option>
+          <option>Bathroom</option>
+          <option>Bedroom</option>
+          <option>Kitchen</option>
+          <option value="LivingRoom">Living Room</option>
+        </select>
+        <div className="text-xs text-zinc-500 mt-1">
+          Presets: {room ? (ROOM_PRESETS[room] || []).join(", ") : "–"}
+        </div>
       </div>
 
-      <div className="grid md:grid-cols-[260px_minmax(0,1fr)] gap-4 md:gap-8 items-start">
-        {/* ---------- Sidebar ---------- */}
-        {filtersOpen && (
-          <aside
-            className={`
-              fixed inset-0 z-50 md:static md:w-auto
-              bg-white md:bg-transparent p-4 md:p-0
-              overflow-y-auto md:overflow-visible
-              border border-zinc-200 md:border-none rounded-2xl
-              transition-transform duration-300
-              md:translate-x-0
-            `}
-          >
-            <h2 className="font-semibold text-zinc-800 mb-4 md:mb-2">Filters</h2>
+      {/* Type */}
+      <div>
+        <div className="font-medium text-sm text-zinc-800 mb-1">Window Type</div>
+        <select
+          value={typeFilter}
+          onChange={(e) => setTypeFilter(e.target.value)}
+          className="w-full px-3 py-2 border border-zinc-300 rounded-lg text-sm"
+        >
+          <option value="">All types</option>
+          {Object.keys(PRODUCT_LIBRARY).map((t) => (
+            <option key={t}>{t}</option>
+          ))}
+        </select>
+      </div>
 
-            {/* Room */}
-            <div className="mb-4">
-              <div className="font-medium text-sm text-zinc-800 mb-1">Room</div>
-              <select
-                value={room}
-                onChange={(e) => setRoom(e.target.value)}
-                className="w-full px-3 py-2 border border-zinc-300 rounded-lg text-sm"
-              >
-                <option value="">All rooms</option>
-                <option>Bathroom</option>
-                <option>Bedroom</option>
-                <option>Kitchen</option>
-                <option value="LivingRoom">Living Room</option>
-              </select>
-              <div className="text-xs text-zinc-500 mt-1">
-                Presets: {room ? (ROOM_PRESETS[room] || []).join(", ") : "–"}
-              </div>
-            </div>
+      <div className="text-xs text-zinc-500">
+        Prices shown are for <b>clear glass &amp; white frame</b>. Adjust on the product page.
+      </div>
+    </div>
+  );
 
-            {/* Type */}
-            <div className="mb-4">
-              <div className="font-medium text-sm text-zinc-800 mb-1">Window Type</div>
-              <select
-                value={typeFilter}
-                onChange={(e) => setTypeFilter(e.target.value)}
-                className="w-full px-3 py-2 border border-zinc-300 rounded-lg text-sm"
-              >
-                <option value="">All types</option>
-                {Object.keys(PRODUCT_LIBRARY).map((t) => (
-                  <option key={t}>{t}</option>
-                ))}
-              </select>
-            </div>
+  return (
+    <div className="relative">
+      {/* ---------- Mobile Drawer ---------- */}
+      {mobileDrawerOpen && (
+        <div className="fixed inset-0 z-50 bg-black/50 md:hidden">
+          <div className="absolute left-0 top-0 h-full w-3/4 max-w-xs bg-white p-4 overflow-auto">
+            <button
+              className="mb-4 text-sm text-zinc-500 hover:underline"
+              onClick={() => setMobileDrawerOpen(false)}
+            >
+              ← Close Filters
+            </button>
+            {FiltersSidebar}
+          </div>
+          <div
+            className="w-1/4 h-full"
+            onClick={() => setMobileDrawerOpen(false)}
+          />
+        </div>
+      )}
 
-            <div className="text-xs text-zinc-500">
-              Prices shown are for <b>clear glass &amp; white frame</b>. Adjust on the product page.
-            </div>
-          </aside>
-        )}
+      {/* ---------- Grid + Header ---------- */}
+      <div
+        className={
+          filtersOpen
+            ? "grid grid-cols-[260px_minmax(0,1fr)] gap-4 md:gap-8 items-start"
+            : "grid grid-cols-1 gap-4 md:gap-8 items-start"
+        }
+      >
+        {/* Sidebar (Desktop only) */}
+        <div className="hidden md:block">{filtersOpen && FiltersSidebar}</div>
 
-        {/* ---------- Grid + Sort Header ---------- */}
+        {/* Grid */}
         <div className="min-w-0">
           <div className="mb-4 pb-3 border-b border-zinc-200 bg-white flex flex-wrap items-center justify-between gap-3">
-            <div className="hidden md:block">
+            <div>
               <h1 className="text-3xl font-bold">Shop</h1>
               <p className="text-xs text-zinc-500">
                 Showing {gridItems.length} item{gridItems.length !== 1 ? "s" : ""}
@@ -224,13 +234,22 @@ function Products() {
             </div>
 
             <div className="flex items-center gap-2">
-              {/* Desktop Toggle Filters */}
+              {/* Desktop toggle */}
               <button
                 type="button"
                 onClick={() => setFiltersOpen((v) => !v)}
                 className="hidden md:inline text-xs border border-zinc-300 rounded-md px-2 py-1 bg-white"
               >
                 {filtersOpen ? "Hide filters" : "Show filters"}
+              </button>
+
+              {/* Mobile drawer open */}
+              <button
+                type="button"
+                onClick={() => setMobileDrawerOpen(true)}
+                className="md:hidden text-xs border border-zinc-300 rounded-md px-2 py-1 bg-white"
+              >
+                Filters
               </button>
 
               {/* Sort */}
@@ -264,7 +283,9 @@ function Products() {
                     <div className="font-semibold">{item.name}</div>
                     <div className="text-sm text-zinc-600">{item.type}</div>
                     <ReviewSummary sku={item.sku} />
-                    <div className="mt-1 font-bold">R {item.price.toLocaleString()}</div>
+                    <div className="mt-1 font-bold">
+                      R {item.price.toLocaleString()}
+                    </div>
                     <div className="mt-2">
                       <button
                         onClick={() =>
