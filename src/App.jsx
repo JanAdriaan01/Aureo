@@ -113,7 +113,6 @@ function TrustBar() {
   );
 }
 
-// ---------- Shop (filters + grid) ----------
 function Products() {
   const navigate = useNavigate();
   const [room, setRoom] = useState("");             // Bathroom / Bedroom / Kitchen / LivingRoom
@@ -123,7 +122,6 @@ function Products() {
   const presetSizes = room ? ROOM_PRESETS[room] || [] : null;
 
   const gridItems = useMemo(() => {
-    // Build flat list from PRODUCT_LIBRARY based on filters
     const items = [];
     Object.entries(PRODUCT_LIBRARY).forEach(([type, product]) => {
       if (typeFilter && type !== typeFilter) return;
@@ -137,80 +135,88 @@ function Products() {
           size,
           name: `${type} ${size}`,
           image: product.image,
-          price: basePrice, // base (clear glass, white frame)
+          price: basePrice,
         });
       });
     });
 
-    // Apply sorting
-    if (sortBy === "price-asc") {
-      return [...items].sort((a, b) => a.price - b.price);
-    }
-    if (sortBy === "price-desc") {
-      return [...items].sort((a, b) => b.price - a.price);
-    }
+    if (sortBy === "price-asc") return [...items].sort((a, b) => a.price - b.price);
+    if (sortBy === "price-desc") return [...items].sort((a, b) => b.price - a.price);
     return items;
   }, [room, typeFilter, presetSizes, sortBy]);
 
   return (
-    <div
-      className={
-        filtersOpen
-          ? "grid grid-cols-[260px_minmax(0,1fr)] gap-4 md:gap-8 items-start"
-          : "grid grid-cols-1 gap-4 md:gap-8 items-start"
-      }
-    >
-      {/* Sidebar */}
-      {filtersOpen && (
-        <aside className="space-y-6 bg-white border border-zinc-200 rounded-2xl p-4 h-max sticky top-24">
-          <h2 className="font-semibold text-zinc-800">Filters</h2>
+    <div className="relative">
+      {/* ---------- Mobile Header + Filter Toggle ---------- */}
+      <div className="flex justify-between items-center mb-4 md:hidden px-2">
+        <h1 className="text-3xl font-bold">Shop</h1>
+        <button
+          onClick={() => setFiltersOpen((v) => !v)}
+          className="px-3 py-1.5 bg-zinc-900 text-white rounded-md text-sm"
+        >
+          {filtersOpen ? "Close Filters" : "Filters"}
+        </button>
+      </div>
 
-          {/* Room */}
-          <div>
-            <div className="font-medium text-sm text-zinc-800 mb-1">Room</div>
-            <select
-              value={room}
-              onChange={(e) => setRoom(e.target.value)}
-              className="w-full px-3 py-2 border border-zinc-300 rounded-lg text-sm"
-            >
-              <option value="">All rooms</option>
-              <option>Bathroom</option>
-              <option>Bedroom</option>
-              <option>Kitchen</option>
-              <option value="LivingRoom">Living Room</option>
-            </select>
-            <div className="text-xs text-zinc-500 mt-1">
-              Presets: {room ? (ROOM_PRESETS[room] || []).join(", ") : "–"}
+      <div className="grid md:grid-cols-[260px_minmax(0,1fr)] gap-4 md:gap-8 items-start">
+        {/* ---------- Sidebar ---------- */}
+        {filtersOpen && (
+          <aside
+            className={`
+              fixed inset-0 z-50 md:static md:w-auto
+              bg-white md:bg-transparent p-4 md:p-0
+              overflow-y-auto md:overflow-visible
+              border border-zinc-200 md:border-none rounded-2xl
+              transition-transform duration-300
+              md:translate-x-0
+            `}
+          >
+            <h2 className="font-semibold text-zinc-800 mb-4 md:mb-2">Filters</h2>
+
+            {/* Room */}
+            <div className="mb-4">
+              <div className="font-medium text-sm text-zinc-800 mb-1">Room</div>
+              <select
+                value={room}
+                onChange={(e) => setRoom(e.target.value)}
+                className="w-full px-3 py-2 border border-zinc-300 rounded-lg text-sm"
+              >
+                <option value="">All rooms</option>
+                <option>Bathroom</option>
+                <option>Bedroom</option>
+                <option>Kitchen</option>
+                <option value="LivingRoom">Living Room</option>
+              </select>
+              <div className="text-xs text-zinc-500 mt-1">
+                Presets: {room ? (ROOM_PRESETS[room] || []).join(", ") : "–"}
+              </div>
             </div>
-          </div>
 
-          {/* Type */}
-          <div>
-            <div className="font-medium text-sm text-zinc-800 mb-1">Window Type</div>
-            <select
-              value={typeFilter}
-              onChange={(e) => setTypeFilter(e.target.value)}
-              className="w-full px-3 py-2 border border-zinc-300 rounded-lg text-sm"
-            >
-              <option value="">All types</option>
-              {Object.keys(PRODUCT_LIBRARY).map((t) => (
-                <option key={t}>{t}</option>
-              ))}
-            </select>
-          </div>
+            {/* Type */}
+            <div className="mb-4">
+              <div className="font-medium text-sm text-zinc-800 mb-1">Window Type</div>
+              <select
+                value={typeFilter}
+                onChange={(e) => setTypeFilter(e.target.value)}
+                className="w-full px-3 py-2 border border-zinc-300 rounded-lg text-sm"
+              >
+                <option value="">All types</option>
+                {Object.keys(PRODUCT_LIBRARY).map((t) => (
+                  <option key={t}>{t}</option>
+                ))}
+              </select>
+            </div>
 
-          <div className="text-xs text-zinc-500">
-            Prices shown are for <b>clear glass &amp; white frame</b>. Adjust on the product page.
-          </div>
-        </aside>
-      )}
+            <div className="text-xs text-zinc-500">
+              Prices shown are for <b>clear glass &amp; white frame</b>. Adjust on the product page.
+            </div>
+          </aside>
+        )}
 
-      {/* Grid + header */}
-      <div className="min-w-0">
-        {/* Sort header (non-sticky now, no overlap) */}
-        <div className="mb-4 pb-3 border-b border-zinc-200 bg-white">
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <div>
+        {/* ---------- Grid + Sort Header ---------- */}
+        <div className="min-w-0">
+          <div className="mb-4 pb-3 border-b border-zinc-200 bg-white flex flex-wrap items-center justify-between gap-3">
+            <div className="hidden md:block">
               <h1 className="text-3xl font-bold">Shop</h1>
               <p className="text-xs text-zinc-500">
                 Showing {gridItems.length} item{gridItems.length !== 1 ? "s" : ""}
@@ -218,11 +224,11 @@ function Products() {
             </div>
 
             <div className="flex items-center gap-2">
-              {/* Toggle filters */}
+              {/* Desktop Toggle Filters */}
               <button
                 type="button"
                 onClick={() => setFiltersOpen((v) => !v)}
-                className="text-xs border border-zinc-300 rounded-md px-2 py-1 bg-white"
+                className="hidden md:inline text-xs border border-zinc-300 rounded-md px-2 py-1 bg-white"
               >
                 {filtersOpen ? "Hide filters" : "Show filters"}
               </button>
@@ -239,43 +245,42 @@ function Products() {
               </select>
             </div>
           </div>
-        </div>
 
-        {gridItems.length === 0 ? (
-          <div className="text-sm text-zinc-600">No products match your filters.</div>
-        ) : (
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {gridItems.map((item) => (
-              <div
-                key={item.sku}
-                className="rounded-2xl border border-zinc-200 overflow-hidden bg-white"
-              >
-                <img
-                  src={item.image}
-                  alt={item.name}
-                  className="w-full aspect-[4/3] object-cover"
-                />
-                <div className="p-4">
-                  <div className="font-semibold">{item.name}</div>
-                  <div className="text-sm text-zinc-600">{item.type}</div>
-                  <ReviewSummary sku={item.sku} />
-                  <div className="mt-1 font-bold">
-                    R {item.price.toLocaleString()}
-                  </div>
-                  <div className="mt-2">
-                    <button
-                      onClick={() =>
-                        navigate(`/products/${encodeURIComponent(item.sku)}`)}
-                      className="mt-3 px-3 py-1.5 rounded-xl bg-zinc-900 text-white text-sm"
-                    >
-                      View Details
-                    </button>
+          {gridItems.length === 0 ? (
+            <div className="text-sm text-zinc-600">No products match your filters.</div>
+          ) : (
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {gridItems.map((item) => (
+                <div
+                  key={item.sku}
+                  className="rounded-2xl border border-zinc-200 overflow-hidden bg-white"
+                >
+                  <img
+                    src={item.image}
+                    alt={item.name}
+                    className="w-full aspect-[4/3] object-cover"
+                  />
+                  <div className="p-4">
+                    <div className="font-semibold">{item.name}</div>
+                    <div className="text-sm text-zinc-600">{item.type}</div>
+                    <ReviewSummary sku={item.sku} />
+                    <div className="mt-1 font-bold">R {item.price.toLocaleString()}</div>
+                    <div className="mt-2">
+                      <button
+                        onClick={() =>
+                          navigate(`/products/${encodeURIComponent(item.sku)}`)
+                        }
+                        className="mt-3 px-3 py-1.5 rounded-xl bg-zinc-900 text-white text-sm"
+                      >
+                        View Details
+                      </button>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
-          </div>
-        )}
+              ))}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
