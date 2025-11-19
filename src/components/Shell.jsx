@@ -1,7 +1,7 @@
 // src/components/Shell.jsx
 import React from "react";
 import { NavLink, useNavigate } from "react-router-dom";
-import { useOrder } from "./OrderContext";
+import { useOrder } from "../context/OrderContext";
 
 function classNames(...xs) {
   return xs.filter(Boolean).join(" ");

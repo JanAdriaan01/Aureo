@@ -1,8 +1,6 @@
 import React from "react";
-import ReactDOM from "react-dom/client";
-import App from "./App.jsx";     // <-- note the .jsx extension
-import "./main.css";             // or ./index.css, but be consistent
+import { createRoot } from "react-dom/client";
+import App from "./App";
+import "./main.css"; // <- must be imported
 
-ReactDOM.createRoot(document.getElementById("root")).render(
-  <App />
-);
+createRoot(document.getElementById("root")).render(<App />);
