@@ -9,6 +9,21 @@ import { ACW_CATALOGUE } from "../data/acw-catalogue.js";
  *
  * IMPORTANT: This file preserves all existing product mapping / image paths / links.
  */
+
+// Colour map: code -> name + display hex (edit hex values to match your latest schemes)
+const COLOUR_MAP = [
+  { code: "W", name: "White", hex: "#FFFFFF" },
+  { code: "B", name: "Black", hex: "#0B0B0B" },
+  { code: "BR", name: "Bronze", hex: "#6B4F3A" },
+  { code: "C", name: "Charcoal", hex: "#2F2F2F" },
+  { code: "N", name: "Natural", hex: "#C0A97A" },
+];
+
+// Helper to find colour metadata by code
+function findColourMeta(code) {
+  return COLOUR_MAP.find((c) => c.code === code) || { code, name: code, hex: "#E5E7EB" };
+}
+
 export default function Products() {
   // --- original product mapping (kept as-is) ---
   const products = useMemo(() => {
@@ -21,12 +36,43 @@ export default function Products() {
 
       const price = typeof p.basePrice === "number" ? p.basePrice : Number(p.basePrice) || null;
 
+      // build list of available colours for this product:
+      // - prefer explicit imagesByColour keys
+      // - normalized to COLOUR_MAP codes
+      const imagesByColour = p.imagesByColour || {};
+      const availableColourCodes = Object.keys(imagesByColour).filter((k) => {
+        const arr = imagesByColour[k];
+        return Array.isArray(arr) && arr.length > 0;
+      });
+
+      // If no explicit imagesByColour, try to infer from image path (/images/<code>/<colour>/...)
+      if (availableColourCodes.length === 0 && p.image && typeof p.image === "string") {
+        const match = p.image.match(/\/images\/[^/]+\/([^/]+)\//);
+        if (match && match[1]) availableColourCodes.push(match[1]);
+      }
+
+      // Normalize codes and map to meta
+      const coloursAvailable = availableColourCodes
+        .map((c) => {
+          const meta = findColourMeta(c);
+          return {
+            code: meta.code,
+            name: meta.name,
+            hex: meta.hex,
+            // pass first image for preview (if present)
+            image: (imagesByColour[c] && imagesByColour[c][0]) || null,
+          };
+        })
+        // dedupe by code
+        .filter((v, i, arr) => arr.findIndex((x) => x.code === v.code) === i);
+
       return {
         code,
         title: p.title || p.codePrefix || code,
         category: p.category || "Product",
         image: firstImage,
         price,
+        coloursAvailable,
       };
     });
   }, []);
@@ -200,8 +246,31 @@ export default function Products() {
                     </div>
                   </Link>
                   <div className="p-4">
-                    <div className="font-semibold text-lg">{prod.title}</div>
-                    <div className="text-sm text-zinc-500">{prod.category}</div>
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="flex-1 min-w-0">
+                        <div className="font-semibold text-lg truncate">{prod.title}</div>
+                        <div className="text-sm text-zinc-500">{prod.category}</div>
+                      </div>
+                    </div>
+
+                    {/* Colour swatches */}
+                    <div className="mt-3 flex items-center gap-2">
+                      {prod.coloursAvailable && prod.coloursAvailable.length > 0 ? (
+                        prod.coloursAvailable.slice(0, 6).map((c) => (
+                          <div key={c.code} title={c.name} className="w-6 h-6 rounded-full border overflow-hidden" style={{ flex: "0 0 24px" }}>
+                            {c.image ? (
+                              <img src={c.image} alt={c.name} className="w-full h-full object-cover" />
+                            ) : (
+                              <div style={{ backgroundColor: c.hex, width: "100%", height: "100%" }} />
+                            )}
+                          </div>
+                        ))
+                      ) : (
+                        // if no colours available show small neutral placeholder
+                        <div className="w-6 h-6 rounded-full border bg-zinc-100" title="No colour images available" />
+                      )}
+                    </div>
+
                     <div className="mt-3">
                       {prod.price !== null ? (
                         <div className="text-xl font-bold">R {Number(prod.price).toLocaleString()}</div>
