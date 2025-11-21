@@ -39,7 +39,7 @@ const COLOUR_MAP = [
 ];
 
 function parseJsonSafe(val, fallback) {
-  if (!val && val !== "") return fallback;
+  if (val === undefined || val === null) return fallback;
   const s = String(val).trim();
   if (!s) return fallback;
   try {
@@ -78,7 +78,7 @@ function normKey(k) {
 }
 
 // helper to get a field from row with many possible header names (case-insensitive)
-function getField(row, variants=[]) {
+function getField(row, variants = []) {
   for (const v of variants) {
     // try exact key
     if (row[v] !== undefined) return row[v];
@@ -240,7 +240,7 @@ async function main() {
     const metaVal = getField(rawRow, ["Metadata", "metadata"]) || "";
     if (metaVal) {
       const parsed = parseJsonSafe(metaVal, null);
-      if (parsed) metadata = parsed;
+      if (parsed && typeof parsed === "object") metadata = parsed;
     }
 
     let reviews = [];
@@ -250,12 +250,10 @@ async function main() {
       if (Array.isArray(parsed)) reviews = parsed;
       else {
         // try regex to extract simple comments if JSON failed
-        const found = reviewsVal.match(/\{[^}]+\}/g);
-        if (found) {
-          for (const f of found) {
-            const p = parseJsonSafe(f, null);
-            if (p) reviews.push(p);
-          }
+        const found = String(reviewsVal).match(/\{[^}]+\}/g) || [];
+        for (const f of found) {
+          const p = parseJsonSafe(f, null);
+          if (p) reviews.push(p);
         }
       }
     }
@@ -267,6 +265,14 @@ async function main() {
       .map(s => s.trim())
       .filter(Boolean);
 
+    // -------------------------
+    // NEW: prefer fullDescription, fallback to shortDescription
+    const finalDescription = (String(fullDescription || "").trim()) || String(shortDescription || "").trim();
+
+    // NEW: ensure additionalInfo is captured and copied into metadata
+    const finalAdditional = String(additionalInfo || "").trim();
+    if (finalAdditional && !metadata.additionalInfo) metadata.additionalInfo = finalAdditional;
+
     catalogue[code] = {
       title: String(title).trim(),
       category: String(category).trim(),
@@ -274,10 +280,20 @@ async function main() {
       image,
       imagesByColour,
       shortDescription: String(shortDescription || "").trim(),
-      description: String(fullDescription || "").trim(),
+      // prefer long full description
+      description: finalDescription,
+      // explicit additionalInfo field for UI use
+      additionalInfo: finalAdditional,
+      // export glass / glazing / tinting in metadata for compatibility
       dimensions: { width: Number(width) || 0, height: Number(height) || 0 },
       basePrice: Number(basePrice) || 0,
-      metadata,
+      metadata: {
+        ...metadata,
+        // keep glass / glazing / tinting at top-level metadata if provided in CSV
+        ...(glassType ? { glassType: String(glassType).trim() } : {}),
+        ...(glazing ? { glazing: String(glazing).trim() } : {}),
+        ...(tinting ? { tinting: String(tinting).trim() } : {})
+      },
       relatedCodes,
       reviews
     };

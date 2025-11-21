@@ -25,19 +25,13 @@ export const ACW_CATALOGUE = {
       ]
     },
     "shortDescription": "Aluminium Casement Window Top Hung 1790 x 1190",
-    "description": "This Aluminium Casement 30.5 Aluminium Top Hung Window is a modern and affordable option for your home. It can be hung on the top or side and is designed for residential use. This window is both practical and stylish, allowing fresh air to enter your home. It offers various configurations to match your design needs.",
-    "additionalInfo": "Aluminium Casement 30.5 Aluminium window is designed to accommodate burglar bars if required. We use the Y Gasket Seal to Weatherproof and eliminate draughts. Sash hinges on friction stays allow the window to remain open at various angles; restrictor stays can also be used to limit the opening of the window. Insect screens can be added at the time of manufacturing or at a later stage. Smooth and silent operation. Glazing: Casement 30.5 Aluminium window is suitable for single glazing and double glazing. It allows for various thicknesses of glass ranging between 4mm clear float glass to 6.38 mm laminated safety glass and 6.38mm Clear Laminated Glass. All Aluminium Windows are Manufactured and Glazed in accordance with AAAMSA and SAGGA, National Building regulations. Gaskets and Seals: In addition to their high quality, locally available gaskets and seals are also affordable and reliable. Finish: Bronze, Natural Anodized, Black, Charcoal, White, New Silver. Components: Designed to accommodate standard local hardware (handles, friction stays, gaskets, glass and finpile).",
+    "description": "This Aluminium Top Hung Window is a modern and affordable option for residential use. It offers multiple configurations and smooth operation.",
     "dimensions": {
       "width": 1790,
       "height": 1190
     },
     "basePrice": 4300,
-    "metadata": {
-      "additionalInfo": "Aluminium Casement 30.5 Aluminium window is designed to accommodate burglar bars if required. We use the Y Gasket Seal to Weatherproof and eliminate draughts. Sash hinges on friction stays allow the window to remain open at various angles; restrictor stays can also be used to limit the opening of the window. Insect screens can be added at the time of manufacturing or at a later stage. Smooth and silent operation. Glazing: Casement 30.5 Aluminium window is suitable for single glazing and double glazing. It allows for various thicknesses of glass ranging between 4mm clear float glass to 6.38 mm laminated safety glass and 6.38mm Clear Laminated Glass. All Aluminium Windows are Manufactured and Glazed in accordance with AAAMSA and SAGGA, National Building regulations. Gaskets and Seals: In addition to their high quality, locally available gaskets and seals are also affordable and reliable. Finish: Bronze, Natural Anodized, Black, Charcoal, White, New Silver. Components: Designed to accommodate standard local hardware (handles, friction stays, gaskets, glass and finpile).",
-      "glassType": "4mm Clear Float",
-      "glazing": "Single Glazed",
-      "tinting": "Standard Tint"
-    },
+    "metadata": {},
     "relatedCodes": [
       "ACW888",
       "ACW889",
@@ -83,19 +77,13 @@ export const ACW_CATALOGUE = {
       ]
     },
     "shortDescription": "Aluminium Casement Top Hung 2390 x 1790",
-    "description": "This Aluminium Top Hung Window P4T2418 Casement 30.5 — product overview: Aluminium Top Hung Window P4T2418 is a modern and affordable option for your home. It can be hung on the top or side and is designed for residential use. This window is both practical and stylish, allowing fresh air to enter your home. It offers various configurations to match your design needs.",
-    "additionalInfo": "Features: Aluminium Casement 30.5 window is designed to accommodate burglar bars if required. We use the Y Gasket Seal to Weatherproof and eliminate draughts. Sash hinges on friction stays allow the window to remain open at various angles; restrictor stays can also be used to limit the opening. Insect screens can be added at manufacturing or later. Smooth and silent operation. Glazing: suitable for single and double glazing; accepts glass from 4mm clear float up to 6.38mm laminated safety glass. Manufactured and glazed in accordance with AAAMSA and SAGGA, National Building regulations.",
+    "description": "Modern aluminium top hung window with robust construction and multiple glazing options.",
     "dimensions": {
       "width": 2390,
       "height": 1790
     },
     "basePrice": 6730,
-    "metadata": {
-      "additionalInfo": "Features: Aluminium Casement 30.5 window is designed to accommodate burglar bars if required. We use the Y Gasket Seal to Weatherproof and eliminate draughts. Sash hinges on friction stays allow the window to remain open at various angles; restrictor stays can also be used to limit the opening. Insect screens can be added at manufacturing or later. Smooth and silent operation. Glazing: suitable for single and double glazing; accepts glass from 4mm clear float up to 6.38mm laminated safety glass. Manufactured and glazed in accordance with AAAMSA and SAGGA, National Building regulations.",
-      "glassType": "4mm Clear Float & 6.38mm Safety Glass",
-      "glazing": "Single Glazed",
-      "tinting": "Standard Tint"
-    },
+    "metadata": {},
     "relatedCodes": [
       "ACW887",
       "ACW889",
@@ -141,19 +129,13 @@ export const ACW_CATALOGUE = {
       ]
     },
     "shortDescription": "Premium Aluminium Casement 2390 x 1490",
-    "description": "The Premium Aluminium Casement 30.5 Aluminium Top Hung Window P4T2415 is a modern and affordable option for your home. It can be hung on the top or side and is designed for residential use. This window is both practical and stylish, allowing fresh air to enter your home. It offers various configurations to match your design needs.",
-    "additionalInfo": "Designed for residential use; accommodates standard hardware, multiple glass thicknesses up to laminated safety glass. Smooth operation, weatherproofing with Y gasket; optional insect screens and restrictor stays.",
+    "description": "Premium aluminium top hung window with stylish finish and reliable hardware.",
     "dimensions": {
       "width": 2390,
       "height": 1490
     },
     "basePrice": 6070,
-    "metadata": {
-      "additionalInfo": "Designed for residential use; accommodates standard hardware, multiple glass thicknesses up to laminated safety glass. Smooth operation, weatherproofing with Y gasket; optional insect screens and restrictor stays.",
-      "glassType": "4mm Clear Float",
-      "glazing": "Single Glazed",
-      "tinting": "Standard Tint"
-    },
+    "metadata": {},
     "relatedCodes": [
       "ACW887",
       "ACW888",
@@ -199,19 +181,13 @@ export const ACW_CATALOGUE = {
       ]
     },
     "shortDescription": "Premium Aluminium Top Hung 1790 x 1490",
-    "description": "The Premium Aluminium Casement 30.5 Aluminium Top Hung Window P4T1815 is a modern and affordable option for your home. It can be hung on the top or side and is designed for residential use. This window is both practical and stylish, allowing fresh air to enter your home. It offers various configurations to match your design needs.",
-    "additionalInfo": "Suitable for single and double glazing; manufactured to national standards. Y gasket weatherproofing, optional insect screens, and standard hardware compatibility.",
+    "description": "Premium aluminium top hung window for residential applications with smooth operation.",
     "dimensions": {
       "width": 1790,
       "height": 1490
     },
     "basePrice": 5260,
-    "metadata": {
-      "additionalInfo": "Suitable for single and double glazing; manufactured to national standards. Y gasket weatherproofing, optional insect screens, and standard hardware compatibility.",
-      "glassType": "4mm Clear Float",
-      "glazing": "Single Glazed",
-      "tinting": "Standard Tint"
-    },
+    "metadata": {},
     "relatedCodes": [
       "ACW887",
       "ACW888",
@@ -257,19 +233,13 @@ export const ACW_CATALOGUE = {
       ]
     },
     "shortDescription": "Premium Top Hung 2090 x 1190",
-    "description": "The Premium Aluminium Casement 30.5 Aluminium Top Hung Window P4T2112 is a modern and affordable option for your home. It can be hung on the top or side and is designed for residential use. This window is both practical and stylish, allowing fresh air to enter your home. It offers various configurations to match your design needs.",
-    "additionalInfo": "Features: Y gasket, friction stays, optional insect screens, multiple finish options. Manufactured and glazed according to national standards.",
+    "description": "Premium aluminium top hung window — practical and stylish.",
     "dimensions": {
       "width": 2090,
       "height": 1190
     },
     "basePrice": 4480,
-    "metadata": {
-      "additionalInfo": "Features: Y gasket, friction stays, optional insect screens, multiple finish options. Manufactured and glazed according to national standards.",
-      "glassType": "4mm Clear Float",
-      "glazing": "Single Glazed",
-      "tinting": "Standard Tint"
-    },
+    "metadata": {},
     "relatedCodes": [
       "ACW887",
       "ACW888",
@@ -315,19 +285,13 @@ export const ACW_CATALOGUE = {
       ]
     },
     "shortDescription": "Premium Top Hung 2090 x 1490",
-    "description": "The Premium Aluminium Casement 30.5 Aluminium Top Hung Window P4T2115 is a modern and affordable option for your home. It can be hung on the top or side and is designed for residential use. This window is both practical and stylish, allowing fresh air to enter your home. It offers various configurations to match your design needs.",
-    "additionalInfo": "Manufactured and glazed to national standards; multiple glass options; weatherproof sealing and optional insect screens.",
+    "description": "Premium aluminium top hung window with robust features.",
     "dimensions": {
       "width": 2090,
       "height": 1490
     },
     "basePrice": 5460,
-    "metadata": {
-      "additionalInfo": "Manufactured and glazed to national standards; multiple glass options; weatherproof sealing and optional insect screens.",
-      "glassType": "4mm Clear Float",
-      "glazing": "Single Glazed",
-      "tinting": "Standard Tint"
-    },
+    "metadata": {},
     "relatedCodes": [
       "ACW887",
       "ACW888",
@@ -373,19 +337,13 @@ export const ACW_CATALOGUE = {
       ]
     },
     "shortDescription": "Premium Top Hung 1790 x 1790",
-    "description": "The Premium Aluminium Casement 30.5 Aluminium Top Hung Window P4T1818 is a modern and affordable option for your home. It can be hung on the top or side and is designed for residential use. This window is both practical and stylish, allowing fresh air to enter your home. It offers various configurations to match your design needs.",
-    "additionalInfo": "High-quality seals and hardware; optional insect screens and various finishes. Suitable for grouped configurations or large single openings.",
+    "description": "Premium aluminium top hung window — versatile configurations.",
     "dimensions": {
       "width": 1790,
       "height": 1790
     },
     "basePrice": 6030,
-    "metadata": {
-      "additionalInfo": "High-quality seals and hardware; optional insect screens and various finishes. Suitable for grouped configurations or large single openings.",
-      "glassType": "4mm Clear Float & 6.38mm Safety Glass",
-      "glazing": "Single Glazed",
-      "tinting": "Standard Tint"
-    },
+    "metadata": {},
     "relatedCodes": [
       "ACW887",
       "ACW888",
@@ -431,19 +389,13 @@ export const ACW_CATALOGUE = {
       ]
     },
     "shortDescription": "Premium Top Hung 2390 x 1190",
-    "description": "The Premium Aluminium Casement 30.5 Aluminium Top Hung Window P4T2412 is a modern and affordable option for your home. It can be hung on the top or side and is designed for residential use. This window is both practical and stylish, allowing fresh air to enter your home. It offers various configurations to match your design needs.",
-    "additionalInfo": "Smooth operation; Y gasket; manufactured to standards. Suitable for wide openings and grouped installations.",
+    "description": "Premium aluminium window with multiple glazing options.",
     "dimensions": {
       "width": 2390,
       "height": 1190
     },
     "basePrice": 4650,
-    "metadata": {
-      "additionalInfo": "Smooth operation; Y gasket; manufactured to standards. Suitable for wide openings and grouped installations.",
-      "glassType": "4mm Clear Float",
-      "glazing": "Single Glazed",
-      "tinting": "Standard Tint"
-    },
+    "metadata": {},
     "relatedCodes": [
       "ACW887",
       "ACW888",
@@ -489,19 +441,13 @@ export const ACW_CATALOGUE = {
       ]
     },
     "shortDescription": "Top Hung 2090 x 1790",
-    "description": "The Premium Aluminium Casement 30.5 Aluminium Top Hung Window P4T2118 is a modern and affordable option for your home. It can be hung on the top or side and is designed for residential use. This window is both practical and stylish, allowing fresh air to enter your home. It offers various configurations to match your design needs.",
-    "additionalInfo": "Features multiple glazing options and standard hardware compatibility. Suitable for medium-to-large openings.",
+    "description": "Premium aluminium top hung window with strong construction.",
     "dimensions": {
       "width": 2090,
       "height": 1790
     },
     "basePrice": 6380,
-    "metadata": {
-      "additionalInfo": "Features multiple glazing options and standard hardware compatibility. Suitable for medium-to-large openings.",
-      "glassType": "4mm Clear Float & 6.38mm Safety Glass",
-      "glazing": "Single Glazed",
-      "tinting": "Standard Tint"
-    },
+    "metadata": {},
     "relatedCodes": [
       "ACW887",
       "ACW888",
@@ -547,19 +493,13 @@ export const ACW_CATALOGUE = {
       ]
     },
     "shortDescription": "Top Hung 1190 x 1190",
-    "description": "The Premium Aluminium Casement 30.5 Aluminium Top Hung Window PT1212 is a modern and affordable option for your home. It can be hung on the top or side and is designed for residential use. This window is both practical and stylish, allowing fresh air to enter your home. It offers various configurations to match your design needs.",
-    "additionalInfo": "Reliable operation and multiple finish options. Suitable for grouped or single installations.",
+    "description": "Premium aluminium top hung window PT1212 with compact dimensions.",
     "dimensions": {
       "width": 1190,
       "height": 1190
     },
     "basePrice": 2090,
-    "metadata": {
-      "additionalInfo": "Reliable operation and multiple finish options. Suitable for grouped or single installations.",
-      "glassType": "4mm Clear Float",
-      "glazing": "Single Glazed",
-      "tinting": "Standard Tint"
-    },
+    "metadata": {},
     "relatedCodes": [
       "ACW887",
       "ACW888",
@@ -605,19 +545,13 @@ export const ACW_CATALOGUE = {
       ]
     },
     "shortDescription": "Top Hung 1190 x 590",
-    "description": "The Premium Aluminium Casement 30.5 Aluminium Top Hung Window PT126 is a modern and affordable option for your home. It can be hung on the top or side and is designed for residential use. This window is both practical and stylish, allowing fresh air to enter your home. It offers various configurations to match your design needs.",
-    "additionalInfo": "Smooth operation; standard hardware; multiple finish choices. Easy to install and maintain.",
+    "description": "Compact top hung window PT126 suitable for smaller openings.",
     "dimensions": {
       "width": 1190,
       "height": 590
     },
     "basePrice": 1420,
-    "metadata": {
-      "additionalInfo": "Smooth operation; standard hardware; multiple finish choices. Easy to install and maintain.",
-      "glassType": "4mm Clear Float",
-      "glazing": "Single Glazed",
-      "tinting": "Standard Tint"
-    },
+    "metadata": {},
     "relatedCodes": [
       "ACW887",
       "ACW888",
