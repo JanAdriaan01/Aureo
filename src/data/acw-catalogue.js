@@ -9,8 +9,7 @@ export const ACW_CATALOGUE = {
     "image": "/images/ACW887/W/ACW887W.png",
     "imagesByColour": {
       "B": [
-        "/images/ACW887/B/ACW887B.png",
-        "/images/ACW887/B/ACW887BR.png"
+        "/images/ACW887/B/ACW887B.png"
       ],
       "BR": [
         "/images/ACW887/BR/ACW887BR.png"
@@ -62,8 +61,7 @@ export const ACW_CATALOGUE = {
     "image": "/images/ACW888/W/ACW888W.png",
     "imagesByColour": {
       "B": [
-        "/images/ACW888/B/ACW888B.png",
-        "/images/ACW888/B/ACW888BR.png"
+        "/images/ACW888/B/ACW888B.png"
       ],
       "BR": [
         "/images/ACW888/BR/ACW888BR.png"
@@ -115,8 +113,7 @@ export const ACW_CATALOGUE = {
     "image": "/images/ACW889/W/ACW889W.png",
     "imagesByColour": {
       "B": [
-        "/images/ACW889/B/ACW889B.png",
-        "/images/ACW889/B/ACW889BR.png"
+        "/images/ACW889/B/ACW889B.png"
       ],
       "BR": [
         "/images/ACW889/BR/ACW889BR.png"
@@ -168,8 +165,7 @@ export const ACW_CATALOGUE = {
     "image": "/images/ACW890/W/ACW890W.png",
     "imagesByColour": {
       "B": [
-        "/images/ACW890/B/ACW890B.png",
-        "/images/ACW890/B/ACW890BR.png"
+        "/images/ACW890/B/ACW890B.png"
       ],
       "BR": [
         "/images/ACW890/BR/ACW890BR.png"
@@ -221,8 +217,7 @@ export const ACW_CATALOGUE = {
     "image": "/images/ACW891/W/ACW891W.png",
     "imagesByColour": {
       "B": [
-        "/images/ACW891/B/ACW891B.png",
-        "/images/ACW891/B/ACW891BR.png"
+        "/images/ACW891/B/ACW891B.png"
       ],
       "BR": [
         "/images/ACW891/BR/ACW891BR.png"
@@ -274,8 +269,7 @@ export const ACW_CATALOGUE = {
     "image": "/images/ACW892/W/ACW892W.png",
     "imagesByColour": {
       "B": [
-        "/images/ACW892/B/ACW892B.png",
-        "/images/ACW892/B/ACW892BR.png"
+        "/images/ACW892/B/ACW892B.png"
       ],
       "BR": [
         "/images/ACW892/BR/ACW892BR.png"
@@ -327,8 +321,7 @@ export const ACW_CATALOGUE = {
     "image": "/images/ACW893/W/ACW893W.png",
     "imagesByColour": {
       "B": [
-        "/images/ACW893/B/ACW893B.png",
-        "/images/ACW893/B/ACW893BR.png"
+        "/images/ACW893/B/ACW893B.png"
       ],
       "BR": [
         "/images/ACW893/BR/ACW893BR.png"
@@ -380,8 +373,7 @@ export const ACW_CATALOGUE = {
     "image": "/images/ACW894/W/ACW894W.png",
     "imagesByColour": {
       "B": [
-        "/images/ACW894/B/ACW894B.png",
-        "/images/ACW894/B/ACW894BR.png"
+        "/images/ACW894/B/ACW894B.png"
       ],
       "BR": [
         "/images/ACW894/BR/ACW894BR.png"
@@ -433,8 +425,7 @@ export const ACW_CATALOGUE = {
     "image": "/images/ACW895/W/ACW895W.png",
     "imagesByColour": {
       "B": [
-        "/images/ACW895/B/ACW895B.png",
-        "/images/ACW895/B/ACW895BR.png"
+        "/images/ACW895/B/ACW895B.png"
       ],
       "BR": [
         "/images/ACW895/BR/ACW895BR.png"
@@ -486,8 +477,7 @@ export const ACW_CATALOGUE = {
     "image": "/images/ACW896/W/ACW896W.png",
     "imagesByColour": {
       "B": [
-        "/images/ACW896/B/ACW896B.png",
-        "/images/ACW896/B/ACW896BR.png"
+        "/images/ACW896/B/ACW896B.png"
       ],
       "BR": [
         "/images/ACW896/BR/ACW896BR.png"
@@ -539,8 +529,7 @@ export const ACW_CATALOGUE = {
     "image": "/images/ACW897/W/ACW897W.png",
     "imagesByColour": {
       "B": [
-        "/images/ACW897/B/ACW897B.png",
-        "/images/ACW897/B/ACW897BR.png"
+        "/images/ACW897/B/ACW897B.png"
       ],
       "BR": [
         "/images/ACW897/BR/ACW897BR.png"
