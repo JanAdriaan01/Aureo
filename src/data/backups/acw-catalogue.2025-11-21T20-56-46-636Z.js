@@ -32,7 +32,12 @@ export const ACW_CATALOGUE = {
       "height": 1190
     },
     "basePrice": 4300,
-    "metadata": {},
+    "metadata": {
+      "additionalInfo": "Aluminium Casement 30.5 Aluminium window is designed to accommodate burglar bars if required. We use the Y Gasket Seal to Weatherproof and eliminate draughts. Sash hinges on friction stays allow the window to remain open at various angles; restrictor stays can also be used to limit the opening of the window. Insect screens can be added at the time of manufacturing or at a later stage. Smooth and silent operation. Glazing: Casement 30.5 Aluminium window is suitable for single glazing and double glazing. It allows for various thicknesses of glass ranging between 4mm clear float glass to 6.38 mm laminated safety glass and 6.38mm Clear Laminated Glass. All Aluminium Windows are Manufactured and Glazed in accordance with AAAMSA and SAGGA, National Building regulations. Gaskets and Seals: In addition to their high quality, locally available gaskets and seals are also affordable and reliable. Finish: Bronze, Natural Anodized, Black, Charcoal, White, New Silver. Components: Designed to accommodate standard local hardware (handles, friction stays, gaskets, glass and finpile).",
+      "glassType": "4mm Clear Float",
+      "glazing": "Single Glazed",
+      "tinting": "Standard Tint"
+    },
     "relatedCodes": [
       "ACW888",
       "ACW889",
@@ -85,7 +90,12 @@ export const ACW_CATALOGUE = {
       "height": 1790
     },
     "basePrice": 6730,
-    "metadata": {},
+    "metadata": {
+      "additionalInfo": "Features: Aluminium Casement 30.5 window is designed to accommodate burglar bars if required. We use the Y Gasket Seal to Weatherproof and eliminate draughts. Sash hinges on friction stays allow the window to remain open at various angles; restrictor stays can also be used to limit the opening. Insect screens can be added at manufacturing or later. Smooth and silent operation. Glazing: suitable for single and double glazing; accepts glass from 4mm clear float up to 6.38mm laminated safety glass. Manufactured and glazed in accordance with AAAMSA and SAGGA, National Building regulations.",
+      "glassType": "4mm Clear Float & 6.38mm Safety Glass",
+      "glazing": "Single Glazed",
+      "tinting": "Standard Tint"
+    },
     "relatedCodes": [
       "ACW887",
       "ACW889",
@@ -138,7 +148,12 @@ export const ACW_CATALOGUE = {
       "height": 1490
     },
     "basePrice": 6070,
-    "metadata": {},
+    "metadata": {
+      "additionalInfo": "Designed for residential use; accommodates standard hardware, multiple glass thicknesses up to laminated safety glass. Smooth operation, weatherproofing with Y gasket; optional insect screens and restrictor stays.",
+      "glassType": "4mm Clear Float",
+      "glazing": "Single Glazed",
+      "tinting": "Standard Tint"
+    },
     "relatedCodes": [
       "ACW887",
       "ACW888",
@@ -191,7 +206,12 @@ export const ACW_CATALOGUE = {
       "height": 1490
     },
     "basePrice": 5260,
-    "metadata": {},
+    "metadata": {
+      "additionalInfo": "Suitable for single and double glazing; manufactured to national standards. Y gasket weatherproofing, optional insect screens, and standard hardware compatibility.",
+      "glassType": "4mm Clear Float",
+      "glazing": "Single Glazed",
+      "tinting": "Standard Tint"
+    },
     "relatedCodes": [
       "ACW887",
       "ACW888",
@@ -244,7 +264,12 @@ export const ACW_CATALOGUE = {
       "height": 1190
     },
     "basePrice": 4480,
-    "metadata": {},
+    "metadata": {
+      "additionalInfo": "Features: Y gasket, friction stays, optional insect screens, multiple finish options. Manufactured and glazed according to national standards.",
+      "glassType": "4mm Clear Float",
+      "glazing": "Single Glazed",
+      "tinting": "Standard Tint"
+    },
     "relatedCodes": [
       "ACW887",
       "ACW888",
@@ -297,7 +322,12 @@ export const ACW_CATALOGUE = {
       "height": 1490
     },
     "basePrice": 5460,
-    "metadata": {},
+    "metadata": {
+      "additionalInfo": "Manufactured and glazed to national standards; multiple glass options; weatherproof sealing and optional insect screens.",
+      "glassType": "4mm Clear Float",
+      "glazing": "Single Glazed",
+      "tinting": "Standard Tint"
+    },
     "relatedCodes": [
       "ACW887",
       "ACW888",
@@ -350,7 +380,12 @@ export const ACW_CATALOGUE = {
       "height": 1790
     },
     "basePrice": 6030,
-    "metadata": {},
+    "metadata": {
+      "additionalInfo": "High-quality seals and hardware; optional insect screens and various finishes. Suitable for grouped configurations or large single openings.",
+      "glassType": "4mm Clear Float & 6.38mm Safety Glass",
+      "glazing": "Single Glazed",
+      "tinting": "Standard Tint"
+    },
     "relatedCodes": [
       "ACW887",
       "ACW888",
@@ -403,7 +438,12 @@ export const ACW_CATALOGUE = {
       "height": 1190
     },
     "basePrice": 4650,
-    "metadata": {},
+    "metadata": {
+      "additionalInfo": "Smooth operation; Y gasket; manufactured to standards. Suitable for wide openings and grouped installations.",
+      "glassType": "4mm Clear Float",
+      "glazing": "Single Glazed",
+      "tinting": "Standard Tint"
+    },
     "relatedCodes": [
       "ACW887",
       "ACW888",
@@ -456,7 +496,12 @@ export const ACW_CATALOGUE = {
       "height": 1790
     },
     "basePrice": 6380,
-    "metadata": {},
+    "metadata": {
+      "additionalInfo": "Features multiple glazing options and standard hardware compatibility. Suitable for medium-to-large openings.",
+      "glassType": "4mm Clear Float & 6.38mm Safety Glass",
+      "glazing": "Single Glazed",
+      "tinting": "Standard Tint"
+    },
     "relatedCodes": [
       "ACW887",
       "ACW888",
@@ -509,7 +554,12 @@ export const ACW_CATALOGUE = {
       "height": 1190
     },
     "basePrice": 2090,
-    "metadata": {},
+    "metadata": {
+      "additionalInfo": "Reliable operation and multiple finish options. Suitable for grouped or single installations.",
+      "glassType": "4mm Clear Float",
+      "glazing": "Single Glazed",
+      "tinting": "Standard Tint"
+    },
     "relatedCodes": [
       "ACW887",
       "ACW888",
@@ -562,7 +612,12 @@ export const ACW_CATALOGUE = {
       "height": 590
     },
     "basePrice": 1420,
-    "metadata": {},
+    "metadata": {
+      "additionalInfo": "Smooth operation; standard hardware; multiple finish choices. Easy to install and maintain.",
+      "glassType": "4mm Clear Float",
+      "glazing": "Single Glazed",
+      "tinting": "Standard Tint"
+    },
     "relatedCodes": [
       "ACW887",
       "ACW888",
@@ -589,8 +644,29 @@ export const ACW_CATALOGUE = {
     "title": "Aluminium Sliding Door 1 Panel",
     "category": "Doors",
     "codePrefix": "ASD887",
-    "image": "/images/ASD887/ASD887.jpg",
-    "imagesByColour": {},
+    "image": "/images/ASD887/ASD887.png",
+    "imagesByColour": {
+      "B": [
+        "/images/ASD887/ASD887O.png",
+        "/images/ASD887/ASD887C.png"
+      ],
+      "BR": [
+        "/images/ASD887/ASD887O.png",
+        "/images/ASD887/ASD887C.png"
+      ],
+      "W": [
+        "/images/ASD887/ASD887O.png",
+        "/images/ASD887/ASD887C.png"
+      ],
+      "N": [
+        "/images/ASD887/ASD887O.png",
+        "/images/ASD887/ASD887C.png"
+      ],
+      "C": [
+        "/images/ASD887/ASD887O.png",
+        "/images/ASD887/ASD887C.png"
+      ]
+    },
     "shortDescription": "Aluminium Sliding Door 1 Panel W2400mm x H2100mm",
     "description": "Aluminium Sliding Door 1 Panel W2400mm x H2100mm. Single sliding panel.",
     "additionalInfo": "Colour: Charcoal, Bronze, White. Glass: Clear - 4mm.",
@@ -599,7 +675,12 @@ export const ACW_CATALOGUE = {
       "height": 2100
     },
     "basePrice": 4500,
-    "metadata": {},
+    "metadata": {
+      "additionalInfo": "Colour: Charcoal, Bronze, White. Glass: Clear - 4mm.",
+      "glassType": "\"Clear - 4mm\"",
+      "glazing": "\"Single Glazed\"",
+      "tinting": "\"Standard Tint\""
+    },
     "relatedCodes": [],
     "reviews": []
   },
@@ -607,8 +688,29 @@ export const ACW_CATALOGUE = {
     "title": "Aluminium Sliding Door 1 Panel",
     "category": "Doors",
     "codePrefix": "ASD888",
-    "image": "/images/ASD888/ASD888.jpg",
-    "imagesByColour": {},
+    "image": "/images/ASD888/ASD888.png",
+    "imagesByColour": {
+      "B": [
+        "/images/ASD888/ASD888O.png",
+        "/images/ASD888/ASD888C.png"
+      ],
+      "BR": [
+        "/images/ASD888/ASD888O.png",
+        "/images/ASD888/ASD888C.png"
+      ],
+      "W": [
+        "/images/ASD888/ASD888O.png",
+        "/images/ASD888/ASD888C.png"
+      ],
+      "N": [
+        "/images/ASD888/ASD888O.png",
+        "/images/ASD888/ASD888C.png"
+      ],
+      "C": [
+        "/images/ASD888/ASD888O.png",
+        "/images/ASD888/ASD888C.png"
+      ]
+    },
     "shortDescription": "Aluminium Sliding Door 1 Panel",
     "description": "Aluminium Sliding Door 1 Panel W2400mm x H2100mm.",
     "additionalInfo": "Colour: Charcoal, Bronze, White. Glass: Clear - 4mm.",
@@ -617,7 +719,12 @@ export const ACW_CATALOGUE = {
       "height": 2100
     },
     "basePrice": 3500,
-    "metadata": {},
+    "metadata": {
+      "additionalInfo": "Colour: Charcoal, Bronze, White. Glass: Clear - 4mm.",
+      "glassType": "Clear - 4mm",
+      "glazing": "Single Glazed",
+      "tinting": "Standard Tint"
+    },
     "relatedCodes": [],
     "reviews": []
   },
@@ -625,8 +732,29 @@ export const ACW_CATALOGUE = {
     "title": "Aluminium Sliding Door 1 Panel",
     "category": "Doors",
     "codePrefix": "ASD889",
-    "image": "/images/ASD889/ASD889.jpg",
-    "imagesByColour": {},
+    "image": "/images/ASD889/ASD889.png",
+    "imagesByColour": {
+      "B": [
+        "/images/ASD889/ASD889O.png",
+        "/images/ASD889/ASD889C.png"
+      ],
+      "BR": [
+        "/images/ASD889/ASD889O.png",
+        "/images/ASD889/ASD889C.png"
+      ],
+      "W": [
+        "/images/ASD889/ASD889O.png",
+        "/images/ASD889/ASD889C.png"
+      ],
+      "N": [
+        "/images/ASD889/ASD889O.png",
+        "/images/ASD889/ASD889C.png"
+      ],
+      "C": [
+        "/images/ASD889/ASD889O.png",
+        "/images/ASD889/ASD889C.png"
+      ]
+    },
     "shortDescription": "Aluminium Sliding Door 1 Panel (W1500 x H2100)",
     "description": "Aluminium Sliding Door single panel — W1500 x H2100.",
     "additionalInfo": "Colour: Charcoal, Bronze, White. Glass: Clear - 4mm.",
@@ -635,7 +763,12 @@ export const ACW_CATALOGUE = {
       "height": 2100
     },
     "basePrice": 2900,
-    "metadata": {},
+    "metadata": {
+      "additionalInfo": "Colour: Charcoal, Bronze, White. Glass: Clear - 4mm.",
+      "glassType": "Clear - 4mm",
+      "glazing": "Single Glazed",
+      "tinting": "Standard Tint"
+    },
     "relatedCodes": [],
     "reviews": []
   },
@@ -643,8 +776,29 @@ export const ACW_CATALOGUE = {
     "title": "Double Hinged Aluminium Door",
     "category": "Doors",
     "codePrefix": "ASD890",
-    "image": "/images/ASD890/ASD890.jpg",
-    "imagesByColour": {},
+    "image": "/images/ASD890/ASD890.png",
+    "imagesByColour": {
+      "B": [
+        "/images/ASD890/ASD890O.png",
+        "/images/ASD890/ASD890C.png"
+      ],
+      "BR": [
+        "/images/ASD890/ASD890O.png",
+        "/images/ASD890/ASD890C.png"
+      ],
+      "W": [
+        "/images/ASD890/ASD890O.png",
+        "/images/ASD890/ASD890C.png"
+      ],
+      "N": [
+        "/images/ASD890/ASD890O.png",
+        "/images/ASD890/ASD890C.png"
+      ],
+      "C": [
+        "/images/ASD890/ASD890O.png",
+        "/images/ASD890/ASD890C.png"
+      ]
+    },
     "shortDescription": "Double Hinged Door Aluminium",
     "description": "Double hinged aluminium door — W1800 x H2100.",
     "additionalInfo": "Colour: Charcoal, Bronze, White. Glass: Clear - 4mm.",
@@ -653,7 +807,12 @@ export const ACW_CATALOGUE = {
       "height": 2100
     },
     "basePrice": 7500,
-    "metadata": {},
+    "metadata": {
+      "additionalInfo": "Colour: Charcoal, Bronze, White. Glass: Clear - 4mm.",
+      "glassType": "Clear - 4mm",
+      "glazing": "Single Glazed",
+      "tinting": "Standard Tint"
+    },
     "relatedCodes": [],
     "reviews": []
   },
@@ -661,8 +820,29 @@ export const ACW_CATALOGUE = {
     "title": "Aluminium Sliding Door 2 Panels",
     "category": "Doors",
     "codePrefix": "ASD891",
-    "image": "/images/ASD891/ASD891.jpg",
-    "imagesByColour": {},
+    "image": "/images/ASD891/ASD891.png",
+    "imagesByColour": {
+      "B": [
+        "/images/ASD891/ASD891O.png",
+        "/images/ASD891/ASD891C.png"
+      ],
+      "BR": [
+        "/images/ASD891/ASD891O.png",
+        "/images/ASD891/ASD891C.png"
+      ],
+      "W": [
+        "/images/ASD891/ASD891O.png",
+        "/images/ASD891/ASD891C.png"
+      ],
+      "N": [
+        "/images/ASD891/ASD891O.png",
+        "/images/ASD891/ASD891C.png"
+      ],
+      "C": [
+        "/images/ASD891/ASD891O.png",
+        "/images/ASD891/ASD891C.png"
+      ]
+    },
     "shortDescription": "Aluminium Sliding Door 2 Panels",
     "description": "Aluminium Sliding Door — 2 panels, W4800 x H2100.",
     "additionalInfo": "Colour: Charcoal, Bronze, White. Glass: Clear - 4mm.",
@@ -671,7 +851,12 @@ export const ACW_CATALOGUE = {
       "height": 2100
     },
     "basePrice": 10500,
-    "metadata": {},
+    "metadata": {
+      "additionalInfo": "Colour: Charcoal, Bronze, White. Glass: Clear - 4mm.",
+      "glassType": "Clear - 4mm",
+      "glazing": "Single Glazed",
+      "tinting": "Standard Tint"
+    },
     "relatedCodes": [],
     "reviews": []
   },
@@ -679,8 +864,29 @@ export const ACW_CATALOGUE = {
     "title": "Aluminium Folding Door 3 Panel Left Hand Opening",
     "category": "Doors",
     "codePrefix": "ASD892",
-    "image": "/images/ASD892/ASD892.jpg",
-    "imagesByColour": {},
+    "image": "/images/ASD892/ASD892.png",
+    "imagesByColour": {
+      "B": [
+        "/images/ASD892/ASD892O.png",
+        "/images/ASD892/ASD892C.png"
+      ],
+      "BR": [
+        "/images/ASD892/ASD892O.png",
+        "/images/ASD892/ASD892C.png"
+      ],
+      "W": [
+        "/images/ASD892/ASD892O.png",
+        "/images/ASD892/ASD892C.png"
+      ],
+      "N": [
+        "/images/ASD892/ASD892O.png",
+        "/images/ASD892/ASD892C.png"
+      ],
+      "C": [
+        "/images/ASD892/ASD892O.png",
+        "/images/ASD892/ASD892C.png"
+      ]
+    },
     "shortDescription": "Aluminium Folding Door 3 Panel Left Hand Opening",
     "description": "Aluminium Folding Door — 3 panel left hand, W1800 x H2100.",
     "additionalInfo": "Colour: Charcoal, Bronze, White. Glass: Clear - 4mm.",
@@ -689,7 +895,12 @@ export const ACW_CATALOGUE = {
       "height": 2100
     },
     "basePrice": 12550,
-    "metadata": {},
+    "metadata": {
+      "additionalInfo": "Colour: Charcoal, Bronze, White. Glass: Clear - 4mm.",
+      "glassType": "Clear - 4mm",
+      "glazing": "Single Glazed",
+      "tinting": "Standard Tint"
+    },
     "relatedCodes": [],
     "reviews": []
   },
@@ -697,8 +908,29 @@ export const ACW_CATALOGUE = {
     "title": "Aluminium 2 Panel Sliding Door (both panels slide)",
     "category": "Doors",
     "codePrefix": "ASD893",
-    "image": "/images/ASD893/ASD893.jpg",
-    "imagesByColour": {},
+    "image": "/images/ASD893/ASD893.png",
+    "imagesByColour": {
+      "B": [
+        "/images/ASD893/ASD893O.png",
+        "/images/ASD893/ASD893C.png"
+      ],
+      "BR": [
+        "/images/ASD893/ASD893O.png",
+        "/images/ASD893/ASD893C.png"
+      ],
+      "W": [
+        "/images/ASD893/ASD893O.png",
+        "/images/ASD893/ASD893C.png"
+      ],
+      "N": [
+        "/images/ASD893/ASD893O.png",
+        "/images/ASD893/ASD893C.png"
+      ],
+      "C": [
+        "/images/ASD893/ASD893O.png",
+        "/images/ASD893/ASD893C.png"
+      ]
+    },
     "shortDescription": "Aluminium 2 Panel Sliding Door (both panels slide)",
     "description": "Aluminium 2 panel sliding door, both panels slide — W3000 x H2100.",
     "additionalInfo": "Colour: Charcoal, Bronze, White. Glass: Clear - 4mm.",
@@ -707,7 +939,12 @@ export const ACW_CATALOGUE = {
       "height": 2100
     },
     "basePrice": 8200,
-    "metadata": {},
+    "metadata": {
+      "additionalInfo": "Colour: Charcoal, Bronze, White. Glass: Clear - 4mm.",
+      "glassType": "Clear - 4mm",
+      "glazing": "Single Glazed",
+      "tinting": "Standard Tint"
+    },
     "relatedCodes": [],
     "reviews": []
   },
@@ -715,8 +952,29 @@ export const ACW_CATALOGUE = {
     "title": "Aluminium Sliding Door 1 Panel",
     "category": "Doors",
     "codePrefix": "ASD894",
-    "image": "/images/ASD894/ASD894.jpg",
-    "imagesByColour": {},
+    "image": "/images/ASD894/ASD894.png",
+    "imagesByColour": {
+      "B": [
+        "/images/ASD894/ASD894O.png",
+        "/images/ASD894/ASD894C.png"
+      ],
+      "BR": [
+        "/images/ASD894/ASD894O.png",
+        "/images/ASD894/ASD894C.png"
+      ],
+      "W": [
+        "/images/ASD894/ASD894O.png",
+        "/images/ASD894/ASD894C.png"
+      ],
+      "N": [
+        "/images/ASD894/ASD894O.png",
+        "/images/ASD894/ASD894C.png"
+      ],
+      "C": [
+        "/images/ASD894/ASD894O.png",
+        "/images/ASD894/ASD894C.png"
+      ]
+    },
     "shortDescription": "Aluminium Sliding Door 1 Panel",
     "description": "Aluminium sliding door (1 panel) — W3000 x H2100.",
     "additionalInfo": "Colour: Charcoal, Bronze, White. Glass: Clear - 4mm.",
@@ -725,7 +983,12 @@ export const ACW_CATALOGUE = {
       "height": 2100
     },
     "basePrice": 5200,
-    "metadata": {},
+    "metadata": {
+      "additionalInfo": "Colour: Charcoal, Bronze, White. Glass: Clear - 4mm.",
+      "glassType": "Clear - 4mm",
+      "glazing": "Single Glazed",
+      "tinting": "Standard Tint"
+    },
     "relatedCodes": [],
     "reviews": []
   },
@@ -733,8 +996,29 @@ export const ACW_CATALOGUE = {
     "title": "Aluminium Folding Door 3 Panel Left Hand Opening",
     "category": "Doors",
     "codePrefix": "ASD896",
-    "image": "/images/ASD896/ASD896.jpg",
-    "imagesByColour": {},
+    "image": "/images/ASD896/ASD896.png",
+    "imagesByColour": {
+      "B": [
+        "/images/ASD896/ASD896O.png",
+        "/images/ASD896/ASD896C.png"
+      ],
+      "BR": [
+        "/images/ASD896/ASD896O.png",
+        "/images/ASD896/ASD896C.png"
+      ],
+      "W": [
+        "/images/ASD896/ASD896O.png",
+        "/images/ASD896/ASD896C.png"
+      ],
+      "N": [
+        "/images/ASD896/ASD896O.png",
+        "/images/ASD896/ASD896C.png"
+      ],
+      "C": [
+        "/images/ASD896/ASD896O.png",
+        "/images/ASD896/ASD896C.png"
+      ]
+    },
     "shortDescription": "Aluminium Folding Door 3 Panel Left Hand Opening",
     "description": "Aluminium folding door 3 panel left — W2400 x H2100.",
     "additionalInfo": "Colour: Charcoal, Bronze, White. Glass: Clear - 4mm.",
@@ -743,7 +1027,12 @@ export const ACW_CATALOGUE = {
       "height": 2100
     },
     "basePrice": 15500,
-    "metadata": {},
+    "metadata": {
+      "additionalInfo": "Colour: Charcoal, Bronze, White. Glass: Clear - 4mm.",
+      "glassType": "Clear - 4mm",
+      "glazing": "Single Glazed",
+      "tinting": "Standard Tint"
+    },
     "relatedCodes": [],
     "reviews": []
   },
@@ -751,8 +1040,29 @@ export const ACW_CATALOGUE = {
     "title": "Aluminium Pivot Door (4 horizontal panels)",
     "category": "Doors",
     "codePrefix": "ASD897",
-    "image": "/images/ASD897/ASD897.jpg",
-    "imagesByColour": {},
+    "image": "/images/ASD897/ASD897.png",
+    "imagesByColour": {
+      "B": [
+        "/images/ASD897/ASD897O.png",
+        "/images/ASD897/ASD897C.png"
+      ],
+      "BR": [
+        "/images/ASD897/ASD897O.png",
+        "/images/ASD897/ASD897C.png"
+      ],
+      "W": [
+        "/images/ASD897/ASD897O.png",
+        "/images/ASD897/ASD897C.png"
+      ],
+      "N": [
+        "/images/ASD897/ASD897O.png",
+        "/images/ASD897/ASD897C.png"
+      ],
+      "C": [
+        "/images/ASD897/ASD897O.png",
+        "/images/ASD897/ASD897C.png"
+      ]
+    },
     "shortDescription": "Aluminium Pivot Door Bronze 4 Horizontal Panel",
     "description": "Aluminium pivot door — 4 horizontal panels, W1200 x H2100.",
     "additionalInfo": "Colour: Charcoal, Bronze, White. Glass: Clear - 4mm.",
@@ -761,7 +1071,12 @@ export const ACW_CATALOGUE = {
       "height": 2100
     },
     "basePrice": 6500,
-    "metadata": {},
+    "metadata": {
+      "additionalInfo": "Colour: Charcoal, Bronze, White. Glass: Clear - 4mm.",
+      "glassType": "Clear - 4mm",
+      "glazing": "Single Glazed",
+      "tinting": "Standard Tint"
+    },
     "relatedCodes": [],
     "reviews": []
   },
@@ -769,8 +1084,29 @@ export const ACW_CATALOGUE = {
     "title": "Aluminium Door Kick Plate and Obscure Glass (right opening)",
     "category": "Doors",
     "codePrefix": "ASD898",
-    "image": "/images/ASD898/ASD898.jpg",
-    "imagesByColour": {},
+    "image": "/images/ASD898/ASD898.png",
+    "imagesByColour": {
+      "B": [
+        "/images/ASD898/ASD898.png",
+        "/images/ASD898/ASD898C.png"
+      ],
+      "BR": [
+        "/images/ASD898/ASD898O.png",
+        "/images/ASD898/ASD898C.png"
+      ],
+      "W": [
+        "/images/ASD898/ASD898O.png",
+        "/images/ASD898/ASD898C.png"
+      ],
+      "N": [
+        "/images/ASD898/ASD898O.png",
+        "/images/ASD898/ASD898C.png"
+      ],
+      "C": [
+        "/images/ASD898/ASD898O.png",
+        "/images/ASD898/ASD898C.png"
+      ]
+    },
     "shortDescription": "Aluminium Door Kick Plate and Obscure Glass",
     "description": "Door with kick plate and obscure glass (right opening) — W900 x H2100.",
     "additionalInfo": "Colour: Charcoal, Bronze, White. Glass: Clear - 4mm (or obscure where specified).",
@@ -779,7 +1115,12 @@ export const ACW_CATALOGUE = {
       "height": 2100
     },
     "basePrice": 5400,
-    "metadata": {},
+    "metadata": {
+      "additionalInfo": "Colour: Charcoal, Bronze, White. Glass: Clear - 4mm (or obscure where specified).",
+      "glassType": "Clear - 4mm",
+      "glazing": "Single Glazed",
+      "tinting": "Standard Tint"
+    },
     "relatedCodes": [],
     "reviews": []
   },
@@ -787,8 +1128,29 @@ export const ACW_CATALOGUE = {
     "title": "Aluminium Door 2 Panel Sliding",
     "category": "Doors",
     "codePrefix": "ASD899",
-    "image": "/images/ASD899/ASD899.jpg",
-    "imagesByColour": {},
+    "image": "/images/ASD899/ASD899.png",
+    "imagesByColour": {
+      "B": [
+        "/images/ASD899/ASD899O.png",
+        "/images/ASD899/ASD899C.png"
+      ],
+      "BR": [
+        "/images/ASD899/ASD899O.png",
+        "/images/ASD899/ASD899C.png"
+      ],
+      "W": [
+        "/images/ASD899/ASD899O.png",
+        "/images/ASD899/ASD899C.png"
+      ],
+      "N": [
+        "/images/ASD899/ASD899O.png",
+        "/images/ASD899/ASD899C.png"
+      ],
+      "C": [
+        "/images/ASD899/ASD899O.png",
+        "/images/ASD899/ASD899C.png"
+      ]
+    },
     "shortDescription": "Aluminium Door 2 Panel Sliding",
     "description": "Aluminium 2 panel sliding door — W6000 x H2100.",
     "additionalInfo": "Colour: Charcoal, Bronze, White. Glass: Clear - 4mm.",
@@ -797,7 +1159,12 @@ export const ACW_CATALOGUE = {
       "height": 2100
     },
     "basePrice": 12500,
-    "metadata": {},
+    "metadata": {
+      "additionalInfo": "Colour: Charcoal, Bronze, White. Glass: Clear - 4mm.",
+      "glassType": "Clear - 4mm",
+      "glazing": "Single Glazed",
+      "tinting": "Standard Tint"
+    },
     "relatedCodes": [],
     "reviews": []
   },
@@ -805,8 +1172,29 @@ export const ACW_CATALOGUE = {
     "title": "Aluminium Sliding Door 2 Panel",
     "category": "Doors",
     "codePrefix": "ASD900",
-    "image": "/images/ASD900/ASD900.jpg",
-    "imagesByColour": {},
+    "image": "/images/ASD900/ASD900.png",
+    "imagesByColour": {
+      "B": [
+        "/images/ASD900/ASD900O.png",
+        "/images/ASD900/ASD900C.png"
+      ],
+      "BR": [
+        "/images/ASD900/ASD900O.png",
+        "/images/ASD900/ASD900C.png"
+      ],
+      "W": [
+        "/images/ASD900/ASD900O.png",
+        "/images/ASD900/ASD900C.png"
+      ],
+      "N": [
+        "/images/ASD900/ASD900O.png",
+        "/images/ASD900/ASD900C.png"
+      ],
+      "C": [
+        "/images/ASD900/ASD900O.png",
+        "/images/ASD900/ASD900C.png"
+      ]
+    },
     "shortDescription": "Aluminium Sliding Door 2 Panel",
     "description": "Aluminium sliding door — 2 panels, W4500 x H2100.",
     "additionalInfo": "Colour: Charcoal, Bronze, White. Glass: Clear - 4mm.",
@@ -815,7 +1203,12 @@ export const ACW_CATALOGUE = {
       "height": 2100
     },
     "basePrice": 11000,
-    "metadata": {},
+    "metadata": {
+      "additionalInfo": "Colour: Charcoal, Bronze, White. Glass: Clear - 4mm.",
+      "glassType": "Clear - 4mm",
+      "glazing": "Single Glazed",
+      "tinting": "Standard Tint"
+    },
     "relatedCodes": [],
     "reviews": []
   },
@@ -823,8 +1216,29 @@ export const ACW_CATALOGUE = {
     "title": "2 Panel Aluminium Sliding Door",
     "category": "Doors",
     "codePrefix": "ASD901",
-    "image": "/images/ASD901/ASD901.jpg",
-    "imagesByColour": {},
+    "image": "/images/ASD901/ASD901.png",
+    "imagesByColour": {
+      "B": [
+        "/images/ASD901/ASD901O.png",
+        "/images/ASD901/ASD901C.png"
+      ],
+      "BR": [
+        "/images/ASD901/ASD901O.png",
+        "/images/ASD901/ASD901C.png"
+      ],
+      "W": [
+        "/images/ASD901/ASD901O.png",
+        "/images/ASD901/ASD901C.png"
+      ],
+      "N": [
+        "/images/ASD901/ASD901O.png",
+        "/images/ASD901/ASD901C.png"
+      ],
+      "C": [
+        "/images/ASD901/ASD901O.png",
+        "/images/ASD901/ASD901C.png"
+      ]
+    },
     "shortDescription": "2 Panel Aluminium Sliding Door",
     "description": "2 panel aluminium sliding door — W4200 x H2100.",
     "additionalInfo": "Colour: Charcoal, Bronze, White. Glass: Clear - 4mm.",
@@ -833,7 +1247,12 @@ export const ACW_CATALOGUE = {
       "height": 2100
     },
     "basePrice": 9500,
-    "metadata": {},
+    "metadata": {
+      "additionalInfo": "Colour: Charcoal, Bronze, White. Glass: Clear - 4mm.",
+      "glassType": "Clear - 4mm",
+      "glazing": "Single Glazed",
+      "tinting": "Standard Tint"
+    },
     "relatedCodes": [],
     "reviews": []
   },
@@ -841,8 +1260,29 @@ export const ACW_CATALOGUE = {
     "title": "Aluminium 1 Panel Sliding Door",
     "category": "Doors",
     "codePrefix": "ASD902",
-    "image": "/images/ASD902/ASD902.jpg",
-    "imagesByColour": {},
+    "image": "/images/ASD902/ASD902.png",
+    "imagesByColour": {
+      "B": [
+        "/images/ASD902/ASD902O.png",
+        "/images/ASD902/ASD902C.png"
+      ],
+      "BR": [
+        "/images/ASD902/ASD902O.png",
+        "/images/ASD902/ASD902C.png"
+      ],
+      "W": [
+        "/images/ASD902/ASD902O.png",
+        "/images/ASD902/ASD902C.png"
+      ],
+      "N": [
+        "/images/ASD902/ASD902O.png",
+        "/images/ASD902/ASD902C.png"
+      ],
+      "C": [
+        "/images/ASD902/ASD902O.png",
+        "/images/ASD902/ASD902C.png"
+      ]
+    },
     "shortDescription": "Aluminium 1 Panel Sliding Door",
     "description": "Aluminium 1 panel sliding door — W1800 x H2100.",
     "additionalInfo": "Colour: Charcoal, Bronze, White. Glass: Clear - 4mm.",
@@ -851,7 +1291,12 @@ export const ACW_CATALOGUE = {
       "height": 2100
     },
     "basePrice": 3500,
-    "metadata": {},
+    "metadata": {
+      "additionalInfo": "Colour: Charcoal, Bronze, White. Glass: Clear - 4mm.",
+      "glassType": "Clear - 4mm",
+      "glazing": "Single Glazed",
+      "tinting": "Standard Tint"
+    },
     "relatedCodes": [],
     "reviews": []
   },
@@ -859,8 +1304,29 @@ export const ACW_CATALOGUE = {
     "title": "Aluminium Diagonal Pivot Door (Reflective Glass) Left Hand Opening",
     "category": "Doors",
     "codePrefix": "ASD904",
-    "image": "/images/ASD904/ASD904.jpg",
-    "imagesByColour": {},
+    "image": "/images/ASD904/ASD904.png",
+    "imagesByColour": {
+      "B": [
+        "/images/ASD904/ASD904O.png",
+        "/images/ASD904/ASD904C.png"
+      ],
+      "BR": [
+        "/images/ASD904/ASD904O.png",
+        "/images/ASD904/ASD904C.png"
+      ],
+      "W": [
+        "/images/ASD904/ASD904O.png",
+        "/images/ASD904/ASD904C.png"
+      ],
+      "N": [
+        "/images/ASD904/ASD904O.png",
+        "/images/ASD904/ASD904C.png"
+      ],
+      "C": [
+        "/images/ASD904/ASD904O.png",
+        "/images/ASD904/ASD904C.png"
+      ]
+    },
     "shortDescription": "Aluminium Diagonal Pivot Door Reflective Glass (Left)",
     "description": "Aluminium diagonal pivot door with reflective glass — W1200 x H2100.",
     "additionalInfo": "Colour: Charcoal, Bronze, White. Glass: Clear - 4mm (reflective variant).",
@@ -869,7 +1335,12 @@ export const ACW_CATALOGUE = {
       "height": 2100
     },
     "basePrice": 9000,
-    "metadata": {},
+    "metadata": {
+      "additionalInfo": "Colour: Charcoal, Bronze, White. Glass: Clear - 4mm (reflective variant).",
+      "glassType": "Clear - 4mm",
+      "glazing": "Single Glazed",
+      "tinting": "Standard Tint"
+    },
     "relatedCodes": [],
     "reviews": []
   },
@@ -877,8 +1348,29 @@ export const ACW_CATALOGUE = {
     "title": "Aluminium Diagonal Pivot Door Reflective Glass Left Hand Opening",
     "category": "Doors",
     "codePrefix": "ASD905",
-    "image": "/images/ASD905/ASD905.jpg",
-    "imagesByColour": {},
+    "image": "/images/ASD905/ASD905.png",
+    "imagesByColour": {
+      "B": [
+        "/images/ASD905/ASD905O.png",
+        "/images/ASD905/ASD905C.png"
+      ],
+      "BR": [
+        "/images/ASD905/ASD905O.png",
+        "/images/ASD905/ASD905C.png"
+      ],
+      "W": [
+        "/images/ASD905/ASD905O.png",
+        "/images/ASD905/ASD905C.png"
+      ],
+      "N": [
+        "/images/ASD905/ASD905O.png",
+        "/images/ASD905/ASD905C.png"
+      ],
+      "C": [
+        "/images/ASD905/ASD905O.png",
+        "/images/ASD905/ASD905C.png"
+      ]
+    },
     "shortDescription": "Aluminium Diagonal Pivot Door Reflective Glass (Left)",
     "description": "Aluminium diagonal pivot door — reflective glass variant — W1200 x H2100.",
     "additionalInfo": "Colour: Charcoal, Bronze, White. Glass: Clear - 4mm.",
@@ -887,7 +1379,12 @@ export const ACW_CATALOGUE = {
       "height": 2100
     },
     "basePrice": 5500,
-    "metadata": {},
+    "metadata": {
+      "additionalInfo": "Colour: Charcoal, Bronze, White. Glass: Clear - 4mm.",
+      "glassType": "Clear - 4mm",
+      "glazing": "Single Glazed",
+      "tinting": "Standard Tint"
+    },
     "relatedCodes": [],
     "reviews": []
   },
@@ -895,8 +1392,29 @@ export const ACW_CATALOGUE = {
     "title": "Aluminium Horizontal Slates Door with Midrail",
     "category": "Doors",
     "codePrefix": "ASD906",
-    "image": "/images/ASD906/ASD906.jpg",
-    "imagesByColour": {},
+    "image": "/images/ASD906/ASD906O.png",
+    "imagesByColour": {
+      "B": [
+        "/images/ASD906/ASD906O.png",
+        "/images/ASD906/ASD906C.png"
+      ],
+      "BR": [
+        "/images/ASD906/ASD906O.png",
+        "/images/ASD906/ASD906C.png"
+      ],
+      "W": [
+        "/images/ASD906/ASD906O.png",
+        "/images/ASD906/ASD906C.png"
+      ],
+      "N": [
+        "/images/ASD906/ASD906O.png",
+        "/images/ASD906/ASD906C.png"
+      ],
+      "C": [
+        "/images/ASD906/ASD906O.png",
+        "/images/ASD906/ASD906C.png"
+      ]
+    },
     "shortDescription": "Aluminium Horizontal Slates Door with Midrail",
     "description": "Aluminium horizontal slates door with midrail — W900 x H2100.",
     "additionalInfo": "Colour: Charcoal, Bronze, White. Glass: Clear - 4mm.",
@@ -905,7 +1423,12 @@ export const ACW_CATALOGUE = {
       "height": 2100
     },
     "basePrice": 5300,
-    "metadata": {},
+    "metadata": {
+      "additionalInfo": "Colour: Charcoal, Bronze, White. Glass: Clear - 4mm.",
+      "glassType": "Clear - 4mm",
+      "glazing": "Single Glazed",
+      "tinting": "Standard Tint"
+    },
     "relatedCodes": [],
     "reviews": []
   },
@@ -913,8 +1436,29 @@ export const ACW_CATALOGUE = {
     "title": "Staggered Glass Panel Door",
     "category": "Doors",
     "codePrefix": "ASD907",
-    "image": "/images/ASD907/ASD907.jpg",
-    "imagesByColour": {},
+    "image": "/images/ASD907/ASD907O.png",
+    "imagesByColour": {
+      "B": [
+        "/images/ASD907/ASD907O.png",
+        "/images/ASD907/ASD907C.png"
+      ],
+      "BR": [
+        "/images/ASD907/ASD907O.png",
+        "/images/ASD907/ASD907C.png"
+      ],
+      "W": [
+        "/images/ASD907/ASD907O.png",
+        "/images/ASD907/ASD907C.png"
+      ],
+      "N": [
+        "/images/ASD907/ASD907O.png",
+        "/images/ASD907/ASD907C.png"
+      ],
+      "C": [
+        "/images/ASD907/ASD907O.png",
+        "/images/ASD907/ASD907C.png"
+      ]
+    },
     "shortDescription": "Staggered Glass Panel Door",
     "description": "Staggered glass panel door — W900 x H2100.",
     "additionalInfo": "Colour: Charcoal, Bronze, White. Glass: Clear - 4mm.",
@@ -923,7 +1467,12 @@ export const ACW_CATALOGUE = {
       "height": 2100
     },
     "basePrice": 5200,
-    "metadata": {},
+    "metadata": {
+      "additionalInfo": "Colour: Charcoal, Bronze, White. Glass: Clear - 4mm.",
+      "glassType": "Clear - 4mm",
+      "glazing": "Single Glazed",
+      "tinting": "Standard Tint"
+    },
     "relatedCodes": [],
     "reviews": []
   },
@@ -931,8 +1480,29 @@ export const ACW_CATALOGUE = {
     "title": "Staggered Glass Top Aluminium Panel Bottom Stable Door (Pre-hung)",
     "category": "Doors",
     "codePrefix": "ASD908",
-    "image": "/images/ASD908/ASD908.jpg",
-    "imagesByColour": {},
+    "image": "/images/ASD908/ASD908O.png",
+    "imagesByColour": {
+      "B": [
+        "/images/ASD908/ASD908O.png",
+        "/images/ASD908/ASD908C.png"
+      ],
+      "BR": [
+        "/images/ASD908/ASD908O.png",
+        "/images/ASD908/ASD908C.png"
+      ],
+      "W": [
+        "/images/ASD908/ASD908O.png",
+        "/images/ASD908/ASD908C.png"
+      ],
+      "N": [
+        "/images/ASD908/ASD908O.png",
+        "/images/ASD908/ASD908C.png"
+      ],
+      "C": [
+        "/images/ASD908/ASD908O.png",
+        "/images/ASD908/ASD908C.png"
+      ]
+    },
     "shortDescription": "Staggered Glass Top Aluminium Panel Bottom Stable Door (Pre-hung)",
     "description": "Pre-hung stable door — staggered glass top with aluminium panel bottom — W900 x H2100.",
     "additionalInfo": "Colour: Charcoal, Bronze, White. Glass: Clear - 4mm.",
@@ -941,7 +1511,12 @@ export const ACW_CATALOGUE = {
       "height": 2100
     },
     "basePrice": 5400,
-    "metadata": {},
+    "metadata": {
+      "additionalInfo": "Colour: Charcoal, Bronze, White. Glass: Clear - 4mm.",
+      "glassType": "Clear - 4mm",
+      "glazing": "Single Glazed",
+      "tinting": "Standard Tint"
+    },
     "relatedCodes": [],
     "reviews": []
   },
@@ -949,8 +1524,29 @@ export const ACW_CATALOGUE = {
     "title": "Single Aluminium Hinged Door (Two Panel Glass with Midrail)",
     "category": "Doors",
     "codePrefix": "ASD909",
-    "image": "/images/ASD909/ASD909.jpg",
-    "imagesByColour": {},
+    "image": "/images/ASD909/ASD909O.png",
+    "imagesByColour": {
+      "B": [
+        "/images/ASD909/ASD909O.png",
+        "/images/ASD909/ASD909C.png"
+      ],
+      "BR": [
+        "/images/ASD909/ASD909O.png",
+        "/images/ASD909/ASD909C.png"
+      ],
+      "W": [
+        "/images/ASD909/ASD909O.png",
+        "/images/ASD909/ASD909C.png"
+      ],
+      "N": [
+        "/images/ASD909/ASD909O.png",
+        "/images/ASD909/ASD909C.png"
+      ],
+      "C": [
+        "/images/ASD909/ASD909O.png",
+        "/images/ASD909/ASD909C.png"
+      ]
+    },
     "shortDescription": "Single Aluminium Hinged Door (Two Panel Glass with Midrail)",
     "description": "Single aluminium hinged door with two glass panels and midrail — W900 x H2100.",
     "additionalInfo": "Colour: Charcoal, Bronze, White. Glass: Clear - 4mm.",
@@ -959,7 +1555,12 @@ export const ACW_CATALOGUE = {
       "height": 2100
     },
     "basePrice": 5000,
-    "metadata": {},
+    "metadata": {
+      "additionalInfo": "Colour: Charcoal, Bronze, White. Glass: Clear - 4mm.",
+      "glassType": "Clear - 4mm",
+      "glazing": "Single Glazed",
+      "tinting": "Standard Tint"
+    },
     "relatedCodes": [],
     "reviews": []
   },
@@ -967,8 +1568,29 @@ export const ACW_CATALOGUE = {
     "title": "Aluminium Folding Door 5 Panel Right Hand Opening",
     "category": "Doors",
     "codePrefix": "ASD910",
-    "image": "/images/ASD910/ASD910.jpg",
-    "imagesByColour": {},
+    "image": "/images/ASD910/ASD910O.png",
+    "imagesByColour": {
+      "B": [
+        "/images/ASD910/ASD910O.png",
+        "/images/ASD910/ASD910C.png"
+      ],
+      "BR": [
+        "/images/ASD910/ASD910O.png",
+        "/images/ASD910/ASD910C.png"
+      ],
+      "W": [
+        "/images/ASD910/ASD910O.png",
+        "/images/ASD910/ASD910C.png"
+      ],
+      "N": [
+        "/images/ASD910/ASD910O.png",
+        "/images/ASD910/ASD910C.png"
+      ],
+      "C": [
+        "/images/ASD910/ASD910O.png",
+        "/images/ASD910/ASD910C.png"
+      ]
+    },
     "shortDescription": "Aluminium Folding Door 5 Panel Right Hand Opening",
     "description": "Aluminium folding door — 5 panel right hand opening — W4200 x H2100.",
     "additionalInfo": "Colour: Charcoal, Bronze, White. Glass: Clear - 4mm.",
@@ -977,7 +1599,12 @@ export const ACW_CATALOGUE = {
       "height": 2100
     },
     "basePrice": 23500,
-    "metadata": {},
+    "metadata": {
+      "additionalInfo": "Colour: Charcoal, Bronze, White. Glass: Clear - 4mm.",
+      "glassType": "Clear - 4mm",
+      "glazing": "Single Glazed",
+      "tinting": "Standard Tint"
+    },
     "relatedCodes": [],
     "reviews": []
   },
@@ -985,8 +1612,29 @@ export const ACW_CATALOGUE = {
     "title": "Aluminium Folding Door 5 Panel Right Hand Opening",
     "category": "Doors",
     "codePrefix": "ASD911",
-    "image": "/images/ASD911/ASD911.jpg",
-    "imagesByColour": {},
+    "image": "/images/ASD911/ASD911O.png",
+    "imagesByColour": {
+      "B": [
+        "/images/ASD911/ASD911O.png",
+        "/images/ASD911/ASD911C.png"
+      ],
+      "BR": [
+        "/images/ASD911/ASD911O.png",
+        "/images/ASD911/ASD911C.png"
+      ],
+      "W": [
+        "/images/ASD911/ASD911O.png",
+        "/images/ASD911/ASD911C.png"
+      ],
+      "N": [
+        "/images/ASD911/ASD911O.png",
+        "/images/ASD911/ASD911C.png"
+      ],
+      "C": [
+        "/images/ASD911/ASD911O.png",
+        "/images/ASD911/ASD911C.png"
+      ]
+    },
     "shortDescription": "Aluminium Folding Door 5 Panel Right Hand Opening",
     "description": "Aluminium folding door — 5 panel right hand opening — W4400 x H2100.",
     "additionalInfo": "Colour: Charcoal, Bronze, White. Glass: Clear - 4mm.",
@@ -995,7 +1643,12 @@ export const ACW_CATALOGUE = {
       "height": 2100
     },
     "basePrice": 24650,
-    "metadata": {},
+    "metadata": {
+      "additionalInfo": "Colour: Charcoal, Bronze, White. Glass: Clear - 4mm.",
+      "glassType": "Clear - 4mm",
+      "glazing": "Single Glazed",
+      "tinting": "Standard Tint"
+    },
     "relatedCodes": [],
     "reviews": []
   },
@@ -1003,8 +1656,29 @@ export const ACW_CATALOGUE = {
     "title": "Aluminium Folding Door 5 Panel Right Hand Opening",
     "category": "Doors",
     "codePrefix": "ASD912",
-    "image": "/images/ASD912/ASD912.jpg",
-    "imagesByColour": {},
+    "image": "/images/ASD912/ASD912O.png",
+    "imagesByColour": {
+      "B": [
+        "/images/ASD912/ASD912O.png",
+        "/images/ASD912/ASD912C.png"
+      ],
+      "BR": [
+        "/images/ASD912/ASD912O.png",
+        "/images/ASD912/ASD912C.png"
+      ],
+      "W": [
+        "/images/ASD912/ASD912O.png",
+        "/images/ASD912/ASD912C.png"
+      ],
+      "N": [
+        "/images/ASD912/ASD912O.png",
+        "/images/ASD912/ASD912C.png"
+      ],
+      "C": [
+        "/images/ASD912/ASD912O.png",
+        "/images/ASD912/ASD912C.png"
+      ]
+    },
     "shortDescription": "Aluminium Folding Door 5 Panel Right Hand Opening",
     "description": "Aluminium folding door — 5 panel right hand opening — W4500 x H2100.",
     "additionalInfo": "Colour: Charcoal, Bronze, White. Glass: Clear - 4mm.",
@@ -1013,7 +1687,12 @@ export const ACW_CATALOGUE = {
       "height": 2100
     },
     "basePrice": 25100,
-    "metadata": {},
+    "metadata": {
+      "additionalInfo": "Colour: Charcoal, Bronze, White. Glass: Clear - 4mm.",
+      "glassType": "Clear - 4mm",
+      "glazing": "Single Glazed",
+      "tinting": "Standard Tint"
+    },
     "relatedCodes": [],
     "reviews": []
   },
@@ -1021,8 +1700,29 @@ export const ACW_CATALOGUE = {
     "title": "Aluminium Folding Door 5 Panel Right Hand Opening",
     "category": "Doors",
     "codePrefix": "ASD913",
-    "image": "/images/ASD913/ASD913.jpg",
-    "imagesByColour": {},
+    "image": "/images/ASD913/ASD913O.png",
+    "imagesByColour": {
+      "B": [
+        "/images/ASD913/ASD913O.png",
+        "/images/ASD913/ASD913C.png"
+      ],
+      "BR": [
+        "/images/ASD913/ASD913O.png",
+        "/images/ASD913/ASD913C.png"
+      ],
+      "W": [
+        "/images/ASD913/ASD913O.png",
+        "/images/ASD913/ASD913C.png"
+      ],
+      "N": [
+        "/images/ASD913/ASD913O.png",
+        "/images/ASD913/ASD913C.png"
+      ],
+      "C": [
+        "/images/ASD913/ASD913O.png",
+        "/images/ASD913/ASD913C.png"
+      ]
+    },
     "shortDescription": "Aluminium Folding Door 5 Panel Right Hand Opening",
     "description": "Aluminium folding door — 5 panel right hand opening — W4000 x H2100.",
     "additionalInfo": "Colour: Charcoal, Bronze, White. Glass: Clear - 4mm.",
@@ -1031,7 +1731,12 @@ export const ACW_CATALOGUE = {
       "height": 2100
     },
     "basePrice": 23200,
-    "metadata": {},
+    "metadata": {
+      "additionalInfo": "Colour: Charcoal, Bronze, White. Glass: Clear - 4mm.",
+      "glassType": "Clear - 4mm",
+      "glazing": "Single Glazed",
+      "tinting": "Standard Tint"
+    },
     "relatedCodes": [],
     "reviews": []
   },
@@ -1039,8 +1744,29 @@ export const ACW_CATALOGUE = {
     "title": "Aluminium Folding Door 5 Panel Right Hand Opening",
     "category": "Doors",
     "codePrefix": "ASD914",
-    "image": "/images/ASD914/ASD914.jpg",
-    "imagesByColour": {},
+    "image": "/images/ASD914/ASD914O.png",
+    "imagesByColour": {
+      "B": [
+        "/images/ASD914/ASD914O.png",
+        "/images/ASD914/ASD914C.png"
+      ],
+      "BR": [
+        "/images/ASD914/ASD914O.png",
+        "/images/ASD914/ASD914C.png"
+      ],
+      "W": [
+        "/images/ASD914/ASD914O.png",
+        "/images/ASD914/ASD914C.png"
+      ],
+      "N": [
+        "/images/ASD914/ASD914O.png",
+        "/images/ASD914/ASD914C.png"
+      ],
+      "C": [
+        "/images/ASD914/ASD914O.png",
+        "/images/ASD914/ASD914C.png"
+      ]
+    },
     "shortDescription": "Aluminium Folding Door 5 Panel Right Hand Opening",
     "description": "Aluminium folding door — 5 panel right hand opening — W3600 x H2100.",
     "additionalInfo": "Colour: Charcoal, Bronze, White. Glass: Clear - 4mm.",
@@ -1049,7 +1775,12 @@ export const ACW_CATALOGUE = {
       "height": 2100
     },
     "basePrice": 21000,
-    "metadata": {},
+    "metadata": {
+      "additionalInfo": "Colour: Charcoal, Bronze, White. Glass: Clear - 4mm.",
+      "glassType": "Clear - 4mm",
+      "glazing": "Single Glazed",
+      "tinting": "Standard Tint"
+    },
     "relatedCodes": [],
     "reviews": []
   },
@@ -1057,8 +1788,29 @@ export const ACW_CATALOGUE = {
     "title": "Aluminium Folding Door 5 Panel Right Hand Opening",
     "category": "Doors",
     "codePrefix": "ASD915",
-    "image": "/images/ASD915/ASD915.jpg",
-    "imagesByColour": {},
+    "image": "/images/ASD915/ASD915O.png",
+    "imagesByColour": {
+      "B": [
+        "/images/ASD915/ASD915O.png",
+        "/images/ASD915/ASD915C.png"
+      ],
+      "BR": [
+        "/images/ASD915/ASD915O.png",
+        "/images/ASD915/ASD915C.png"
+      ],
+      "W": [
+        "/images/ASD915/ASD915O.png",
+        "/images/ASD915/ASD915C.png"
+      ],
+      "N": [
+        "/images/ASD915/ASD915O.png",
+        "/images/ASD915/ASD915C.png"
+      ],
+      "C": [
+        "/images/ASD915/ASD915O.png",
+        "/images/ASD915/ASD915C.png"
+      ]
+    },
     "shortDescription": "Aluminium Folding Door 5 Panel Right Hand Opening",
     "description": "Aluminium folding door — 5 panel right hand opening — W3000 x H2100.",
     "additionalInfo": "Colour: Charcoal, Bronze, White. Glass: Clear - 4mm.",
@@ -1067,7 +1819,12 @@ export const ACW_CATALOGUE = {
       "height": 2100
     },
     "basePrice": 19500,
-    "metadata": {},
+    "metadata": {
+      "additionalInfo": "Colour: Charcoal, Bronze, White. Glass: Clear - 4mm.",
+      "glassType": "Clear - 4mm",
+      "glazing": "Single Glazed",
+      "tinting": "Standard Tint"
+    },
     "relatedCodes": [],
     "reviews": []
   },
@@ -1075,8 +1832,29 @@ export const ACW_CATALOGUE = {
     "title": "Aluminium Folding Door 5 Panel Right Hand Opening",
     "category": "Doors",
     "codePrefix": "ASD916",
-    "image": "/images/ASD916/ASD916.jpg",
-    "imagesByColour": {},
+    "image": "/images/ASD916/ASD916O.png",
+    "imagesByColour": {
+      "B": [
+        "/images/ASD916/ASD916O.png",
+        "/images/ASD916/ASD916C.png"
+      ],
+      "BR": [
+        "/images/ASD916/ASD916O.png",
+        "/images/ASD916/ASD916C.png"
+      ],
+      "W": [
+        "/images/ASD916/ASD916O.png",
+        "/images/ASD916/ASD916C.png"
+      ],
+      "N": [
+        "/images/ASD916/ASD916O.png",
+        "/images/ASD916/ASD916C.png"
+      ],
+      "C": [
+        "/images/ASD916/ASD916O.png",
+        "/images/ASD916/ASD916C.png"
+      ]
+    },
     "shortDescription": "Aluminium Folding Door 5 Panel Right Hand Opening",
     "description": "Aluminium folding door — 5 panel right hand opening — W2400 x H2100.",
     "additionalInfo": "Colour: Charcoal, Bronze, White. Glass: Clear - 4mm.",
@@ -1085,7 +1863,12 @@ export const ACW_CATALOGUE = {
       "height": 2100
     },
     "basePrice": 17500,
-    "metadata": {},
+    "metadata": {
+      "additionalInfo": "Colour: Charcoal, Bronze, White. Glass: Clear - 4mm.",
+      "glassType": "Clear - 4mm",
+      "glazing": "Single Glazed",
+      "tinting": "Standard Tint"
+    },
     "relatedCodes": [],
     "reviews": []
   },
@@ -1093,8 +1876,29 @@ export const ACW_CATALOGUE = {
     "title": "Aluminium Sliding Door 2 Panel Sliding",
     "category": "Doors",
     "codePrefix": "ASD917",
-    "image": "/images/ASD917/ASD917.jpg",
-    "imagesByColour": {},
+    "image": "/images/ASD917/ASD917O.png",
+    "imagesByColour": {
+      "B": [
+        "/images/ASD917/ASD917O.png",
+        "/images/ASD917/ASD917C.png"
+      ],
+      "BR": [
+        "/images/ASD917/ASD917O.png",
+        "/images/ASD917/ASD917C.png"
+      ],
+      "W": [
+        "/images/ASD917/ASD917O.png",
+        "/images/ASD917/ASD917C.png"
+      ],
+      "N": [
+        "/images/ASD917/ASD917O.png",
+        "/images/ASD917/ASD917C.png"
+      ],
+      "C": [
+        "/images/ASD917/ASD917O.png",
+        "/images/ASD917/ASD917C.png"
+      ]
+    },
     "shortDescription": "Aluminium Sliding Door, 2 Panel Sliding",
     "description": "Aluminium sliding door — 2 panels, W5200 x H2100.",
     "additionalInfo": "Colour: Charcoal, Bronze, White. Glass: Clear - 4mm.",
@@ -1103,7 +1907,12 @@ export const ACW_CATALOGUE = {
       "height": 2100
     },
     "basePrice": 9900,
-    "metadata": {},
+    "metadata": {
+      "additionalInfo": "Colour: Charcoal, Bronze, White. Glass: Clear - 4mm.",
+      "glassType": "Clear - 4mm",
+      "glazing": "Single Glazed",
+      "tinting": "Standard Tint"
+    },
     "relatedCodes": [],
     "reviews": []
   },
@@ -1111,8 +1920,29 @@ export const ACW_CATALOGUE = {
     "title": "Aluminium Folding Door 3 Panel Left Hand Opening",
     "category": "Doors",
     "codePrefix": "ASD918",
-    "image": "/images/ASD918/ASD918.jpg",
-    "imagesByColour": {},
+    "image": "/images/ASD918/ASD918O.png",
+    "imagesByColour": {
+      "B": [
+        "/images/ASD918/ASD918O.png",
+        "/images/ASD918/ASD918C.png"
+      ],
+      "BR": [
+        "/images/ASD918/ASD918O.png",
+        "/images/ASD918/ASD918C.png"
+      ],
+      "W": [
+        "/images/ASD918/ASD918O.png",
+        "/images/ASD918/ASD918C.png"
+      ],
+      "N": [
+        "/images/ASD918/ASD918O.png",
+        "/images/ASD918/ASD918C.png"
+      ],
+      "C": [
+        "/images/ASD918/ASD918O.png",
+        "/images/ASD918/ASD918C.png"
+      ]
+    },
     "shortDescription": "Aluminium Folding Door 3 Panel Left Hand Opening",
     "description": "Aluminium folding door — 3 panel left hand opening — W2100 x H2100.",
     "additionalInfo": "Colour: Charcoal, Bronze, White. Glass: Clear - 4mm.",
@@ -1121,7 +1951,12 @@ export const ACW_CATALOGUE = {
       "height": 2100
     },
     "basePrice": 13500,
-    "metadata": {},
+    "metadata": {
+      "additionalInfo": "Colour: Charcoal, Bronze, White. Glass: Clear - 4mm.",
+      "glassType": "Clear - 4mm",
+      "glazing": "Single Glazed",
+      "tinting": "Standard Tint"
+    },
     "relatedCodes": [],
     "reviews": []
   },
@@ -1129,8 +1964,29 @@ export const ACW_CATALOGUE = {
     "title": "Aluminium Folding Door 3 Panel Left Hand Opening",
     "category": "Doors",
     "codePrefix": "ASD919",
-    "image": "/images/ASD919/ASD919.jpg",
-    "imagesByColour": {},
+    "image": "/images/ASD919/ASD919O.png",
+    "imagesByColour": {
+      "B": [
+        "/images/ASD919/ASD919O.png",
+        "/images/ASD919/ASD919C.png"
+      ],
+      "BR": [
+        "/images/ASD919/ASD919O.png",
+        "/images/ASD919/ASD919C.png"
+      ],
+      "W": [
+        "/images/ASD919/ASD919O.png",
+        "/images/ASD919/ASD919C.png"
+      ],
+      "N": [
+        "/images/ASD919/ASD919O.png",
+        "/images/ASD919/ASD919C.png"
+      ],
+      "C": [
+        "/images/ASD919/ASD919O.png",
+        "/images/ASD919/ASD919C.png"
+      ]
+    },
     "shortDescription": "Aluminium Folding Door 3 Panel Left Hand Opening",
     "description": "Aluminium folding door — 3 panel left hand opening — W2700 x H2100.",
     "additionalInfo": "Colour: Charcoal, Bronze, White. Glass: Clear - 4mm.",
@@ -1139,7 +1995,12 @@ export const ACW_CATALOGUE = {
       "height": 2100
     },
     "basePrice": 15570,
-    "metadata": {},
+    "metadata": {
+      "additionalInfo": "Colour: Charcoal, Bronze, White. Glass: Clear - 4mm.",
+      "glassType": "Clear - 4mm",
+      "glazing": "Single Glazed",
+      "tinting": "Standard Tint"
+    },
     "relatedCodes": [],
     "reviews": []
   }
