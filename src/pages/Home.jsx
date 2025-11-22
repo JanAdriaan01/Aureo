@@ -16,7 +16,7 @@ export default function Home() {
 
           <p className="text-lg text-zinc-600 max-w-xl">
             Premium systems in standard sizes — anodised or powder coated.
-            Live pricing for standard sizes. Configure online; we fabricate.
+            Live pricing for standard sizes.
           </p>
 
           <div className="flex flex-wrap gap-3 mt-6">
