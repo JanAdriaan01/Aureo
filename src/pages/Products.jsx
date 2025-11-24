@@ -4,16 +4,13 @@ import { Link } from "react-router-dom";
 import { ACW_CATALOGUE } from "../data/acw-catalogue.js";
 
 /**
- * Products grid — full file replacement.
- * Panorama detection tuned based on example /mnt/data/ASD911.jpg (ratio ≈ 1.50).
- *
- * Notes:
- * - PANORAMA_THRESHOLD lowered to 1.4 to catch moderately wide product photos.
- * - panoramaThumbHeight increased to 140px so wide images are visible without feeling tiny.
- * - Detection uses a programmatic Image preloader (works with cached images).
+ * Products page — responsive + mobile-safe thumbnails
+ * - uses programmatic Image() detection for aspect ratio
+ * - mobile default uses object-contain to prevent overflow/overlap
+ * - sm+ uses object-cover for a consistent card look
  */
 
-// Colour map (unchanged)
+/* Colour map */
 const COLOUR_MAP = [
   { code: "W", name: "White", hex: "#FFFFFF" },
   { code: "B", name: "Black", hex: "#0B0B0B" },
@@ -26,30 +23,20 @@ function findColourMeta(code) {
   return COLOUR_MAP.find((c) => c.code === code) || { code, name: code, hex: "#E5E7EB" };
 }
 
-/* ProductCard with robust aspect detection */
+/* Product card — detects panoramas and adapts rendering */
 function ProductCard({ prod }) {
   const [isPanorama, setIsPanorama] = useState(false);
 
-  // TUNING:
-  // - PANORAMA_THRESHOLD set to 1.4 (images wider than 1.4:1 are treated as panoramas).
-  //   Example uploaded: /mnt/data/ASD911.jpg => ratio ≈ 1.50, will be detected as panorama.
+  // threshold tuning: images wider than this (w/h) treated as panorama
   const PANORAMA_THRESHOLD = 1.4;
 
-  // thumbnail heights (px)
-  const normalThumbHeight = 224; // ~h-56
-  const panoramaThumbHeight = 140; // tuned so panoramas are visible (change as desired)
-
-  // Use a programmatic preloader which is reliable even with cached images
+  // Use programmatic preloader for reliable detection (works with cached images)
   useEffect(() => {
-    setIsPanorama(false); // reset while we (re)detect
+    setIsPanorama(false);
     if (!prod?.image) return;
 
     let cancelled = false;
     const img = new Image();
-
-    // If your images are on another origin and require CORS, uncomment:
-    // img.crossOrigin = "anonymous";
-
     img.onload = function () {
       if (cancelled) return;
       const w = img.naturalWidth || img.width;
@@ -61,14 +48,11 @@ function ProductCard({ prod }) {
       const ratio = w / h;
       setIsPanorama(ratio >= PANORAMA_THRESHOLD);
     };
-
     img.onerror = function () {
       if (cancelled) return;
       setIsPanorama(false);
     };
-
-    img.src = prod.image; // start load (uses cache if available)
-
+    img.src = prod.image;
     return () => {
       cancelled = true;
       img.onload = null;
@@ -76,33 +60,26 @@ function ProductCard({ prod }) {
     };
   }, [prod.image, prod.code]);
 
-  // choose container height based on detection
-  const containerHeight = isPanorama ? panoramaThumbHeight : normalThumbHeight;
-
+  // CSS class names are used for media-query height overrides (see component-level <style>).
+  // .product-thumb -> mobile default height; sm+ gets larger height via media query.
   return (
     <div className="border rounded-xl overflow-hidden shadow bg-white">
       <Link to={`/products/${encodeURIComponent(prod.code)}`}>
         <div
-          // data attribute helps inspect in devtools: data-panorama="true"/"false"
           data-panorama={isPanorama ? "true" : "false"}
-          className="w-full bg-zinc-100 flex items-center justify-center overflow-hidden transition-all duration-200"
-          style={{
-            height: `${containerHeight}px`,
-            minHeight: `${containerHeight}px`,
-            maxHeight: `${containerHeight}px`,
-          }}
+          className="product-thumb w-full bg-zinc-100 flex items-center justify-center overflow-hidden transition-all duration-200"
         >
           {prod.image ? (
             <img
               src={prod.image}
               alt={prod.title}
-              className="block"
+              className={`block max-w-full max-h-full`}
               style={
                 isPanorama
                   ? {
                       objectFit: "contain",
-                      width: "auto",   // let width scale naturally so whole image fits
-                      height: "100%",  // fill container height
+                      width: "auto",
+                      height: "100%",
                     }
                   : {
                       objectFit: "cover",
@@ -166,9 +143,7 @@ function ProductCard({ prod }) {
   );
 }
 
-/* -------------------------
-   Main Products page (original logic preserved)
-   ------------------------- */
+/* Main Products page */
 export default function Products() {
   // --- original product mapping (kept as-is) ---
   const products = useMemo(() => {
@@ -246,6 +221,16 @@ export default function Products() {
 
   return (
     <div className="p-6 max-w-7xl mx-auto">
+      {/* Inline CSS to control responsive heights for .product-thumb */}
+      <style>{`
+        /* mobile default: thumbnail height smaller so mobile layout is compact */
+        .product-thumb { height: 140px; min-height: 140px; max-height: 140px; }
+        @media (min-width: 640px) {
+          /* sm and up: larger square-ish thumbnails (close to your original h-56) */
+          .product-thumb { height: 224px; min-height: 224px; max-height: 224px; }
+        }
+      `}</style>
+
       <div className="text-center mb-6">
         <h1 className="text-3xl font-bold mb-4">Shop</h1>
         <div className="flex justify-center">

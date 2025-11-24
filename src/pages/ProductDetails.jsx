@@ -5,6 +5,14 @@ import { ACW_CATALOGUE } from "../data/acw-catalogue.js";
 import { useOrder } from "../context/OrderContext.jsx";
 import Input from "../components/ui/Input";
 
+/**
+ * ProductDetails — responsive hero + mobile-safe thumbnails
+ * - programmatic Image() detection (works with cached images)
+ * - mobile default: object-contain (prevents overflow/overlap)
+ * - sm+ default: object-cover (fills hero area)
+ */
+
+// colour constants & fallbacks
 const LATEST_COLOURS = [
   { code: "W", name: "White" },
   { code: "B", name: "Black" },
@@ -15,8 +23,7 @@ const LATEST_COLOURS = [
 
 const FALLBACK_DIMENSIONS = { width: 1200, height: 1500 };
 
-// For local testing, you uploaded an example image — use this path to test detection visually:
-// (Dev note: the environment maps /mnt/data/... to a URL when serving assets)
+// local uploaded sample path (for your local testing)
 const UPLOADED_TEST_IMAGE = "/mnt/data/ASD911.jpg";
 
 export default function ProductDetails() {
@@ -24,7 +31,7 @@ export default function ProductDetails() {
   const navigate = useNavigate();
   const { addItem } = useOrder();
 
-  // find product by code, codePrefix, or title (keeps your existing logic)
+  // find product
   const product = useMemo(() => {
     if (!ACW_CATALOGUE) return null;
     return (
@@ -34,7 +41,6 @@ export default function ProductDetails() {
     );
   }, [code]);
 
-  // scroll to top whenever this page renders for a different product code
   useEffect(() => {
     window.scrollTo({ top: 0, left: 0, behavior: "auto" });
   }, [code]);
@@ -54,7 +60,6 @@ export default function ProductDetails() {
   const dims = product.dimensions || FALLBACK_DIMENSIONS;
   const sizeLabel = `${dims.width} x ${dims.height} mm`;
 
-  // images / colours handling — preserve your merged list behaviour but ensure any extra keys show
   const imagesByColour = product.imagesByColour || {};
   const extraColourKeys = Object.keys(imagesByColour).filter((k) => !LATEST_COLOURS.find((c) => c.code === k));
   const mergedColourList = [...LATEST_COLOURS, ...extraColourKeys.map((k) => ({ code: k, name: k }))];
@@ -69,7 +74,6 @@ export default function ProductDetails() {
     return { ...c, images: imgs };
   });
 
-  // price + selection state (initialised afterwards via useEffect to react to product change)
   const unitPrice = typeof product.basePrice === "number" ? product.basePrice : Number(product.basePrice) || 0;
   const [selectedColour, setSelectedColour] = useState(colourOptions[0]?.code || mergedColourList[0]?.code || "W");
   const [selectedImage, setSelectedImage] = useState(
@@ -77,7 +81,6 @@ export default function ProductDetails() {
   );
   const [quantity, setQuantity] = useState(1);
 
-  // when product or colourOptions change, reset the selected colour and image to the first available
   useEffect(() => {
     const first = colourOptions[0];
     const firstCode = first?.code || mergedColourList[0]?.code || "W";
@@ -120,7 +123,6 @@ export default function ProductDetails() {
 
   const [activeTab, setActiveTab] = useState("description");
 
-  // relatedProducts: keep your existing logic but expose the code key for navigation
   const relatedProducts = Object.entries(ACW_CATALOGUE)
     .map(([k, p]) => ({ code: k, ...p }))
     .filter((p) => p.code !== (product.codePrefix || code) && (p.category === product.category || p.codePrefix === product.codePrefix))
@@ -139,32 +141,18 @@ export default function ProductDetails() {
     }
   };
 
-  /* ------------------------------
-     HERO IMAGE: panorama detection + adaptive rendering
-     ------------------------------ */
+  /* ---------- HERO: panorama detection & responsive safe rendering ---------- */
   const [isPanorama, setIsPanorama] = useState(false);
+  const PANORAMA_THRESHOLD = 1.4; // tuned low to catch moderate wides (like 1.5:1)
+  const heroMobileHeight = 420; // mobile default
+  const heroDesktopHeight = 520; // sm+
 
-  // TUNING: images wider than this ratio => treat as 'panorama' and use object-contain
-  // Example: the uploaded test file /mnt/data/ASD911.jpg has ratio ≈ 1.5, so threshold 1.4 will detect it.
-  const PANORAMA_THRESHOLD = 1.4;
-
-  // hero heights (px)
-  const heroNormalHeight = 520; // original: h-[520px]
-  const heroPanoramaHeight = 420; // slightly shorter but shows full width with contain (tweakable)
-
+  // detect aspect ratio via Image() (reliable with cache)
   useEffect(() => {
-    // robust detection via programmatic Image (works even if cached)
-    if (!selectedImage) {
-      setIsPanorama(false);
-      return;
-    }
-
+    setIsPanorama(false);
+    if (!selectedImage) return;
     let cancelled = false;
     const img = new Image();
-
-    // If your images are served from a different origin and need CORS, uncomment:
-    // img.crossOrigin = "anonymous";
-
     img.onload = function () {
       if (cancelled) return;
       const w = img.naturalWidth || img.width;
@@ -174,18 +162,13 @@ export default function ProductDetails() {
         return;
       }
       const ratio = w / h;
-      // eslint-disable-next-line no-console
-      console.log(`[ProductDetails] image ratio for ${product.codePrefix || code}: ${ratio.toFixed(2)} (w:${w}, h:${h})`);
       setIsPanorama(ratio >= PANORAMA_THRESHOLD);
     };
-
     img.onerror = function () {
       if (cancelled) return;
       setIsPanorama(false);
     };
-
     img.src = selectedImage;
-
     return () => {
       cancelled = true;
       img.onload = null;
@@ -193,18 +176,20 @@ export default function ProductDetails() {
     };
   }, [selectedImage, product.codePrefix, code]);
 
-  // determine inline styles for hero container + img
-  const heroHeight = isPanorama ? heroPanoramaHeight : heroNormalHeight;
+  // compute hero styles — we keep object-contain on mobile by default and switch to cover on sm+.
   const heroContainerStyle = {
-    height: `${heroHeight}px`,
-    minHeight: `${heroHeight}px`,
-    maxHeight: `${heroHeight}px`,
+    height: `${heroMobileHeight}px`,
+    minHeight: `${heroMobileHeight}px`,
+    maxHeight: `${heroMobileHeight}px`,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
   };
 
   const heroImageStyle = isPanorama
     ? {
         objectFit: "contain",
-        width: "auto", // let width scale naturally; image will fill container height
+        width: "auto",
         height: "100%",
         display: "block",
       }
@@ -217,42 +202,56 @@ export default function ProductDetails() {
 
   return (
     <div className="p-6 max-w-6xl mx-auto space-y-10 overflow-x-hidden">
+      {/* inline CSS to increase hero height on sm+ and ensure thumbnails behave */}
+      <style>{`
+        /* Hero: mobile height (set by inline style above) -> sm+ larger hero */
+        @media (min-width: 640px) {
+          .product-hero { height: ${heroDesktopHeight}px !important; min-height: ${heroDesktopHeight}px !important; max-height: ${heroDesktopHeight}px !important; }
+        }
+        /* Thumbnails: make sure they're consistent and use contain on mobile */
+        .thumb-btn img { object-fit: contain; width: 100%; height: 100%; display: block; }
+        @media (min-width:640px) {
+          /* on sm+, thumbnail previews can use cover to match original visual */
+          .thumb-btn img { object-fit: cover; }
+        }
+      `}</style>
+
       <div className="grid md:grid-cols-2 gap-8">
         <div className="min-w-0">
-          {/* Main image container: adaptive height and object-fit behaviour */}
+          {/* HERO: wrapper uses .product-hero to get sm+ override */}
           <div
-            className="rounded-2xl overflow-hidden border mb-4 bg-zinc-50 flex items-center justify-center"
+            className="rounded-2xl overflow-hidden border mb-4 bg-zinc-50 product-hero"
             style={heroContainerStyle}
             data-panorama={isPanorama ? "true" : "false"}
           >
-            {/* If you want to test locally with the uploaded test image, replace selectedImage with UPLOADED_TEST_IMAGE */}
             <img
               src={selectedImage || product.image || UPLOADED_TEST_IMAGE || "/placeholder.png"}
               alt={`${product.title} ${selectedColour}`}
-              className="w-full h-full"
-              style={heroImageStyle}
               loading="lazy"
+              style={heroImageStyle}
+              className="w-full h-full"
             />
           </div>
 
           {/* Thumbnails + colour swatches */}
-          <div className="flex gap-3 items-center flex-wrap overflow-x-auto">
-            <div className="flex gap-2 flex-wrap">
+          <div className="flex gap-3 items-center flex-wrap overflow-x-auto -mx-1">
+            <div className="flex gap-2 flex-wrap px-1">
               {(colourOptions.find((o) => o.code === selectedColour)?.images || [selectedImage])
                 .slice(0, 8)
                 .map((img, i) => (
                   <button
                     key={i}
                     onClick={() => setSelectedImage(img)}
-                    className={`w-20 h-20 rounded-lg overflow-hidden border flex-shrink-0 ${selectedImage === img ? "ring-2 ring-zinc-900" : ""}`}
+                    className={`thumb-btn w-20 h-20 rounded-lg overflow-hidden border flex-shrink-0 ${selectedImage === img ? "ring-2 ring-zinc-900" : ""}`}
                     title={`Preview image ${i + 1}`}
+                    style={{ minWidth: "80px" }}
                   >
-                    <img src={img} alt={`${product.title}-${i}`} className="w-full h-full object-cover" loading="lazy" />
+                    <img src={img} alt={`${product.title}-${i}`} loading="lazy" />
                   </button>
                 ))}
             </div>
 
-            <div className="ml-4 flex gap-2 items-center flex-wrap overflow-x-auto">
+            <div className="ml-4 flex gap-2 items-center flex-wrap overflow-x-auto px-1">
               {colourOptions.map((o) => (
                 <button
                   key={o.code}
