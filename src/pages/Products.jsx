@@ -1,16 +1,19 @@
 // src/pages/Products.jsx
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { ACW_CATALOGUE } from "../data/acw-catalogue.js";
 
 /**
- * Products grid — shows each ACW product with its primary image and fixed price.
- * Keeps existing product mapping intact; adds filter sidebar, mobile drawer and sort control.
+ * Products grid — full file replacement.
+ * Panorama detection tuned based on example /mnt/data/ASD911.jpg (ratio ≈ 1.50).
  *
- * IMPORTANT: This file preserves all existing product mapping / image paths / links.
+ * Notes:
+ * - PANORAMA_THRESHOLD lowered to 1.4 to catch moderately wide product photos.
+ * - panoramaThumbHeight increased to 140px so wide images are visible without feeling tiny.
+ * - Detection uses a programmatic Image preloader (works with cached images).
  */
 
-// Colour map: code -> name + display hex (edit hex values to match your latest schemes)
+// Colour map (unchanged)
 const COLOUR_MAP = [
   { code: "W", name: "White", hex: "#FFFFFF" },
   { code: "B", name: "Black", hex: "#0B0B0B" },
@@ -19,11 +22,153 @@ const COLOUR_MAP = [
   { code: "N", name: "Natural", hex: "#C0A97A" },
 ];
 
-// Helper to find colour metadata by code
 function findColourMeta(code) {
   return COLOUR_MAP.find((c) => c.code === code) || { code, name: code, hex: "#E5E7EB" };
 }
 
+/* ProductCard with robust aspect detection */
+function ProductCard({ prod }) {
+  const [isPanorama, setIsPanorama] = useState(false);
+
+  // TUNING:
+  // - PANORAMA_THRESHOLD set to 1.4 (images wider than 1.4:1 are treated as panoramas).
+  //   Example uploaded: /mnt/data/ASD911.jpg => ratio ≈ 1.50, will be detected as panorama.
+  const PANORAMA_THRESHOLD = 1.4;
+
+  // thumbnail heights (px)
+  const normalThumbHeight = 224; // ~h-56
+  const panoramaThumbHeight = 140; // tuned so panoramas are visible (change as desired)
+
+  // Use a programmatic preloader which is reliable even with cached images
+  useEffect(() => {
+    setIsPanorama(false); // reset while we (re)detect
+    if (!prod?.image) return;
+
+    let cancelled = false;
+    const img = new Image();
+
+    // If your images are on another origin and require CORS, uncomment:
+    // img.crossOrigin = "anonymous";
+
+    img.onload = function () {
+      if (cancelled) return;
+      const w = img.naturalWidth || img.width;
+      const h = img.naturalHeight || img.height;
+      if (!w || !h) {
+        setIsPanorama(false);
+        return;
+      }
+      const ratio = w / h;
+      setIsPanorama(ratio >= PANORAMA_THRESHOLD);
+    };
+
+    img.onerror = function () {
+      if (cancelled) return;
+      setIsPanorama(false);
+    };
+
+    img.src = prod.image; // start load (uses cache if available)
+
+    return () => {
+      cancelled = true;
+      img.onload = null;
+      img.onerror = null;
+    };
+  }, [prod.image, prod.code]);
+
+  // choose container height based on detection
+  const containerHeight = isPanorama ? panoramaThumbHeight : normalThumbHeight;
+
+  return (
+    <div className="border rounded-xl overflow-hidden shadow bg-white">
+      <Link to={`/products/${encodeURIComponent(prod.code)}`}>
+        <div
+          // data attribute helps inspect in devtools: data-panorama="true"/"false"
+          data-panorama={isPanorama ? "true" : "false"}
+          className="w-full bg-zinc-100 flex items-center justify-center overflow-hidden transition-all duration-200"
+          style={{
+            height: `${containerHeight}px`,
+            minHeight: `${containerHeight}px`,
+            maxHeight: `${containerHeight}px`,
+          }}
+        >
+          {prod.image ? (
+            <img
+              src={prod.image}
+              alt={prod.title}
+              className="block"
+              style={
+                isPanorama
+                  ? {
+                      objectFit: "contain",
+                      width: "auto",   // let width scale naturally so whole image fits
+                      height: "100%",  // fill container height
+                    }
+                  : {
+                      objectFit: "cover",
+                      width: "100%",
+                      height: "100%",
+                    }
+              }
+            />
+          ) : (
+            <div className="text-zinc-400">No image</div>
+          )}
+        </div>
+      </Link>
+
+      <div className="p-4">
+        <div className="flex items-start justify-between gap-3">
+          <div className="flex-1 min-w-0">
+            <div className="font-semibold text-lg truncate">{prod.title}</div>
+            <div className="text-sm text-zinc-500">{prod.category}</div>
+          </div>
+        </div>
+
+        {/* Colour swatches */}
+        <div className="mt-3 flex items-center gap-2">
+          {prod.coloursAvailable && prod.coloursAvailable.length > 0 ? (
+            prod.coloursAvailable.slice(0, 6).map((c) => (
+              <div
+                key={c.code}
+                title={c.name}
+                className="w-6 h-6 rounded-full border overflow-hidden"
+                style={{ flex: "0 0 24px" }}
+              >
+                {c.image ? (
+                  <img src={c.image} alt={c.name} className="w-full h-full object-cover" />
+                ) : (
+                  <div style={{ backgroundColor: c.hex, width: "100%", height: "100%" }} />
+                )}
+              </div>
+            ))
+          ) : (
+            <div className="w-6 h-6 rounded-full border bg-zinc-100" title="No colour images available" />
+          )}
+        </div>
+
+        <div className="mt-3">
+          {prod.price !== null ? (
+            <div className="text-xl font-bold">R {Number(prod.price).toLocaleString()}</div>
+          ) : (
+            <div className="text-sm text-zinc-500">Price on request</div>
+          )}
+        </div>
+
+        <Link
+          to={`/products/${encodeURIComponent(prod.code)}`}
+          className="mt-4 inline-block px-4 py-2 bg-zinc-900 text-white rounded-xl text-sm hover:bg-zinc-800"
+        >
+          View
+        </Link>
+      </div>
+    </div>
+  );
+}
+
+/* -------------------------
+   Main Products page (original logic preserved)
+   ------------------------- */
 export default function Products() {
   // --- original product mapping (kept as-is) ---
   const products = useMemo(() => {
@@ -36,22 +181,17 @@ export default function Products() {
 
       const price = typeof p.basePrice === "number" ? p.basePrice : Number(p.basePrice) || null;
 
-      // build list of available colours for this product:
-      // - prefer explicit imagesByColour keys
-      // - normalized to COLOUR_MAP codes
       const imagesByColour = p.imagesByColour || {};
       const availableColourCodes = Object.keys(imagesByColour).filter((k) => {
         const arr = imagesByColour[k];
         return Array.isArray(arr) && arr.length > 0;
       });
 
-      // If no explicit imagesByColour, try to infer from image path (/images/<code>/<colour>/...)
       if (availableColourCodes.length === 0 && p.image && typeof p.image === "string") {
         const match = p.image.match(/\/images\/[^/]+\/([^/]+)\//);
         if (match && match[1]) availableColourCodes.push(match[1]);
       }
 
-      // Normalize codes and map to meta
       const coloursAvailable = availableColourCodes
         .map((c) => {
           const meta = findColourMeta(c);
@@ -59,11 +199,9 @@ export default function Products() {
             code: meta.code,
             name: meta.name,
             hex: meta.hex,
-            // pass first image for preview (if present)
             image: (imagesByColour[c] && imagesByColour[c][0]) || null,
           };
         })
-        // dedupe by code
         .filter((v, i, arr) => arr.findIndex((x) => x.code === v.code) === i);
 
       return {
@@ -78,24 +216,21 @@ export default function Products() {
   }, []);
 
   // --- UI state ---
-  const [filtersOpen, setFiltersOpen] = useState(false); // mobile drawer
-  const [typeFilter, setTypeFilter] = useState(""); // category filter
-  const [sortBy, setSortBy] = useState("price-asc"); // sort state
-  const [searchQuery, setSearchQuery] = useState(""); // search state
+  const [filtersOpen, setFiltersOpen] = useState(false);
+  const [typeFilter, setTypeFilter] = useState("");
+  const [sortBy, setSortBy] = useState("price-asc");
+  const [searchQuery, setSearchQuery] = useState("");
 
-  // derive unique categories for the sidebar dropdown
   const categories = useMemo(() => {
     const set = new Set(products.map((p) => p.category || "Product"));
     return Array.from(set);
   }, [products]);
 
-  // apply filters + sorting + search to the original products (do not change original products array)
   const displayed = useMemo(() => {
     let items = [...products];
 
     if (typeFilter) items = items.filter((p) => p.category === typeFilter);
 
-    // Apply search filter
     if (searchQuery.trim() !== "") {
       const q = searchQuery.toLowerCase();
       items = items.filter((p) => p.title.toLowerCase().includes(q));
@@ -111,7 +246,6 @@ export default function Products() {
 
   return (
     <div className="p-6 max-w-7xl mx-auto">
-      {/* Centered Shop header + search */}
       <div className="text-center mb-6">
         <h1 className="text-3xl font-bold mb-4">Shop</h1>
         <div className="flex justify-center">
@@ -125,7 +259,6 @@ export default function Products() {
         </div>
       </div>
 
-      {/* Header: Sort + mobile filter toggle */}
       <div className="mb-4 flex items-center justify-between gap-4">
         <div className="hidden md:block w-64" />
         <div className="text-sm text-zinc-500">
@@ -157,7 +290,6 @@ export default function Products() {
       </div>
 
       <div className="grid md:grid-cols-[260px_minmax(0,1fr)] gap-4 md:gap-8 items-start">
-        {/* Desktop Sidebar */}
         <aside className="hidden md:block space-y-6 bg-white border border-zinc-200 rounded-2xl p-4 h-max sticky top-24">
           <h2 className="font-semibold text-zinc-800 mb-4">Filters</h2>
 
@@ -182,7 +314,6 @@ export default function Products() {
           </div>
         </aside>
 
-        {/* Mobile Filter Drawer */}
         <div
           className={`fixed inset-0 z-60 md:hidden transition-transform duration-300 ${
             filtersOpen ? "pointer-events-auto" : "pointer-events-none"
@@ -190,9 +321,7 @@ export default function Products() {
           aria-hidden={!filtersOpen}
         >
           <div
-            className={`absolute inset-0 bg-black/30 transition-opacity ${
-              filtersOpen ? "opacity-100" : "opacity-0"
-            }`}
+            className={`absolute inset-0 bg-black/30 transition-opacity ${filtersOpen ? "opacity-100" : "opacity-0"}`}
             onClick={() => setFiltersOpen(false)}
           />
           <aside
@@ -205,7 +334,9 @@ export default function Products() {
           >
             <div className="flex items-center justify-between mb-4">
               <h2 className="font-semibold text-zinc-800">Filters</h2>
-              <button className="text-zinc-600" onClick={() => setFiltersOpen(false)}>✕</button>
+              <button className="text-zinc-600" onClick={() => setFiltersOpen(false)}>
+                ✕
+              </button>
             </div>
             <div className="mb-4">
               <div className="font-medium text-sm text-zinc-800 mb-1">Window Type</div>
@@ -228,64 +359,13 @@ export default function Products() {
           </aside>
         </div>
 
-        {/* Grid + header */}
         <div className="min-w-0">
           {displayed.length === 0 ? (
             <div className="text-sm text-zinc-600">No products match your filters.</div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
               {displayed.map((prod) => (
-                <div key={prod.code} className="border rounded-xl overflow-hidden shadow bg-white">
-                  <Link to={`/products/${encodeURIComponent(prod.code)}`}>
-                    <div className="w-full h-56 bg-zinc-100 flex items-center justify-center overflow-hidden">
-                      {prod.image ? (
-                        <img src={prod.image} alt={prod.title} className="w-full h-full object-cover" />
-                      ) : (
-                        <div className="text-zinc-400">No image</div>
-                      )}
-                    </div>
-                  </Link>
-                  <div className="p-4">
-                    <div className="flex items-start justify-between gap-3">
-                      <div className="flex-1 min-w-0">
-                        <div className="font-semibold text-lg truncate">{prod.title}</div>
-                        <div className="text-sm text-zinc-500">{prod.category}</div>
-                      </div>
-                    </div>
-
-                    {/* Colour swatches */}
-                    <div className="mt-3 flex items-center gap-2">
-                      {prod.coloursAvailable && prod.coloursAvailable.length > 0 ? (
-                        prod.coloursAvailable.slice(0, 6).map((c) => (
-                          <div key={c.code} title={c.name} className="w-6 h-6 rounded-full border overflow-hidden" style={{ flex: "0 0 24px" }}>
-                            {c.image ? (
-                              <img src={c.image} alt={c.name} className="w-full h-full object-cover" />
-                            ) : (
-                              <div style={{ backgroundColor: c.hex, width: "100%", height: "100%" }} />
-                            )}
-                          </div>
-                        ))
-                      ) : (
-                        // if no colours available show small neutral placeholder
-                        <div className="w-6 h-6 rounded-full border bg-zinc-100" title="No colour images available" />
-                      )}
-                    </div>
-
-                    <div className="mt-3">
-                      {prod.price !== null ? (
-                        <div className="text-xl font-bold">R {Number(prod.price).toLocaleString()}</div>
-                      ) : (
-                        <div className="text-sm text-zinc-500">Price on request</div>
-                      )}
-                    </div>
-                    <Link
-                      to={`/products/${encodeURIComponent(prod.code)}`}
-                      className="mt-4 inline-block px-4 py-2 bg-zinc-900 text-white rounded-xl text-sm hover:bg-zinc-800"
-                    >
-                      View
-                    </Link>
-                  </div>
-                </div>
+                <ProductCard key={prod.code} prod={prod} />
               ))}
             </div>
           )}
