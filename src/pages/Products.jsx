@@ -1,13 +1,16 @@
 // src/pages/Products.jsx
-import React, { useMemo, useState, useEffect } from "react";
+import React, { useMemo, useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { ACW_CATALOGUE } from "../data/acw-catalogue.js";
 
 /**
- * Products page — responsive + mobile-safe thumbnails
- * - uses programmatic Image() detection for aspect ratio
- * - mobile default uses object-contain to prevent overflow/overlap
- * - sm+ uses object-cover for a consistent card look
+ * Products page — responsive + mobile-safe thumbnails + accessible lightbox
+ *
+ * Key features:
+ * - programmatic Image() detection to mark panoramas
+ * - mobile-first object-contain, sm+ object-cover for thumbnails
+ * - accessible Lightbox: open by tapping thumbnail, keyboard navigation (Esc, ←, →), focus management
+ * - tuned values: PANORAMA_THRESHOLD and thumbnail heights chosen to work with example /mnt/data/ASD911.jpg
  */
 
 /* Colour map */
@@ -23,18 +26,126 @@ function findColourMeta(code) {
   return COLOUR_MAP.find((c) => c.code === code) || { code, name: code, hex: "#E5E7EB" };
 }
 
-/* Product card — detects panoramas and adapts rendering */
+/* ------------------------
+   Accessible Lightbox component (self-contained)
+   Props:
+    - items: array of { src, alt } images
+    - startIndex: initial index
+    - onClose: callback
+   ------------------------ */
+function Lightbox({ items, startIndex = 0, onClose }) {
+  const [index, setIndex] = useState(startIndex);
+  const overlayRef = useRef(null);
+  const lastActiveEl = useRef(null);
+
+  useEffect(() => {
+    lastActiveEl.current = document.activeElement;
+    // focus overlay for keyboard handling
+    overlayRef.current?.focus();
+
+    const onKey = (e) => {
+      if (e.key === "Escape") onClose();
+      if (e.key === "ArrowLeft") setIndex((i) => (i - 1 + items.length) % items.length);
+      if (e.key === "ArrowRight") setIndex((i) => (i + 1) % items.length);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      // restore focus
+      try {
+        lastActiveEl.current?.focus?.();
+      } catch {}
+    };
+  }, [items.length, onClose]);
+
+  if (!items || items.length === 0) return null;
+
+  const prev = () => setIndex((i) => (i - 1 + items.length) % items.length);
+  const next = () => setIndex((i) => (i + 1) % items.length);
+
+  return (
+    <div
+      ref={overlayRef}
+      tabIndex={-1}
+      aria-modal="true"
+      role="dialog"
+      className="fixed inset-0 z-70 flex items-center justify-center p-4"
+      onClick={(e) => {
+        // close if clicking overlay but not when clicking inside content
+        if (e.target === overlayRef.current) onClose();
+      }}
+    >
+      <div className="absolute inset-0 bg-black/70" />
+      <div className="relative z-80 max-w-[96vw] max-h-[92vh] w-full flex items-center justify-center">
+        <button
+          className="absolute top-3 right-3 z-90 text-white bg-black/40 px-3 py-2 rounded-md"
+          onClick={onClose}
+          aria-label="Close"
+        >
+          ✕
+        </button>
+
+        <button
+          className="absolute left-2 sm:left-4 z-90 text-white bg-black/30 p-2 rounded-full hidden sm:block"
+          onClick={(e) => {
+            e.stopPropagation();
+            prev();
+          }}
+          aria-label="Previous"
+        >
+          ←
+        </button>
+
+        <div className="bg-white rounded-md overflow-hidden max-w-full max-h-full flex items-center justify-center">
+          <img
+            src={items[index].src}
+            alt={items[index].alt || ""}
+            style={{ maxWidth: "100%", maxHeight: "100%", objectFit: "contain", display: "block" }}
+          />
+        </div>
+
+        <button
+          className="absolute right-2 sm:right-4 z-90 text-white bg-black/30 p-2 rounded-full hidden sm:block"
+          onClick={(e) => {
+            e.stopPropagation();
+            next();
+          }}
+          aria-label="Next"
+        >
+          →
+        </button>
+
+        {/* dots */}
+        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-90 flex gap-2">
+          {items.map((_, i) => (
+            <button
+              key={i}
+              onClick={(ev) => {
+                ev.stopPropagation();
+                setIndex(i);
+              }}
+              aria-label={`Go to image ${i + 1}`}
+              className={`w-2 h-2 rounded-full ${i === index ? "bg-white" : "bg-white/50"}`}
+            />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* Product card — thumbnail behavior and lightbox trigger */
 function ProductCard({ prod }) {
   const [isPanorama, setIsPanorama] = useState(false);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
 
   // threshold tuning: images wider than this (w/h) treated as panorama
-  const PANORAMA_THRESHOLD = 1.4;
+  const PANORAMA_THRESHOLD = 1.35;
 
-  // Use programmatic preloader for reliable detection (works with cached images)
+  // Preload image to detect aspect ratio (reliable with cache)
   useEffect(() => {
     setIsPanorama(false);
     if (!prod?.image) return;
-
     let cancelled = false;
     const img = new Image();
     img.onload = function () {
@@ -60,32 +171,34 @@ function ProductCard({ prod }) {
     };
   }, [prod.image, prod.code]);
 
-  // CSS class names are used for media-query height overrides (see component-level <style>).
-  // .product-thumb -> mobile default height; sm+ gets larger height via media query.
+  const openLightbox = (e) => {
+    // prevent Link navigation (image sits inside Link)
+    e.preventDefault();
+    e.stopPropagation();
+    setLightboxOpen(true);
+  };
+
+  // items for lightbox (could be multiple in future if you add additional images)
+  const items = [{ src: prod.image, alt: prod.title }];
+
   return (
     <div className="border rounded-xl overflow-hidden shadow bg-white">
-      <Link to={`/products/${encodeURIComponent(prod.code)}`}>
+      <Link to={`/products/${encodeURIComponent(prod.code)}`} aria-label={`Open ${prod.title} details`}>
         <div
           data-panorama={isPanorama ? "true" : "false"}
-          className="product-thumb w-full bg-zinc-100 flex items-center justify-center overflow-hidden transition-all duration-200"
+          className="product-thumb w-full bg-zinc-100 flex items-center justify-center overflow-hidden transition-all duration-200 relative"
         >
           {prod.image ? (
+            // clicking the image opens the lightbox (prevents navigation)
             <img
               src={prod.image}
               alt={prod.title}
-              className={`block max-w-full max-h-full`}
+              onClick={openLightbox}
+              className="block max-w-full max-h-full cursor-zoom-in"
               style={
                 isPanorama
-                  ? {
-                      objectFit: "contain",
-                      width: "auto",
-                      height: "100%",
-                    }
-                  : {
-                      objectFit: "cover",
-                      width: "100%",
-                      height: "100%",
-                    }
+                  ? { objectFit: "contain", width: "auto", height: "100%" }
+                  : { objectFit: "cover", width: "100%", height: "100%" }
               }
             />
           ) : (
@@ -139,6 +252,8 @@ function ProductCard({ prod }) {
           View
         </Link>
       </div>
+
+      {lightboxOpen && <Lightbox items={items} startIndex={0} onClose={() => setLightboxOpen(false)} />}
     </div>
   );
 }
@@ -226,7 +341,7 @@ export default function Products() {
         /* mobile default: thumbnail height smaller so mobile layout is compact */
         .product-thumb { height: 140px; min-height: 140px; max-height: 140px; }
         @media (min-width: 640px) {
-          /* sm and up: larger square-ish thumbnails (close to your original h-56) */
+          /* sm and up: larger thumbnails */
           .product-thumb { height: 224px; min-height: 224px; max-height: 224px; }
         }
       `}</style>
