@@ -15,6 +15,10 @@ const LATEST_COLOURS = [
 
 const FALLBACK_DIMENSIONS = { width: 1200, height: 1500 };
 
+// For local testing, you uploaded an example image — use this path to test detection visually:
+// (Dev note: the environment maps /mnt/data/... to a URL when serving assets)
+const UPLOADED_TEST_IMAGE = "/mnt/data/ASD911.jpg";
+
 export default function ProductDetails() {
   const { code } = useParams();
   const navigate = useNavigate();
@@ -53,10 +57,7 @@ export default function ProductDetails() {
   // images / colours handling — preserve your merged list behaviour but ensure any extra keys show
   const imagesByColour = product.imagesByColour || {};
   const extraColourKeys = Object.keys(imagesByColour).filter((k) => !LATEST_COLOURS.find((c) => c.code === k));
-  const mergedColourList = [
-    ...LATEST_COLOURS,
-    ...extraColourKeys.map((k) => ({ code: k, name: k })),
-  ];
+  const mergedColourList = [...LATEST_COLOURS, ...extraColourKeys.map((k) => ({ code: k, name: k }))];
 
   const colourOptions = mergedColourList.map((c) => {
     const imgs =
@@ -71,7 +72,9 @@ export default function ProductDetails() {
   // price + selection state (initialised afterwards via useEffect to react to product change)
   const unitPrice = typeof product.basePrice === "number" ? product.basePrice : Number(product.basePrice) || 0;
   const [selectedColour, setSelectedColour] = useState(colourOptions[0]?.code || mergedColourList[0]?.code || "W");
-  const [selectedImage, setSelectedImage] = useState(colourOptions[0]?.images?.[0] || product.image || "/placeholder.png");
+  const [selectedImage, setSelectedImage] = useState(
+    colourOptions[0]?.images?.[0] || product.image || "/placeholder.png"
+  );
   const [quantity, setQuantity] = useState(1);
 
   // when product or colourOptions change, reset the selected colour and image to the first available
@@ -81,7 +84,7 @@ export default function ProductDetails() {
     const firstImg = first?.images?.[0] || product.image || "/placeholder.png";
     setSelectedColour(firstCode);
     setSelectedImage(firstImg);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [product?.codePrefix]);
 
   const FIXED_GLAZING = product.metadata?.glazing || "10mm Clear Float";
@@ -136,16 +139,98 @@ export default function ProductDetails() {
     }
   };
 
+  /* ------------------------------
+     HERO IMAGE: panorama detection + adaptive rendering
+     ------------------------------ */
+  const [isPanorama, setIsPanorama] = useState(false);
+
+  // TUNING: images wider than this ratio => treat as 'panorama' and use object-contain
+  // Example: the uploaded test file /mnt/data/ASD911.jpg has ratio ≈ 1.5, so threshold 1.4 will detect it.
+  const PANORAMA_THRESHOLD = 1.4;
+
+  // hero heights (px)
+  const heroNormalHeight = 520; // original: h-[520px]
+  const heroPanoramaHeight = 420; // slightly shorter but shows full width with contain (tweakable)
+
+  useEffect(() => {
+    // robust detection via programmatic Image (works even if cached)
+    if (!selectedImage) {
+      setIsPanorama(false);
+      return;
+    }
+
+    let cancelled = false;
+    const img = new Image();
+
+    // If your images are served from a different origin and need CORS, uncomment:
+    // img.crossOrigin = "anonymous";
+
+    img.onload = function () {
+      if (cancelled) return;
+      const w = img.naturalWidth || img.width;
+      const h = img.naturalHeight || img.height;
+      if (!w || !h) {
+        setIsPanorama(false);
+        return;
+      }
+      const ratio = w / h;
+      // eslint-disable-next-line no-console
+      console.log(`[ProductDetails] image ratio for ${product.codePrefix || code}: ${ratio.toFixed(2)} (w:${w}, h:${h})`);
+      setIsPanorama(ratio >= PANORAMA_THRESHOLD);
+    };
+
+    img.onerror = function () {
+      if (cancelled) return;
+      setIsPanorama(false);
+    };
+
+    img.src = selectedImage;
+
+    return () => {
+      cancelled = true;
+      img.onload = null;
+      img.onerror = null;
+    };
+  }, [selectedImage, product.codePrefix, code]);
+
+  // determine inline styles for hero container + img
+  const heroHeight = isPanorama ? heroPanoramaHeight : heroNormalHeight;
+  const heroContainerStyle = {
+    height: `${heroHeight}px`,
+    minHeight: `${heroHeight}px`,
+    maxHeight: `${heroHeight}px`,
+  };
+
+  const heroImageStyle = isPanorama
+    ? {
+        objectFit: "contain",
+        width: "auto", // let width scale naturally; image will fill container height
+        height: "100%",
+        display: "block",
+      }
+    : {
+        objectFit: "cover",
+        width: "100%",
+        height: "100%",
+        display: "block",
+      };
+
   return (
     <div className="p-6 max-w-6xl mx-auto space-y-10 overflow-x-hidden">
       <div className="grid md:grid-cols-2 gap-8">
         <div className="min-w-0">
-          {/* Main image container: fixed height, overflow-hidden, object-cover for consistent rendering */}
-          <div className="rounded-2xl overflow-hidden border mb-4 h-[520px] md:h-[520px] lg:h-[560px]">
+          {/* Main image container: adaptive height and object-fit behaviour */}
+          <div
+            className="rounded-2xl overflow-hidden border mb-4 bg-zinc-50 flex items-center justify-center"
+            style={heroContainerStyle}
+            data-panorama={isPanorama ? "true" : "false"}
+          >
+            {/* If you want to test locally with the uploaded test image, replace selectedImage with UPLOADED_TEST_IMAGE */}
             <img
-              src={selectedImage}
+              src={selectedImage || product.image || UPLOADED_TEST_IMAGE || "/placeholder.png"}
               alt={`${product.title} ${selectedColour}`}
-              className="w-full h-full object-cover"
+              className="w-full h-full"
+              style={heroImageStyle}
               loading="lazy"
             />
           </div>
@@ -153,16 +238,18 @@ export default function ProductDetails() {
           {/* Thumbnails + colour swatches */}
           <div className="flex gap-3 items-center flex-wrap overflow-x-auto">
             <div className="flex gap-2 flex-wrap">
-              {(colourOptions.find((o) => o.code === selectedColour)?.images || [selectedImage]).slice(0, 8).map((img, i) => (
-                <button
-                  key={i}
-                  onClick={() => setSelectedImage(img)}
-                  className="w-20 h-20 rounded-lg overflow-hidden border flex-shrink-0"
-                  title={`Preview image ${i + 1}`}
-                >
-                  <img src={img} alt={`${product.title}-${i}`} className="w-full h-full object-cover" loading="lazy" />
-                </button>
-              ))}
+              {(colourOptions.find((o) => o.code === selectedColour)?.images || [selectedImage])
+                .slice(0, 8)
+                .map((img, i) => (
+                  <button
+                    key={i}
+                    onClick={() => setSelectedImage(img)}
+                    className={`w-20 h-20 rounded-lg overflow-hidden border flex-shrink-0 ${selectedImage === img ? "ring-2 ring-zinc-900" : ""}`}
+                    title={`Preview image ${i + 1}`}
+                  >
+                    <img src={img} alt={`${product.title}-${i}`} className="w-full h-full object-cover" loading="lazy" />
+                  </button>
+                ))}
             </div>
 
             <div className="ml-4 flex gap-2 items-center flex-wrap overflow-x-auto">
