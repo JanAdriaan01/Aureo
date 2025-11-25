@@ -1,19 +1,10 @@
 // src/pages/ProductDetails.jsx
 import React, { useMemo, useState, useEffect, useRef } from "react";
-import { useParams, useNavigate, Link } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { ACW_CATALOGUE } from "../data/acw-catalogue.js";
 import { useOrder } from "../context/OrderContext.jsx";
 import Input from "../components/ui/Input";
 
-/**
- * ProductDetails — responsive hero + mobile-safe thumbnails + accessible lightbox
- *
- * - programmatic Image() detection to choose object-fit and hero heights
- * - mobile-first object-contain, sm+ object-cover
- * - Lightbox to display full gallery; keyboard support and focus management
- */
-
-// colour constants & fallbacks
 const LATEST_COLOURS = [
   { code: "W", name: "White" },
   { code: "B", name: "Black" },
@@ -23,11 +14,9 @@ const LATEST_COLOURS = [
 ];
 
 const FALLBACK_DIMENSIONS = { width: 1200, height: 1500 };
-
-// local uploaded sample path (for your local testing)
 const UPLOADED_TEST_IMAGE = "/mnt/data/ASD911.jpg";
 
-/* Reusable lightbox (same behaviour as Products page) */
+/* Reusable Lightbox identical to Products page */
 function Lightbox({ items, startIndex = 0, onClose }) {
   const [index, setIndex] = useState(startIndex);
   const overlayRef = useRef(null);
@@ -42,12 +31,11 @@ function Lightbox({ items, startIndex = 0, onClose }) {
       if (e.key === "ArrowLeft") setIndex((i) => (i - 1 + items.length) % items.length);
       if (e.key === "ArrowRight") setIndex((i) => (i + 1) % items.length);
     };
+
     window.addEventListener("keydown", onKey);
     return () => {
       window.removeEventListener("keydown", onKey);
-      try {
-        lastActiveEl.current?.focus?.();
-      } catch {}
+      lastActiveEl.current?.focus?.();
     };
   }, [items.length, onClose]);
 
@@ -63,9 +51,7 @@ function Lightbox({ items, startIndex = 0, onClose }) {
       aria-modal="true"
       role="dialog"
       className="fixed inset-0 z-70 flex items-center justify-center p-4"
-      onClick={(e) => {
-        if (e.target === overlayRef.current) onClose();
-      }}
+      onClick={(e) => { if (e.target === overlayRef.current) onClose(); }}
     >
       <div className="absolute inset-0 bg-black/70" />
       <div className="relative z-80 max-w-[96vw] max-h-[92vh] w-full flex items-center justify-center">
@@ -79,10 +65,7 @@ function Lightbox({ items, startIndex = 0, onClose }) {
 
         <button
           className="absolute left-2 sm:left-4 z-90 text-white bg-black/30 p-2 rounded-full hidden sm:block"
-          onClick={(e) => {
-            e.stopPropagation();
-            prev();
-          }}
+          onClick={(e) => { e.stopPropagation(); prev(); }}
           aria-label="Previous"
         >
           ←
@@ -98,10 +81,7 @@ function Lightbox({ items, startIndex = 0, onClose }) {
 
         <button
           className="absolute right-2 sm:right-4 z-90 text-white bg-black/30 p-2 rounded-full hidden sm:block"
-          onClick={(e) => {
-            e.stopPropagation();
-            next();
-          }}
+          onClick={(e) => { e.stopPropagation(); next(); }}
           aria-label="Next"
         >
           →
@@ -111,10 +91,7 @@ function Lightbox({ items, startIndex = 0, onClose }) {
           {items.map((_, i) => (
             <button
               key={i}
-              onClick={(ev) => {
-                ev.stopPropagation();
-                setIndex(i);
-              }}
+              onClick={(ev) => { ev.stopPropagation(); setIndex(i); }}
               aria-label={`Go to image ${i + 1}`}
               className={`w-2 h-2 rounded-full ${i === index ? "bg-white" : "bg-white/50"}`}
             />
@@ -130,19 +107,12 @@ export default function ProductDetails() {
   const navigate = useNavigate();
   const { addItem } = useOrder();
 
-  // find product
   const product = useMemo(() => {
     if (!ACW_CATALOGUE) return null;
-    return (
-      ACW_CATALOGUE[code] ||
-      Object.values(ACW_CATALOGUE).find((p) => p.codePrefix === code || p.title === code) ||
-      null
-    );
+    return ACW_CATALOGUE[code] || Object.values(ACW_CATALOGUE).find((p) => p.codePrefix === code || p.title === code) || null;
   }, [code]);
 
-  useEffect(() => {
-    window.scrollTo({ top: 0, left: 0, behavior: "auto" });
-  }, [code]);
+  useEffect(() => { window.scrollTo({ top: 0, left: 0, behavior: "auto" }); }, [code]);
 
   if (!product) {
     return (
@@ -164,29 +134,19 @@ export default function ProductDetails() {
   const mergedColourList = [...LATEST_COLOURS, ...extraColourKeys.map((k) => ({ code: k, name: k }))];
 
   const colourOptions = mergedColourList.map((c) => {
-    const imgs =
-      imagesByColour[c.code] && imagesByColour[c.code].length > 0
-        ? imagesByColour[c.code]
-        : product.image
-        ? [product.image]
-        : ["/placeholder.png"];
+    const imgs = imagesByColour[c.code]?.length > 0 ? imagesByColour[c.code] : product.image ? [product.image] : ["/placeholder.png"];
     return { ...c, images: imgs };
   });
 
-  const unitPrice = typeof product.basePrice === "number" ? product.basePrice : Number(product.basePrice) || 0;
-  const [selectedColour, setSelectedColour] = useState(colourOptions[0]?.code || mergedColourList[0]?.code || "W");
-  const [selectedImage, setSelectedImage] = useState(
-    colourOptions[0]?.images?.[0] || product.image || "/placeholder.png"
-  );
+  const unitPrice = Number(product.basePrice) || 0;
+  const [selectedColour, setSelectedColour] = useState(colourOptions[0]?.code || "W");
+  const [selectedImage, setSelectedImage] = useState(colourOptions[0]?.images?.[0] || product.image || "/placeholder.png");
   const [quantity, setQuantity] = useState(1);
 
   useEffect(() => {
     const first = colourOptions[0];
-    const firstCode = first?.code || mergedColourList[0]?.code || "W";
-    const firstImg = first?.images?.[0] || product.image || "/placeholder.png";
-    setSelectedColour(firstCode);
-    setSelectedImage(firstImg);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    setSelectedColour(first?.code || "W");
+    setSelectedImage(first?.images?.[0] || product.image || "/placeholder.png");
   }, [product?.codePrefix]);
 
   const FIXED_GLAZING = product.metadata?.glazing || "10mm Clear Float";
@@ -202,8 +162,7 @@ export default function ProductDetails() {
     const qtyNum = Number(quantity) || 1;
     const price = Number(unitPrice) || 0;
     const subtotal = price * qtyNum;
-
-    const item = {
+    addItem({
       system: product.codePrefix || code,
       systemName: `${product.title || product.codePrefix || code} (${sizeLabel})`,
       size: sizeLabel,
@@ -214,9 +173,7 @@ export default function ProductDetails() {
       subtotal,
       image: selectedImage,
       timestamp: new Date().toISOString(),
-    };
-
-    addItem(item);
+    });
     window.dispatchEvent(new Event("cart:open"));
   };
 
@@ -227,107 +184,55 @@ export default function ProductDetails() {
     .filter((p) => p.code !== (product.codePrefix || code) && (p.category === product.category || p.codePrefix === product.codePrefix))
     .slice(0, 6);
 
-  const pageUrl = typeof window !== "undefined" ? window.location.href : "";
+  const pageUrl = window.location.href;
   const shareText = encodeURIComponent(`${product.title} — ${product.shortDescription || product.description || ""}`);
   const shareUrl = encodeURIComponent(pageUrl);
 
   const copyLink = async () => {
-    try {
-      await navigator.clipboard.writeText(pageUrl);
-      alert("Link copied to clipboard");
-    } catch {
-      alert("Could not copy link — please copy manually");
-    }
+    try { await navigator.clipboard.writeText(pageUrl); alert("Link copied to clipboard"); } 
+    catch { alert("Could not copy link — please copy manually"); }
   };
 
-  /* ---------- HERO: panorama detection & responsive safe rendering ---------- */
   const [isPanorama, setIsPanorama] = useState(false);
-  const PANORAMA_THRESHOLD = 1.35; // tuned to catch moderate wides (like 1.5:1)
-  const heroMobileHeight = 420; // mobile default
-  const heroDesktopHeight = 560; // sm+ larger
+  const PANORAMA_THRESHOLD = 1.35;
+  const heroMobileHeight = 420;
+  const heroDesktopHeight = 560;
 
-  // detect aspect ratio via Image() (reliable with cache)
   useEffect(() => {
     setIsPanorama(false);
     if (!selectedImage) return;
     let cancelled = false;
     const img = new Image();
-    img.onload = function () {
+    img.onload = () => {
       if (cancelled) return;
-      const w = img.naturalWidth || img.width;
-      const h = img.naturalHeight || img.height;
-      if (!w || !h) {
-        setIsPanorama(false);
-        return;
-      }
-      const ratio = w / h;
+      const ratio = (img.naturalWidth || 0) / (img.naturalHeight || 1);
       setIsPanorama(ratio >= PANORAMA_THRESHOLD);
     };
-    img.onerror = function () {
-      if (cancelled) return;
-      setIsPanorama(false);
-    };
+    img.onerror = () => { if (!cancelled) setIsPanorama(false); };
     img.src = selectedImage;
-    return () => {
-      cancelled = true;
-      img.onload = null;
-      img.onerror = null;
-    };
-  }, [selectedImage, product.codePrefix, code]);
+    return () => { cancelled = true; img.onload = null; img.onerror = null; };
+  }, [selectedImage]);
 
-  // compute hero styles
-  const heroContainerStyle = {
-    height: `${heroMobileHeight}px`,
-    minHeight: `${heroMobileHeight}px`,
-    maxHeight: `${heroMobileHeight}px`,
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-  };
+  const heroContainerStyle = { height: heroMobileHeight, minHeight: heroMobileHeight, maxHeight: heroMobileHeight, display: "flex", alignItems: "center", justifyContent: "center" };
+  const heroImageStyle = isPanorama ? { objectFit: "contain", width: "auto", height: "100%", display: "block" } : { objectFit: "cover", width: "100%", height: "100%", display: "block" };
 
-  const heroImageStyle = isPanorama
-    ? {
-        objectFit: "contain",
-        width: "auto",
-        height: "100%",
-        display: "block",
-      }
-    : {
-        objectFit: "cover",
-        width: "100%",
-        height: "100%",
-        display: "block",
-      };
-
-  // Lightbox state & items
   const [lightboxOpen, setLightboxOpen] = useState(false);
-  const galleryItems = (colourOptions.find((o) => o.code === selectedColour)?.images || [selectedImage]).map((s, i) => ({
-    src: s,
-    alt: `${product.title} ${i + 1}`,
-  }));
+  const galleryItems = (colourOptions.find((o) => o.code === selectedColour)?.images || [selectedImage]).map((s, i) => ({ src: s, alt: `${product.title} ${i + 1}` }));
 
   return (
     <div className="p-6 max-w-6xl mx-auto space-y-10 overflow-x-hidden">
-      {/* inline CSS to increase hero height on sm+ and ensure thumbnails behave */}
       <style>{`
         @media (min-width: 640px) {
           .product-hero { height: ${heroDesktopHeight}px !important; min-height: ${heroDesktopHeight}px !important; max-height: ${heroDesktopHeight}px !important; }
         }
-        /* Thumbnails use contain on mobile, cover on sm+ */
         .thumb-btn img { object-fit: contain; width: 100%; height: 100%; display: block; }
-        @media (min-width:640px) {
-          .thumb-btn img { object-fit: cover; }
-        }
+        @media (min-width:640px) { .thumb-btn img { object-fit: cover; } }
       `}</style>
 
+      {/* ---------- HERO + Thumbnails + Colour Selector ---------- */}
       <div className="grid md:grid-cols-2 gap-8">
         <div className="min-w-0">
-          {/* HERO: wrapper uses .product-hero to get sm+ override */}
-          <div
-            className="rounded-2xl overflow-hidden border mb-4 bg-zinc-50 product-hero"
-            style={heroContainerStyle}
-            data-panorama={isPanorama ? "true" : "false"}
-          >
+          <div className="rounded-2xl overflow-hidden border mb-4 bg-zinc-50 product-hero" style={heroContainerStyle} data-panorama={isPanorama ? "true" : "false"}>
             <img
               src={selectedImage || product.image || UPLOADED_TEST_IMAGE || "/placeholder.png"}
               alt={`${product.title} ${selectedColour}`}
@@ -338,22 +243,19 @@ export default function ProductDetails() {
             />
           </div>
 
-          {/* Thumbnails + colour swatches */}
           <div className="flex gap-3 items-center flex-wrap overflow-x-auto -mx-1">
             <div className="flex gap-2 flex-wrap px-1">
-              {(colourOptions.find((o) => o.code === selectedColour)?.images || [selectedImage])
-                .slice(0, 8)
-                .map((img, i) => (
-                  <button
-                    key={i}
-                    onClick={() => setSelectedImage(img)}
-                    className={`thumb-btn w-20 h-20 rounded-lg overflow-hidden border flex-shrink-0 ${selectedImage === img ? "ring-2 ring-zinc-900" : ""}`}
-                    title={`Preview image ${i + 1}`}
-                    style={{ minWidth: "80px" }}
-                  >
-                    <img src={img} alt={`${product.title}-${i}`} loading="lazy" />
-                  </button>
-                ))}
+              {(colourOptions.find((o) => o.code === selectedColour)?.images || [selectedImage]).slice(0, 8).map((img, i) => (
+                <button
+                  key={i}
+                  onClick={() => setSelectedImage(img)}
+                  className={`thumb-btn w-20 h-20 rounded-lg overflow-hidden border flex-shrink-0 ${selectedImage === img ? "ring-2 ring-zinc-900" : ""}`}
+                  title={`Preview image ${i + 1}`}
+                  style={{ minWidth: "80px" }}
+                >
+                  <img src={img} alt={`${product.title}-${i}`} loading="lazy" />
+                </button>
+              ))}
             </div>
 
             <div className="ml-4 flex gap-2 items-center flex-wrap overflow-x-auto px-1">
@@ -423,8 +325,91 @@ export default function ProductDetails() {
         </div>
       </div>
 
-      {/* Tabs, reviews, related products (unchanged, omitted here for brevity) */}
-      {/* ... */}
+      {/* ---------- TABS: Detailed Info, Additional Info, Features ---------- */}
+      <div className="mt-10">
+        <div className="border-b border-zinc-200">
+          <nav className="-mb-px flex space-x-8" aria-label="Tabs">
+            {["description", "additional", "features"].map((tab) => (
+              <button
+                key={tab}
+                onClick={() => setActiveTab(tab)}
+                className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm ${
+                  activeTab === tab
+                    ? "border-zinc-900 text-zinc-900"
+                    : "border-transparent text-zinc-500 hover:text-zinc-700 hover:border-zinc-300"
+                }`}
+              >
+                {tab === "description" ? "Detailed Information" : tab === "additional" ? "Additional Information" : "Features"}
+              </button>
+            ))}
+          </nav>
+        </div>
+
+        <div className="mt-6 text-zinc-700 space-y-4">
+          {activeTab === "description" && (
+            <div dangerouslySetInnerHTML={{ __html: product.description || "No detailed information available." }} />
+          )}
+          {activeTab === "additional" && (
+            <div dangerouslySetInnerHTML={{ __html: product.additionalInformation || "No additional information available." }} />
+          )}
+          {activeTab === "features" && (
+            <div dangerouslySetInnerHTML={{ __html: product.features || "No features available." }} />
+          )}
+        </div>
+      </div>
+
+{/* ---------- PRODUCT REVIEWS ---------- */}
+{product.reviews && product.reviews.length > 0 && (
+  <div className="mt-10">
+    <h2 className="text-2xl font-bold mb-4">Reviews</h2>
+    <div className="space-y-4">
+      {product.reviews.map((r, idx) => (
+        <div key={idx} className="border rounded-lg p-4">
+          <div className="flex justify-between items-center mb-2">
+            <div className="font-semibold">{r.author}</div>
+            <div className="flex space-x-1 text-yellow-500">
+              {Array.from({ length: 5 }, (_, i) => (
+                <span key={i}>{i < r.rating ? "★" : "☆"}</span>
+              ))}
+            </div>
+          </div>
+          <div className="text-sm text-zinc-700">{r.comment}</div>
+          {r.date && <div className="text-xs text-zinc-400 mt-1">{new Date(r.date).toLocaleDateString()}</div>}
+        </div>
+      ))}
+    </div>
+  </div>
+)}
+
+      {/* ---------- RELATED PRODUCTS ---------- */}
+      {relatedProducts.length > 0 && (
+        <div className="mt-16">
+          <h2 className="text-2xl font-bold mb-6">Related Items</h2>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
+            {relatedProducts.map((p) => (
+              <div key={p.code} className="border rounded-xl overflow-hidden group cursor-pointer hover:shadow-lg transition-shadow">
+                <img
+                  src={p.image || "/placeholder.png"}
+                  alt={p.title}
+                  className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-200"
+                />
+                <div className="p-3">
+                  <h3 className="text-sm font-semibold truncate">{p.title}</h3>
+                  <div className="text-xs text-zinc-500">{p.category}</div>
+                  <div className="text-sm font-medium mt-1">{p.basePrice ? `R ${p.basePrice.toLocaleString()}` : "Price on request"}</div>
+                  <button
+                    onClick={() => navigate(`/products/${p.codePrefix || p.code}`)}
+                    className="mt-2 w-full px-2 py-1 text-xs rounded bg-zinc-900 text-white"
+                  >
+                    View
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       {lightboxOpen && <Lightbox items={galleryItems} startIndex={0} onClose={() => setLightboxOpen(false)} />}
     </div>
   );
