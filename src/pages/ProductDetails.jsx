@@ -40,14 +40,14 @@ export default function ProductDetails() {
       </div>
     );
 
-  const colourOptions = (Object.keys(product.imagesByColour || {}).length > 0
-    ? Object.keys(product.imagesByColour).map((c) => ({
-        code: c,
-        name: c,
-        images: product.imagesByColour[c] || [product.image || "/placeholder.png"],
-      }))
-    : [{ code: "DEF", name: "Default", images: [product.image || "/placeholder.png"] }]
-  );
+  const colourOptions =
+    Object.keys(product.imagesByColour || {}).length > 0
+      ? Object.keys(product.imagesByColour).map((c) => ({
+          code: c,
+          name: c,
+          images: product.imagesByColour[c] || [product.image || "/placeholder.png"],
+        }))
+      : [{ code: "DEF", name: "Default", images: [product.image || "/placeholder.png"] }];
 
   const [selectedColour, setSelectedColour] = useState(colourOptions[0]?.code || "DEF");
   const [quantity, setQuantity] = useState(1);
@@ -55,19 +55,19 @@ export default function ProductDetails() {
     colourOptions[0]?.images?.[0] || product.image || "/placeholder.png"
   );
 
-  // Sync selectedImage when selectedColour changes
+  // Sync selectedImage when selectedColour or colourOptions change
   useEffect(() => {
     const opts = colourOptions.find((o) => o.code === selectedColour) || colourOptions[0];
     const firstImg = (opts && Array.isArray(opts.images) && opts.images[0]) || product.image || "/placeholder.png";
     setSelectedImage(firstImg);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedColour, JSON.stringify(colourOptions), product.image]);
 
-  // Quantity handlers
+  // Quantity handlers (enforce min 1)
   const handleQuantityChange = (value) => {
     const qty = Number(value);
-    setQuantity(qty < 1 || isNaN(qty) ? 1 : qty);
+    setQuantity(qty < 1 || isNaN(qty) ? 1 : Math.floor(qty));
   };
-
   const decrementQuantity = () => setQuantity((prev) => (prev > 1 ? prev - 1 : 1));
   const incrementQuantity = () => setQuantity((prev) => prev + 1);
 
@@ -95,8 +95,8 @@ export default function ProductDetails() {
 
   const shareLinks = [
     { label: "🔗 Share", href: `https://www.facebook.com/sharer/sharer.php?u=${window.location.href}` },
-    { label: "🐦 Tweet", href: `https://twitter.com/intent/tweet?text=${product.title}&url=${window.location.href}` },
-    { label: "💬 WhatsApp", href: `https://wa.me/?text=${product.title} ${window.location.href}` },
+    { label: "🐦 Tweet", href: `https://twitter.com/intent/tweet?text=${encodeURIComponent(product.title)}&url=${encodeURIComponent(window.location.href)}` },
+    { label: "💬 WhatsApp", href: `https://wa.me/?text=${encodeURIComponent(product.title + " " + window.location.href)}` },
   ];
 
   const relatedProducts = Object.entries(ACW_CATALOGUE)
