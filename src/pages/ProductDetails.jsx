@@ -55,7 +55,6 @@ export default function ProductDetails() {
     colourOptions[0]?.images?.[0] || product.image || "/placeholder.png"
   );
 
-  // Sync selectedImage when selectedColour or colourOptions change
   useEffect(() => {
     const opts = colourOptions.find((o) => o.code === selectedColour) || colourOptions[0];
     const firstImg = (opts && Array.isArray(opts.images) && opts.images[0]) || product.image || "/placeholder.png";
@@ -63,7 +62,7 @@ export default function ProductDetails() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedColour, JSON.stringify(colourOptions), product.image]);
 
-  // Quantity handlers (enforce min 1)
+  // quantity handlers (min 1)
   const handleQuantityChange = (value) => {
     const qty = Number(value);
     setQuantity(qty < 1 || isNaN(qty) ? 1 : Math.floor(qty));
@@ -94,7 +93,7 @@ export default function ProductDetails() {
   };
 
   const shareLinks = [
-    { label: "🔗 Share", href: `https://www.facebook.com/sharer/sharer.php?u=${window.location.href}` },
+    { label: "🔗 Share", href: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}` },
     { label: "🐦 Tweet", href: `https://twitter.com/intent/tweet?text=${encodeURIComponent(product.title)}&url=${encodeURIComponent(window.location.href)}` },
     { label: "💬 WhatsApp", href: `https://wa.me/?text=${encodeURIComponent(product.title + " " + window.location.href)}` },
   ];
@@ -109,34 +108,39 @@ export default function ProductDetails() {
     .slice(0, 6);
 
   return (
-    <div className="p-6 max-w-6xl mx-auto space-y-10 overflow-x-hidden">
+    // top-level padding uses px-4 mobile, sm:px-6 on larger — prevents right-edge overflow
+    <div className="px-4 sm:px-6 py-6 max-w-6xl mx-auto space-y-10 overflow-x-hidden">
       <div className="grid md:grid-cols-2 gap-8">
-        <ProductImagesGallery
-          colourOptions={colourOptions}
-          selectedColour={selectedColour}
-          setSelectedColour={(c) => setSelectedColour(c)}
-          onImageSelect={(img) => img && setSelectedImage(img)}
-        />
+        <div className="min-w-0">
+          <ProductImagesGallery
+            colourOptions={colourOptions}
+            selectedColour={selectedColour}
+            setSelectedColour={(c) => setSelectedColour(c)}
+            onImageSelect={(img) => img && setSelectedImage(img)}
+          />
+        </div>
 
-        <ProductDetailsInfo
-          title={product.title}
-          description={product.shortDescription || product.description}
-          sizeLabel={`${product.dimensions?.width || 1200} x ${product.dimensions?.height || 1500} mm`}
-          glazing={product.metadata?.glazing || "10mm Clear Float"}
-          tint={product.metadata?.tinting || "Standard Tint"}
-          finish={selectedColour}
-          selectedColour={selectedColour}
-          onColourChange={(c) => setSelectedColour(c)}
-          colourOptions={colourOptions}
-          quantity={quantity}
-          setQuantity={handleQuantityChange}
-          incrementQuantity={incrementQuantity}
-          decrementQuantity={decrementQuantity}
-          unitPrice={Number(product.basePrice)}
-          handleAddToOrder={handleAddToOrder}
-          shareLinks={shareLinks}
-          navigateBack={() => navigate(-1)}
-        />
+        <div className="min-w-0">
+          <ProductDetailsInfo
+            title={product.title}
+            description={product.shortDescription || product.description}
+            sizeLabel={`${product.dimensions?.width || 1200} x ${product.dimensions?.height || 1500} mm`}
+            glazing={product.metadata?.glazing || "10mm Clear Float"}
+            tint={product.metadata?.tinting || "Standard Tint"}
+            finish={selectedColour}
+            selectedColour={selectedColour}
+            onColourChange={(c) => setSelectedColour(c)}
+            colourOptions={colourOptions}
+            quantity={quantity}
+            setQuantity={handleQuantityChange}
+            incrementQuantity={incrementQuantity}
+            decrementQuantity={decrementQuantity}
+            unitPrice={Number(product.basePrice)}
+            handleAddToOrder={handleAddToOrder}
+            shareLinks={shareLinks}
+            navigateBack={() => navigate(-1)}
+          />
+        </div>
       </div>
 
       <TabsSection

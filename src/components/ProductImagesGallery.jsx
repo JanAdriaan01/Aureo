@@ -2,14 +2,6 @@
 import React, { useEffect, useState } from "react";
 import Lightbox from "./Lightbox";
 
-/**
- * ProductImagesGallery
- *
- * - thumbnails are horizontally scrollable and won't cause page overflow
- * - thumbnail buttons have a safe min-width (64px)
- * - color swatches are shown to the right (still scrollable)
- */
-
 export default function ProductImagesGallery({
   colourOptions = [],
   selectedColour = "",
@@ -25,7 +17,7 @@ export default function ProductImagesGallery({
     return ["/placeholder.png"];
   })();
 
-  const [selectedImage, setSelectedImage] = useState(imagesForColour[0]);
+  const [selectedImage, setSelectedImage] = useState(imagesForColour[0] || "/placeholder.png");
   const [lightboxOpen, setLightboxOpen] = useState(false);
 
   useEffect(() => {
@@ -43,18 +35,18 @@ export default function ProductImagesGallery({
 
   return (
     <div className={className}>
-      {/* Main image */}
+      {/* Main image: object-contain protects aspect and prevents overflow */}
       <div className="rounded-2xl overflow-hidden border mb-4 bg-zinc-50 h-[420px] sm:h-[560px] flex items-center justify-center">
         <img
           src={selectedImage || "/placeholder.png"}
           alt=""
-          className="w-full h-full object-contain cursor-zoom-in"
+          className="w-full h-full object-contain cursor-zoom-in block"
           onClick={() => setLightboxOpen(true)}
         />
       </div>
 
-      {/* Thumbnails row: use px-1 (not negative margins) and nowrap to avoid pushing page width */}
-      <div className="flex gap-2 items-center overflow-x-auto px-1">
+      {/* Thumbnails & swatches — no negative margins, nowrap to avoid pushing page width */}
+      <div className="flex items-center overflow-x-auto px-1">
         <div className="flex gap-2 px-1 flex-nowrap">
           {thumbnails.slice(0, 8).map((src, i) => (
             <button
@@ -70,16 +62,13 @@ export default function ProductImagesGallery({
           ))}
         </div>
 
-        {/* Colour swatches (switch colour sets) */}
-        <div className="ml-4 flex gap-2 items-center px-1">
+        <div className="ml-4 flex gap-2 items-center px-1 flex-nowrap">
           {colourOptions.map((o) => {
             const thumb = (o.images && o.images[0]) || "/placeholder.png";
             return (
               <button
                 key={o.code}
-                onClick={() => {
-                  setSelectedColour(o.code);
-                }}
+                onClick={() => setSelectedColour(o.code)}
                 title={o.name}
                 className={`flex flex-col items-center gap-1 text-xs ${selectedColour === o.code ? "opacity-100" : "opacity-80"}`}
                 type="button"
@@ -94,7 +83,6 @@ export default function ProductImagesGallery({
         </div>
       </div>
 
-      {/* Lightbox */}
       {lightboxOpen && (
         <Lightbox
           items={thumbnails.map((s, i) => ({ src: s, alt: `${selectedColour || ""} ${i + 1}` }))}
