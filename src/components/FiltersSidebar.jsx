@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { findColourMeta } from "../utils/colourMeta";
+import DualRangeSlider from "./DualRangeSlider";
 
 export default function FiltersSidebar({
   categories,
@@ -13,33 +14,14 @@ export default function FiltersSidebar({
   setSizeFilter,
   priceRange,
   setPriceRange,
+  // Add any other existing filter props
 }) {
-  const [localRange, setLocalRange] = useState(priceRange);
-
-  // Sync local slider state with parent
-  useEffect(() => {
-    setLocalRange(priceRange);
-  }, [priceRange]);
-
-  const handleMinChange = (e) => {
-    const value = Math.min(Number(e.target.value), localRange[1]);
-    setLocalRange([value, localRange[1]]);
-  };
-
-  const handleMaxChange = (e) => {
-    const value = Math.max(Number(e.target.value), localRange[0]);
-    setLocalRange([localRange[0], value]);
-  };
-
-  const handleMouseUp = () => setPriceRange([...localRange]);
-
   const resetFilters = () => {
     setCategoryFilter("");
     setColourFilter("");
     setSizeFilter("");
-    const defaultRange = [0, 50000];
-    setLocalRange(defaultRange);
-    setPriceRange(defaultRange);
+    setPriceRange([0, 50000]);
+    // reset any other filters you have
   };
 
   return (
@@ -75,7 +57,7 @@ export default function FiltersSidebar({
           <option value="">All Colours</option>
           {colours.map((c) => {
             const meta = findColourMeta(c);
-            return <option key={c} value={c}>{meta.name}</option>;
+            return <option key={c} value={c}>{meta?.name || c}</option>;
           })}
         </select>
       </div>
@@ -93,61 +75,13 @@ export default function FiltersSidebar({
         </select>
       </div>
 
-      {/* Price */}
+      {/* Price Range with Dual Slider */}
       <div>
         <div className="font-medium text-sm text-zinc-800 mb-1">Price Range</div>
-        <div className="flex gap-2 mb-1">
-          <input
-            type="number"
-            value={localRange[0]}
-            onChange={handleMinChange}
-            onBlur={handleMouseUp}
-            className="w-1/2 px-2 py-1 border rounded text-sm"
-          />
-          <span className="text-zinc-500">–</span>
-          <input
-            type="number"
-            value={localRange[1]}
-            onChange={handleMaxChange}
-            onBlur={handleMouseUp}
-            className="w-1/2 px-2 py-1 border rounded text-sm"
-          />
-        </div>
-
-        <div className="relative h-3 mt-2">
-          <div className="absolute w-full h-1 bg-zinc-200 rounded" />
-          <div
-            className="absolute h-1 bg-zinc-900 rounded"
-            style={{
-              left: `${(localRange[0] / 50000) * 100}%`,
-              width: `${((localRange[1] - localRange[0]) / 50000) * 100}%`,
-            }}
-          />
-          <input
-            type="range"
-            min="0"
-            max="50000"
-            step="500"
-            value={localRange[0]}
-            onChange={handleMinChange}
-            onMouseUp={handleMouseUp}
-            className="absolute w-full h-3 bg-transparent appearance-none pointer-events-auto"
-          />
-          <input
-            type="range"
-            min="0"
-            max="50000"
-            step="500"
-            value={localRange[1]}
-            onChange={handleMaxChange}
-            onMouseUp={handleMouseUp}
-            className="absolute w-full h-3 bg-transparent appearance-none pointer-events-auto"
-          />
-        </div>
-        <div className="text-xs text-zinc-500 mt-1">
-          R {localRange[0].toLocaleString()} – R {localRange[1].toLocaleString()}
-        </div>
+        <DualRangeSlider value={priceRange} onChange={setPriceRange} min={0} max={50000} step={500} />
       </div>
+
+      {/* Add back any other original filter sections here */}
     </aside>
   );
 }
