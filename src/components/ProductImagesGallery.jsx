@@ -31,11 +31,9 @@ export default function ProductImagesGallery({
     if (typeof onImageSelect === "function") onImageSelect(selectedImage);
   }, [selectedImage, onImageSelect]);
 
-  const thumbnails = Array.isArray(imagesForColour) ? imagesForColour : [selectedImage];
-
   return (
     <div className={className}>
-      {/* Main image: object-contain protects aspect and prevents overflow */}
+      {/* Main image */}
       <div className="rounded-2xl overflow-hidden border mb-4 bg-zinc-50 h-[420px] sm:h-[560px] flex items-center justify-center">
         <img
           src={selectedImage || "/placeholder.png"}
@@ -45,48 +43,32 @@ export default function ProductImagesGallery({
         />
       </div>
 
-      {/* Thumbnails & swatches — no negative margins, nowrap to avoid pushing page width */}
-      <div className="flex items-center overflow-x-auto px-1">
-        <div className="flex gap-2 px-1 flex-nowrap">
-          {thumbnails.slice(0, 8).map((src, i) => (
+      {/* Color palette only, no thumbnail images */}
+      <div className="mt-4 flex gap-2 items-center flex-wrap">
+        {colourOptions.map((o) => {
+          const swatchStyle = o.hex ? { backgroundColor: o.hex } : { backgroundColor: "#eee" };
+          const isSelected = o.code === selectedColour;
+          return (
             <button
-              key={i}
-              type="button"
-              onClick={() => setSelectedImage(src)}
-              className={`w-20 h-20 rounded-lg overflow-hidden border flex-shrink-0 ${selectedImage === src ? "ring-2 ring-zinc-900" : ""}`}
-              title={`Preview image ${i + 1}`}
-              style={{ minWidth: 64 }}
+              key={o.code}
+              onClick={() => setSelectedColour(o.code)}
+              className={`w-10 h-10 rounded-full border-2 flex items-center justify-center ${
+                isSelected ? "ring-2 ring-indigo-500" : "border-zinc-300"
+              }`}
+              aria-pressed={isSelected}
+              aria-label={`Select ${o.name}`}
+              title={o.name}
             >
-              <img src={src} alt={`thumb-${i}`} loading="lazy" className="w-full h-full object-cover" />
+              <span className="w-8 h-8 rounded-full" style={swatchStyle} />
             </button>
-          ))}
-        </div>
-
-        <div className="ml-4 flex gap-2 items-center px-1 flex-nowrap">
-          {colourOptions.map((o) => {
-            const thumb = (o.images && o.images[0]) || "/placeholder.png";
-            return (
-              <button
-                key={o.code}
-                onClick={() => setSelectedColour(o.code)}
-                title={o.name}
-                className={`flex flex-col items-center gap-1 text-xs ${selectedColour === o.code ? "opacity-100" : "opacity-80"}`}
-                type="button"
-              >
-                <div className={`w-10 h-10 rounded-full overflow-hidden border ${selectedColour === o.code ? "ring-2 ring-zinc-900" : ""}`}>
-                  <img src={thumb} alt={o.name} className="w-full h-full object-cover" loading="lazy" />
-                </div>
-                <div className="text-[10px] text-zinc-600">{o.name}</div>
-              </button>
-            );
-          })}
-        </div>
+          );
+        })}
       </div>
 
       {lightboxOpen && (
         <Lightbox
-          items={thumbnails.map((s, i) => ({ src: s, alt: `${selectedColour || ""} ${i + 1}` }))}
-          startIndex={Math.max(0, thumbnails.indexOf(selectedImage))}
+          items={imagesForColour.map((s, i) => ({ src: s, alt: `${selectedColour || ""} ${i + 1}` }))}
+          startIndex={Math.max(0, imagesForColour.indexOf(selectedImage))}
           onClose={() => setLightboxOpen(false)}
         />
       )}

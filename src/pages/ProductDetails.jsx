@@ -10,6 +10,16 @@ import TabsSection from "../components/TabsSection";
 import ReviewsList from "../components/ReviewsList";
 import RelatedProductsGrid from "../components/RelatedProductsGrid";
 
+// Full color mapping
+const COLOR_MAP = {
+  BR: { name: "Bronze", hex: "#b08d57" },
+  B: { name: "Black", hex: "#000000" },
+  N: { name: "Natural", hex: "#D8C6B8" },
+  C: { name: "Charcoal", hex: "#333333" },
+  W: { name: "White", hex: "#FFFFFF" },
+  DEF: { name: "Default", hex: "#eee" },
+};
+
 export default function ProductDetails() {
   const { code } = useParams();
   const navigate = useNavigate();
@@ -40,14 +50,23 @@ export default function ProductDetails() {
       </div>
     );
 
+  // Build colourOptions with code, full name, hex, images
   const colourOptions =
     Object.keys(product.imagesByColour || {}).length > 0
       ? Object.keys(product.imagesByColour).map((c) => ({
           code: c,
-          name: c,
+          name: COLOR_MAP[c]?.name || c, // Full name
+          hex: COLOR_MAP[c]?.hex || "#eee", // For reference if needed
           images: product.imagesByColour[c] || [product.image || "/placeholder.png"],
         }))
-      : [{ code: "DEF", name: "Default", images: [product.image || "/placeholder.png"] }];
+      : [
+          {
+            code: "DEF",
+            name: COLOR_MAP.DEF.name,
+            hex: COLOR_MAP.DEF.hex,
+            images: [product.image || "/placeholder.png"],
+          },
+        ];
 
   const [selectedColour, setSelectedColour] = useState(colourOptions[0]?.code || "DEF");
   const [quantity, setQuantity] = useState(1);
@@ -62,7 +81,7 @@ export default function ProductDetails() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedColour, JSON.stringify(colourOptions), product.image]);
 
-  // quantity handlers (min 1)
+  // quantity handlers
   const handleQuantityChange = (value) => {
     const qty = Number(value);
     setQuantity(qty < 1 || isNaN(qty) ? 1 : Math.floor(qty));
@@ -85,7 +104,7 @@ export default function ProductDetails() {
       size: `${product.dimensions?.width || 1200} x ${product.dimensions?.height || 1500} mm`,
       glazing: product.metadata?.glazing || "10mm Clear Float",
       tint: product.metadata?.tinting || "Standard Tint",
-      finish: selectedColour,
+      finish: colourOptions.find((o) => o.code === selectedColour)?.name || selectedColour,
       colour: selectedColour,
     });
 
@@ -93,9 +112,22 @@ export default function ProductDetails() {
   };
 
   const shareLinks = [
-    { label: "🔗 Share", href: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}` },
-    { label: "🐦 Tweet", href: `https://twitter.com/intent/tweet?text=${encodeURIComponent(product.title)}&url=${encodeURIComponent(window.location.href)}` },
-    { label: "💬 WhatsApp", href: `https://wa.me/?text=${encodeURIComponent(product.title + " " + window.location.href)}` },
+    {
+      label: "🔗 Share",
+      href: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
+        window.location.href
+      )}`,
+    },
+    {
+      label: "🐦 Tweet",
+      href: `https://twitter.com/intent/tweet?text=${encodeURIComponent(
+        product.title
+      )}&url=${encodeURIComponent(window.location.href)}`,
+    },
+    {
+      label: "💬 WhatsApp",
+      href: `https://wa.me/?text=${encodeURIComponent(product.title + " " + window.location.href)}`,
+    },
   ];
 
   const relatedProducts = Object.entries(ACW_CATALOGUE)
@@ -108,14 +140,13 @@ export default function ProductDetails() {
     .slice(0, 6);
 
   return (
-    // top-level padding uses px-4 mobile, sm:px-6 on larger — prevents right-edge overflow
     <div className="px-4 sm:px-6 py-6 max-w-6xl mx-auto space-y-10 overflow-x-hidden">
       <div className="grid md:grid-cols-2 gap-8">
         <div className="min-w-0">
           <ProductImagesGallery
             colourOptions={colourOptions}
             selectedColour={selectedColour}
-            setSelectedColour={(c) => setSelectedColour(c)}
+            setSelectedColour={setSelectedColour}
             onImageSelect={(img) => img && setSelectedImage(img)}
           />
         </div>
@@ -127,9 +158,9 @@ export default function ProductDetails() {
             sizeLabel={`${product.dimensions?.width || 1200} x ${product.dimensions?.height || 1500} mm`}
             glazing={product.metadata?.glazing || "10mm Clear Float"}
             tint={product.metadata?.tinting || "Standard Tint"}
-            finish={selectedColour}
+            finish={colourOptions.find((o) => o.code === selectedColour)?.name || selectedColour}
             selectedColour={selectedColour}
-            onColourChange={(c) => setSelectedColour(c)}
+            onColourChange={setSelectedColour}
             colourOptions={colourOptions}
             quantity={quantity}
             setQuantity={handleQuantityChange}
