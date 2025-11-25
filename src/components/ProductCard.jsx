@@ -1,7 +1,6 @@
 // src/components/ProductCard.jsx
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useOrder } from "../context/OrderContext.jsx";
 
 const UPLOADED_TEST_IMAGE = "/placeholder.png";
 
@@ -26,7 +25,6 @@ export default function ProductCard({ prod, product }) {
   // accept either prop name for backwards compatibility
   const p = prod || product;
   const navigate = useNavigate();
-  const { addItem } = useOrder();
 
   if (!p) return null; // defensive
 
@@ -41,28 +39,6 @@ export default function ProductCard({ prod, product }) {
   const code = p.code || p.codePrefix || p.system || p.id || p.productCode || p.sku || "";
 
   const price = typeof p.price === "number" ? p.price : Number(p.basePrice || p.price) || null;
-
-  const handleAddToOrder = (qty = 1) => {
-    const qtyNum = Number(qty) || 1;
-    addItem({
-      code,
-      title: p.title || p.name || code,
-      quantity: qtyNum,
-      price: price || 0,
-      subtotal: (price || 0) * qtyNum,
-      image,
-      size:
-        p.dimensions && p.dimensions.width && p.dimensions.height
-          ? `${p.dimensions.width} x ${p.dimensions.height} mm`
-          : p.size || null,
-      glazing: p.metadata?.glazing || p.glazing || "10mm Clear Float",
-      tint: p.metadata?.tinting || p.tint || "Standard Tint",
-      finish: defaultColour,
-      colour: defaultColour,
-      timestamp: new Date().toISOString(),
-    });
-    window.dispatchEvent(new Event("cart:open"));
-  };
 
   return (
     <div className="border rounded-xl overflow-hidden shadow bg-white group hover:shadow-lg transition-shadow">
@@ -102,9 +78,6 @@ export default function ProductCard({ prod, product }) {
         </div>
 
         <div className="mt-4 flex gap-2">
-          <button onClick={() => handleAddToOrder(1)} className="px-3 py-1 bg-zinc-900 text-white rounded text-sm">
-            Add to Order
-          </button>
           <button
             onClick={() => navigate(`/products/${encodeURIComponent(code || p.code)}`)}
             className="px-3 py-1 border rounded text-sm"
