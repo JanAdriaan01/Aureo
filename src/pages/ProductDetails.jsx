@@ -40,7 +40,6 @@ export default function ProductDetails() {
       </div>
     );
 
-  // Build colourOptions (fallback to a default set if none exist)
   const colourOptions = (Object.keys(product.imagesByColour || {}).length > 0
     ? Object.keys(product.imagesByColour).map((c) => ({
         code: c,
@@ -52,19 +51,25 @@ export default function ProductDetails() {
 
   const [selectedColour, setSelectedColour] = useState(colourOptions[0]?.code || "DEF");
   const [quantity, setQuantity] = useState(1);
-
-  // Parent-level selectedImage so ProductImagesGallery and Add-to-Order share the same image
   const [selectedImage, setSelectedImage] = useState(
     colourOptions[0]?.images?.[0] || product.image || "/placeholder.png"
   );
 
-  // Sync selectedImage when selectedColour or colourOptions change
+  // Sync selectedImage when selectedColour changes
   useEffect(() => {
     const opts = colourOptions.find((o) => o.code === selectedColour) || colourOptions[0];
     const firstImg = (opts && Array.isArray(opts.images) && opts.images[0]) || product.image || "/placeholder.png";
     setSelectedImage(firstImg);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedColour, JSON.stringify(colourOptions), product.image]);
+
+  // Quantity handlers
+  const handleQuantityChange = (value) => {
+    const qty = Number(value);
+    setQuantity(qty < 1 || isNaN(qty) ? 1 : qty);
+  };
+
+  const decrementQuantity = () => setQuantity((prev) => (prev > 1 ? prev - 1 : 1));
+  const incrementQuantity = () => setQuantity((prev) => prev + 1);
 
   const handleAddToOrder = () => {
     const qtyNum = Number(quantity) || 1;
@@ -85,7 +90,6 @@ export default function ProductDetails() {
       colour: selectedColour,
     });
 
-    // open cart UI if your app listens for this event
     window.dispatchEvent(new Event("cart:open"));
   };
 
@@ -111,10 +115,7 @@ export default function ProductDetails() {
           colourOptions={colourOptions}
           selectedColour={selectedColour}
           setSelectedColour={(c) => setSelectedColour(c)}
-          // parent receives the selected image when user picks a thumbnail
-          onImageSelect={(img) => {
-            if (img) setSelectedImage(img);
-          }}
+          onImageSelect={(img) => img && setSelectedImage(img)}
         />
 
         <ProductDetailsInfo
@@ -128,7 +129,9 @@ export default function ProductDetails() {
           onColourChange={(c) => setSelectedColour(c)}
           colourOptions={colourOptions}
           quantity={quantity}
-          setQuantity={setQuantity}
+          setQuantity={handleQuantityChange}
+          incrementQuantity={incrementQuantity}
+          decrementQuantity={decrementQuantity}
           unitPrice={Number(product.basePrice)}
           handleAddToOrder={handleAddToOrder}
           shareLinks={shareLinks}

@@ -27,6 +27,12 @@ export default function ProductCard({ prod }) {
   const code = p.code || p.codePrefix || p.system || p.id || p.productCode || p.sku || "";
   const price = typeof p.price === "number" ? p.price : Number(p.basePrice || p.price) || null;
 
+  // Extract measurements & panel info for bottom
+  const size = p.dimensions
+    ? `${p.dimensions.width} x ${p.dimensions.height} mm`
+    : null;
+  const panels = p.metadata?.panels || p.panels || null;
+
   return (
     <div className="border rounded-xl overflow-hidden shadow bg-white group hover:shadow-lg transition-shadow flex flex-col">
       {/* Image */}
@@ -70,12 +76,27 @@ export default function ProductCard({ prod }) {
           </div>
         )}
 
-        {/* Price + View button always at bottom */}
-        <div className="mt-auto">
+        {/* Spacer */}
+        <div className="flex-1" />
+
+        {/* Bottom details */}
+        {size && (
+          <div className="text-xs text-zinc-500 mt-2">
+            Size: {size}
+          </div>
+        )}
+        {panels && (
+          <div className="text-xs text-zinc-500">
+            Panels: {panels}
+          </div>
+        )}
+
+        {/* Price + View button */}
+        <div className="mt-2">
           {price !== null ? (
-            <div className="text-sm sm:text-base font-bold mt-2">R {Number(price).toLocaleString()}</div>
+            <div className="text-sm sm:text-base font-bold">R {Number(price).toLocaleString()}</div>
           ) : (
-            <div className="text-xs text-zinc-500 mt-2">Price on request</div>
+            <div className="text-xs text-zinc-500">Price on request</div>
           )}
 
           <button

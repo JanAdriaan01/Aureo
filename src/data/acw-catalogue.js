@@ -3,7 +3,7 @@
 
 export const ACW_CATALOGUE = {
   "ACW887": {
-    "title": "Aluminium Top Hung Casement Window 1790 x 1190 2 | 1 | 2",
+    "title": "Aluminium Top Hung Casement Window",
     "category": "Aluminium Windows",
     "codePrefix": "ACW887",
     "image": "/images/ACW887/W/ACW887W.png",
