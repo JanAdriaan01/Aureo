@@ -2,13 +2,35 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/images/fav.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Modahaus Global</title>
+    <title>Modahaus</title>
+
+    <!-- Standard favicon for browser tabs -->
+    <link rel="icon" type="image/png" sizes="32x32" href="/images/fav.png" />
+    <link rel="shortcut icon" href="/images/fav.png" type="image/png" />
+
+    <!-- Apple touch icon for iOS home screen -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/images/logo-192.png">
+
+    <!-- Manifest for PWA -->
+    <link rel="manifest" href="/manifest.json">
+
+    <!-- Optional theme color -->
+    <meta name="theme-color" content="#000000" />
+
+    <!-- Structured data for SEO and Google search results -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "Modahaus",
+      "url": "https://www.modahaus.co.za",
+      "logo": "https://www.modahaus.co.za/images/logo-512.png"
+    }
+    </script>
   </head>
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>
-
